@@ -13,7 +13,6 @@ import dungeonescape.space.DungeonSpaceType;
 import dungeonescape.space.DungeonSpaceTypeFilters;
 import dungeonescape.space.Position;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -121,7 +120,6 @@ public class DungeonUtil {
                             || position[0] == width - 1
                             || position[1] == height - 1
                             || position[1] == 0) {
-                        System.out.println("Exit at: " + Arrays.toString(position));
                         break;
                     }
                 }

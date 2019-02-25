@@ -18,10 +18,8 @@ import dungeonescape.dungeonobject.mine.TeleportMine;
 import dungeonescape.play.GameSession;
 import dungeonescape.play.GameState;
 import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.DungeonSpaceType;
 import dungeonescape.space.Position;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -90,14 +88,12 @@ public class Dungeon {
         targetBoundaries.addTargetBoundary(new TargetBoundary(width / 4 + 1, width / 2, .4));
 
         //lay the freeze mines
-        System.out.println("Placing freeze mines.");
         dungeon = placeFreezeMines(dungeon, dungeonConfiguration.getNumberOfFreezeMines(), dungeonConfiguration.getMaxFreezeTime(), targetBoundaries);
 
         //lay the teleport mines
-        System.out.println("Placing teleport mines.");
         dungeon = placeTeleportMines(dungeon, dungeonConfiguration.getNumberOfTeleportMines(), targetBoundaries);
 
-        System.out.println(DungeonUtil.getFullDungeonAsString(dungeon, null));
+//        System.out.println(DungeonUtil.getFullDungeonAsString(dungeon, null));
 
         return dungeon;
     }
