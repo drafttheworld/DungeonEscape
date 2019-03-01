@@ -15,36 +15,16 @@ import dungeonescape.space.DungeonSpaceType;
  *
  * @author Andrew
  */
-public class Player extends DungeonCharacter {
-    
-    private final String playerName;
-    private final int playerVisibility;
-    
-    public Player(String playerName, int playerVisibility) {
-        this.playerName = playerName;
-        this.playerVisibility = playerVisibility;
-    }
-    
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public int getPlayerVisibility() {
-        return playerVisibility;
-    }
-    
-    public void move(Direction direction) {
-        
-    }
+public class Guard extends DungeonCharacter {
 
     @Override
     public void interact(DungeonObject dungeonObject) throws GameNotification {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public DungeonSpaceType getDungeonSpaceType() {
-        return DungeonSpaceType.PLAYER;
+        return DungeonSpaceType.GUARD;
     }
 
     @Override

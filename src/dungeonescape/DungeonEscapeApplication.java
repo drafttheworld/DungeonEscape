@@ -6,8 +6,13 @@
 package dungeonescape;
 
 import dungeonescape.dungeon.DungeonConfiguration;
+import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.mine.FreezeTime;
+import dungeonescape.play.DungeonSize;
+import dungeonescape.play.GameDifficulty;
 import dungeonescape.play.GameSession;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,24 +21,59 @@ import java.util.concurrent.TimeUnit;
  */
 public class DungeonEscapeApplication {
 
-    private GameSession gameSession;
+    private final Map<String, GameSession> gameSessions = new HashMap<>();
 
-    public void startNewGame(String playerName, DungeonConfiguration dungeonConfiguration) {
-        gameSession = new GameSession(playerName, dungeonConfiguration);
+    public GameSession startNewCustomGame(String playerName, DungeonConfiguration dungeonConfiguration) throws GameNotification {
+        GameSession gameSession = new GameSession(playerName, dungeonConfiguration);
+        gameSessions.put(gameSession.getSessionId(), gameSession);
+        return gameSession;
     }
     
-    public static void main(String[] args) {
+    //TODO: Create specific configurations
+    public GameSession startNewCustomGame(String playerName, GameDifficulty gameDifficulty, 
+            DungeonSize dungeonSize) throws GameNotification {
+        DungeonConfiguration dungeonConfiguration = gameDifficulty.getDungeonConfiguration();
+        dungeonConfiguration.setDungeonWidth(dungeonSize.getDungeonWidth());
+        GameSession gameSession = new GameSession(playerName, dungeonConfiguration);
+        gameSessions.put(gameSession.getSessionId(), gameSession);
+        return gameSession;
+    } 
+    
+    public GameSession getGameSession(String gameSessionId){
+        return gameSessions.get(gameSessionId);
+    }
+    
+    public void deleteGameSession(String gameSessionId) {
+        gameSessions.remove(gameSessionId);
+    }
+    
+    public void deleteAllGameSessions(){
+        gameSessions.clear();
+    }
+    
+    public static void main(String[] args) throws GameNotification {
         DungeonEscapeApplication dungeonEscapeApplication = new DungeonEscapeApplication();
 
         DungeonConfiguration dungeonConfiguration
                 = new DungeonConfiguration()
-                        .width(1000)
-                        .exitCount(5)
+                        .playerVisibility(3)
+                        .miniMapVisibility(25)
+                        .dungeonWidth(1000)
+                        .dungeonExitCount(5)
+                        .numberOfDungeonMasters(1)
+                        .numberOfGuards(10)
+                        .numberOfGhosts(4)
                         .maxFreezeTime(new FreezeTime(5, TimeUnit.MINUTES))
                         .numberOfFreezeMines(5000)
                         .numberOfTeleportMines(500);
 
-        dungeonEscapeApplication.startNewGame("Andrew", dungeonConfiguration);
+        GameSession gameSession = dungeonEscapeApplication.startNewCustomGame("Andrew", dungeonConfiguration);
+        
+        //play game
+//        System.out.println(gameSession.movePlayer(Direction.NORTH));
+        
+        //Delete the session once complete (optional)
+        dungeonEscapeApplication.deleteGameSession(gameSession.getSessionId());
     }
 
 }

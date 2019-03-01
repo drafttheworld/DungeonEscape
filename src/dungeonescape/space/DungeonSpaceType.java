@@ -12,13 +12,15 @@ package dungeonescape.space;
 public enum DungeonSpaceType {
 
     WALL('#'),
+    NON_VISIBLE_SPACE('X'),
     OPEN_SPACE(' '),
     FREEZE_MINE('*'),
     TELEPORT_MINE('@'),
     TELEPORT_LOCATION(' '),
-    PLAYER('$'),
+    PLAYER('P'),
     GHOST('~'),
-    DUNGEON_MASTER('X');
+    GUARD('G'),
+    DUNGEON_MASTER('M');
 
     private final char value;
 

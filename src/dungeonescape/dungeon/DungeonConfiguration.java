@@ -15,10 +15,16 @@ public class DungeonConfiguration {
     
     //Player settings
     private int playerVisibility;
+    private int miniMapVisibility;
     
     //Dungeon settings
-    private int width;
-    private int exitCount;
+    private int dungeonWidth;
+    private int dungeonExitCount;
+    
+    //Enemy settings
+    private int numberOfDungeonMasters;
+    private int numberOfGuards;
+    private int numberOfGhosts;
     
     //Mine settings
     private int numberOfFreezeMines;
@@ -39,29 +45,81 @@ public class DungeonConfiguration {
         return this;
     }
 
-    public int getWidth() {
-        return width;
+    public int getMiniMapVisibility() {
+        return miniMapVisibility;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
+    public void setMiniMapVisibility(int miniMapVisibility) {
+        this.miniMapVisibility = miniMapVisibility;
     }
     
-    public DungeonConfiguration width(int width) {
-        setWidth(width);
+    public DungeonConfiguration miniMapVisibility(int miniMapVisibility) {
+        setMiniMapVisibility(miniMapVisibility);
         return this;
     }
 
-    public int getExitCount() {
-        return exitCount;
+    public int getDungeonWidth() {
+        return dungeonWidth;
     }
 
-    public void setExitCount(int exitCount) {
-        this.exitCount = exitCount;
+    public void setDungeonWidth(int width) {
+        this.dungeonWidth = width;
     }
     
-    public DungeonConfiguration exitCount(int exitCount) {
-        setExitCount(exitCount);
+    public DungeonConfiguration dungeonWidth(int width) {
+        setDungeonWidth(width);
+        return this;
+    }
+
+    public int getDungeonExitCount() {
+        return dungeonExitCount;
+    }
+
+    public void setDungeonExitCount(int exitCount) {
+        this.dungeonExitCount = exitCount;
+    }
+    
+    public DungeonConfiguration dungeonExitCount(int exitCount) {
+        setDungeonExitCount(exitCount);
+        return this;
+    }
+
+    public int getNumberOfDungeonMasters() {
+        return numberOfDungeonMasters;
+    }
+
+    public void setNumberOfDungeonMasters(int numberOfDungeonMasters) {
+        this.numberOfDungeonMasters = numberOfDungeonMasters;
+    }
+    
+    public DungeonConfiguration numberOfDungeonMasters(int numberOfDungeonMasters) {
+        setNumberOfDungeonMasters(numberOfDungeonMasters);
+        return this;
+    }
+
+    public int getNumberOfGuards() {
+        return numberOfGuards;
+    }
+
+    public void setNumberOfGuards(int numberOfGuards) {
+        this.numberOfGuards = numberOfGuards;
+    }
+    
+    public DungeonConfiguration numberOfGuards(int numberOfGuards) {
+        setNumberOfGuards(numberOfGuards);
+        return this;
+    }
+
+    public int getNumberOfGhosts() {
+        return numberOfGhosts;
+    }
+
+    public void setNumberOfGhosts(int numberOfGhosts) {
+        this.numberOfGhosts = numberOfGhosts;
+    }
+    
+    public DungeonConfiguration numberOfGhosts(int numberOfGhosts) {
+        setNumberOfGhosts(numberOfGhosts);
         return this;
     }
     

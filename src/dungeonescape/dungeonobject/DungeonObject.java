@@ -5,10 +5,10 @@
  */
 package dungeonescape.dungeonobject;
 
+import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.actions.Action;
-import dungeonescape.space.Position;
-import dungeonescape.play.GameSession;
 import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.space.Position;
 
 /**
  *
@@ -45,8 +45,7 @@ public abstract class DungeonObject {
         return this;
     }
     
-    public abstract void act(GameSession session);
-    
-    public abstract DungeonSpaceType getDungeonSpaceType();
+    public abstract void interact(DungeonObject dungeonObject) throws GameNotification;
+    public abstract DungeonSpaceType getDungeonSpaceType();    
     
 }

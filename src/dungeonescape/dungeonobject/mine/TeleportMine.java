@@ -5,8 +5,7 @@
  */
 package dungeonescape.dungeonobject.mine;
 
-import dungeonescape.space.Position;
-import dungeonescape.play.GameSession;
+import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 
@@ -36,7 +35,7 @@ public class TeleportMine extends Mine {
     }
 
     @Override
-    public void act(GameSession session) {
+    public void interact(DungeonObject dungeonObject) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

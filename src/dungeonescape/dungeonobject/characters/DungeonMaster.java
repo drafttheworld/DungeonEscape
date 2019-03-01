@@ -5,24 +5,31 @@
  */
 package dungeonescape.dungeonobject.characters;
 
+import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.play.GameSession;
+import dungeonescape.dungeonobject.actions.move.Direction;
+import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 
 /**
  *
  * @author Andrew
  */
-public class DungeonMaster extends DungeonObject {
+public class DungeonMaster extends DungeonCharacter {
 
     @Override
-    public void act(GameSession session) {
+    public void interact(DungeonObject dungeonObject) throws GameNotification {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public DungeonSpaceType getDungeonSpaceType() {
         return DungeonSpaceType.DUNGEON_MASTER;
+    }
+
+    @Override
+    public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

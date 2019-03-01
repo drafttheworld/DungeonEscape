@@ -11,10 +11,10 @@ package dungeonescape.dungeonobject.actions.move;
  */
 public enum Direction {
     
-    UP("up"),
-    DOWN("down"),
-    RIGHT("right"),
-    LEFT("left");
+    NORTH("north"),
+    SOUTH("south"),
+    EAST("east"),
+    WEST("west");
     
     private final String value;
     

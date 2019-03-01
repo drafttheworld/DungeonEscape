@@ -6,7 +6,6 @@
 package dungeonescape.dungeonobject.mine;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.play.GameSession;
 import dungeonescape.space.DungeonSpaceType;
 
 /**
@@ -16,7 +15,8 @@ import dungeonescape.space.DungeonSpaceType;
 public class TeleportDestination extends DungeonObject {
 
     @Override
-    public void act(GameSession session) {
+    public void interact(DungeonObject dungeonObject) {
+        //Do nothing I'm simply a destination
     }
 
     @Override

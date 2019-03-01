@@ -5,16 +5,16 @@
  */
 package dungeonescape.dungeonobject.actions;
 
-import dungeonescape.play.GameSession;
+import dungeonescape.dungeonobject.DungeonObject;
 
 /**
  *
  * @author Andrew
  */
-public class Delay implements Action {
+public class Teleport implements Action {
 
     @Override
-    public GameSession act(GameSession session) {
+    public DungeonObject actOn(DungeonObject dungeonObject) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

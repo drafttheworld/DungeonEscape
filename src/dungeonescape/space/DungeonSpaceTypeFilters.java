@@ -16,17 +16,33 @@ import java.util.List;
 public class DungeonSpaceTypeFilters {
     
     private Position playerPosition;
-    private int visibilityDistance;
+    private int playerVisibility = 0;
+    private int mapVisibility = Integer.MAX_VALUE;
     
     private final List<DungeonSpaceType> dungeonSpaceTypeExclusions = new ArrayList<>();
-    
-    public void setPlayerVisibility(Position playerPosition, int visibilityDistance) {
+
+    public Position getPlayerPosition() {
+        return playerPosition;
+    }
+
+    public void setPlayerPosition(Position playerPosition) {
         this.playerPosition = playerPosition;
     }
     
-    public void clearPlayerVisibility() {
-        playerPosition = null;
-        visibilityDistance = Integer.MAX_VALUE;
+    public int getPlayerVisibility() {
+        return playerVisibility;
+    }
+    
+    public void setPlayerVisibility(int playerVisibility) {
+        this.playerVisibility = playerVisibility;
+    }
+    
+    public int getMapVisibility() {
+        return mapVisibility;
+    }
+    
+    public void setMapVisibility(int mapVisibility) {
+        this.mapVisibility = mapVisibility;
     }
     
     public void addExclusionType(DungeonSpaceType dungeonSpaceType) {

@@ -6,22 +6,11 @@
 package dungeonescape.dungeonobject.construction;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.space.DungeonSpaceType;
 
 /**
  *
  * @author Andrew
  */
-public class Wall extends Construction {
-
-    @Override
-    public void interact(DungeonObject dungeonObject) {
-        //Do nothing I'm a wall.
-    }
-
-    @Override
-    public DungeonSpaceType getDungeonSpaceType() {
-        return DungeonSpaceType.WALL;
-    }
+public abstract class Construction extends DungeonObject {
     
 }

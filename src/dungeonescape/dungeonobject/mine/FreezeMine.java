@@ -5,7 +5,7 @@
  */
 package dungeonescape.dungeonobject.mine;
 
-import dungeonescape.play.GameSession;
+import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.space.DungeonSpaceType;
 
 /**
@@ -34,7 +34,7 @@ public class FreezeMine extends Mine {
     }
 
     @Override
-    public void act(GameSession session) {
+    public void interact(DungeonObject dungeonObject) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

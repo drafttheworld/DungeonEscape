@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dungeonescape.dungeonobject.actions;
-
-import dungeonescape.dungeonobject.DungeonObject;
+package dungeonescape.dungeon.notifications;
 
 /**
  *
  * @author Andrew
  */
-public interface Action {
+public class LossNotification extends GameNotification {
     
-    public DungeonObject actOn(DungeonObject dungeonObject);
+    public LossNotification(String message) {
+        super(message);
+    }
     
 }

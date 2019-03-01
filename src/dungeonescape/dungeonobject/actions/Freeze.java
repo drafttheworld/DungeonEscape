@@ -3,16 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dungeonescape.dungeonobject.actions.move;
+package dungeonescape.dungeonobject.actions;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.actions.Action;
 
 /**
  *
  * @author Andrew
  */
-public class Move implements Action {
+public class Freeze implements Action {
 
     @Override
     public DungeonObject actOn(DungeonObject dungeonObject) {
