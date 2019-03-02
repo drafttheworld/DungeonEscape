@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dungeonescape.dungeonobject.mine;
+package dungeonescape.dungeonobject;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,15 +13,15 @@ import java.util.concurrent.TimeUnit;
  */
 public class FreezeTime {
 
-    private final int time;
+    private final long time;
     private final TimeUnit timeUnit;
 
-    public FreezeTime(int time, TimeUnit timeUnit) {
+    public FreezeTime(long time, TimeUnit timeUnit) {
         this.time = time;
         this.timeUnit = timeUnit;
     }
 
-    public int getTime() {
+    public long getTime() {
         return time;
     }
 

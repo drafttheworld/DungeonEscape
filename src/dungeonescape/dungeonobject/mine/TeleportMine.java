@@ -5,7 +5,10 @@
  */
 package dungeonescape.dungeonobject.mine;
 
+import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.characters.Player;
+import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 
@@ -35,8 +38,12 @@ public class TeleportMine extends Mine {
     }
 
     @Override
-    public void interact(DungeonObject dungeonObject) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void interact(DungeonObject dungeonObject) throws GameNotification {
+        if (dungeonObject instanceof Player) {
+            Player player = (Player) dungeonObject;
+            player.getDungeonSpace().removeDungeonObject(player);
+            teleportSpace.addDungeonObject(player);
+        }
     }
 
     @Override

@@ -9,13 +9,9 @@ package dungeonescape.dungeon.notifications;
  *
  * @author Andrew
  */
-public class WinNotification extends GameNotification {
+public class InteractionNotification extends GameNotification {
     
-    public WinNotification() {
-        this("Congratulations, you won!");
-    }
-    
-    public WinNotification(String message) {
+    public InteractionNotification(String message) {
         super(message);
     }
     

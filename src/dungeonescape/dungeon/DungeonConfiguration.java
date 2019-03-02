@@ -5,7 +5,12 @@
  */
 package dungeonescape.dungeon;
 
-import dungeonescape.dungeonobject.mine.FreezeTime;
+import dungeonescape.dungeonobject.FreezeTime;
+import dungeonescape.dungeonobject.characters.Ghost;
+import dungeonescape.dungeonobject.mine.FreezeMine;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -14,6 +19,7 @@ import dungeonescape.dungeonobject.mine.FreezeTime;
 public class DungeonConfiguration {
     
     //Player settings
+    private final List<String> playerNames;
     private int playerVisibility;
     private int miniMapVisibility;
     
@@ -25,12 +31,33 @@ public class DungeonConfiguration {
     private int numberOfDungeonMasters;
     private int numberOfGuards;
     private int numberOfGhosts;
+    private FreezeTime ghostFreezeTime;
     
     //Mine settings
     private int numberOfFreezeMines;
-    private FreezeTime maxFreezeTime;
+    private FreezeTime maxFreezeMineTime;
     
     private int numberOfTeleportMines;
+    
+    public DungeonConfiguration() {
+        playerNames = new ArrayList<>();
+    }
+
+    public List<String> getPlayerNames() {
+        return Collections.unmodifiableList(playerNames);
+    }
+
+    public void addPlayerName(String playerName) {
+        if (playerName == null || "".equals(playerName)) {
+            throw new IllegalArgumentException("Player name cannot be blank.");
+        }
+        playerNames.add(playerName);
+    }
+    
+    public DungeonConfiguration playerName(String playerName) {
+        addPlayerName(playerName);
+        return this;
+    }
 
     public int getPlayerVisibility() {
         return playerVisibility;
@@ -122,6 +149,22 @@ public class DungeonConfiguration {
         setNumberOfGhosts(numberOfGhosts);
         return this;
     }
+
+    public FreezeTime getGhostFreezeTime() {
+        if (ghostFreezeTime == null) {
+            return Ghost.DEFAULT_FREEZE_TIME;
+        }
+        return ghostFreezeTime;
+    }
+
+    public void setGhostFreezeTime(FreezeTime ghostFreezeTime) {
+        this.ghostFreezeTime = ghostFreezeTime;
+    }
+    
+    public DungeonConfiguration ghostFreezeTime(FreezeTime freezeTime) {
+        setGhostFreezeTime(freezeTime);
+        return this;
+    }
     
     public int getNumberOfFreezeMines() {
         return numberOfFreezeMines;
@@ -136,16 +179,19 @@ public class DungeonConfiguration {
         return this;
     }
 
-    public FreezeTime getMaxFreezeTime() {
-        return maxFreezeTime;
+    public FreezeTime getMaxFreezeMineTime() {
+        if (maxFreezeMineTime == null) {
+            return FreezeMine.DEFAULT_MAX_FREEZE_TIME;
+        }
+        return maxFreezeMineTime;
     }
 
-    public void setMaxFreezeTime(FreezeTime maxFreezeTime) {
-        this.maxFreezeTime = maxFreezeTime;
+    public void setMaxFreezeMineTime(FreezeTime maxFreezeTime) {
+        this.maxFreezeMineTime = maxFreezeTime;
     }
     
-    public DungeonConfiguration maxFreezeTime(FreezeTime maxFreezeTime) {
-        setMaxFreezeTime(maxFreezeTime);
+    public DungeonConfiguration maxFreezeMineTime(FreezeTime maxFreezeTime) {
+        setMaxFreezeMineTime(maxFreezeTime);
         return this;
     }
 

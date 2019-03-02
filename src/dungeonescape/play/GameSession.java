@@ -9,7 +9,8 @@ import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.GameOverNotification;
-import dungeonescape.dungeonobject.actions.move.Direction;
+import dungeonescape.dungeon.notifications.LossNotification;
+import dungeonescape.dungeon.notifications.WinNotification;
 import java.util.UUID;
 
 /**
@@ -20,28 +21,22 @@ public class GameSession {
 
     private final String sessionId = UUID.randomUUID().toString();
 
-    private final String playerName;
-    private final DungeonConfiguration dugeonConfiguration;
+    private final DungeonConfiguration dungeonConfiguration;
 
     private final Dungeon dungeon;
 
     //Game status
-    boolean won = false;
-    boolean lost = false;
+    private boolean won = false;
+    private boolean lost = false;
 
-    public GameSession(String playerName, DungeonConfiguration dugeonConfiguration) throws GameNotification {
-        this.playerName = playerName;
-        this.dugeonConfiguration = dugeonConfiguration;
+    public GameSession(DungeonConfiguration dungeonConfiguration) throws GameNotification {
+        this.dungeonConfiguration = dungeonConfiguration;
 
-        dungeon = new Dungeon(this);
+        dungeon = new Dungeon(dungeonConfiguration);
     }
 
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public DungeonConfiguration getDugeonConfiguration() {
-        return dugeonConfiguration;
+    public DungeonConfiguration getDungeonConfiguration() {
+        return dungeonConfiguration;
     }
 
     public String getSessionId() {
@@ -49,13 +44,25 @@ public class GameSession {
     }
 
     public String movePlayer(Direction direction) throws GameNotification {
-
+        
         if (won || lost) {
             String gameResult = won ? "You Won!" : "You lost.";
             throw new GameOverNotification("Cannot move player after game has ended (" + gameResult + ").");
         }
+        
+        try {
+            dungeon.movePlayer(direction);
+        } catch (GameNotification gameNotification) {
+            if (gameNotification instanceof WinNotification) {
+                won = true;
+            } else if (gameNotification instanceof LossNotification) {
+                lost = true;
+            }
+            throw gameNotification;
+        }
+        
 
-        return dungeon.movePlayer(direction);
+        return dungeon.generatePlayerMiniMap();
     }
 
 }

@@ -6,17 +6,17 @@
 package dungeonescape.dungeon;
 
 import dungeonescape.dungeon.notifications.GameNotification;
-import dungeonescape.dungeonobject.actions.move.Direction;
-import dungeonescape.dungeonobject.characters.Ghost;
-import dungeonescape.dungeonobject.characters.Guard;
+import dungeonescape.play.Direction;
+import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.dungeonobject.construction.Wall;
 import dungeonescape.dungeonobject.mine.TargetBoundaries;
 import dungeonescape.dungeonobject.mine.TargetBoundary;
-import dungeonescape.play.GameSession;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.Position;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -25,24 +25,22 @@ import java.util.List;
 public class Dungeon {
 
     private Player player;
+    private int dungeonTimeElapsed;
     private DungeonSpace[][] dungeon;
-    private List<Guard> guards;
-    private List<Ghost> ghosts;
+    private final List<DungeonCharacter> nonPlayerCharacters;
 
-    private final GameSession gameSession;
+    private final DungeonConfiguration dungeonConfiguration;
 
-    public Dungeon(GameSession gameSession) throws GameNotification {
-        this.gameSession = gameSession;
+    public Dungeon(DungeonConfiguration dungeonConfiguration) throws GameNotification {
+        this.dungeonConfiguration = dungeonConfiguration;
 
+        nonPlayerCharacters = new ArrayList<>();
         dungeon = generateDungeon();
+        dungeonTimeElapsed = 0;
     }
 
-    protected DungeonSpace[][] getDungeon() {
-        return dungeon;
-    }
-
-    protected GameSession getGameSession() {
-        return gameSession;
+    public Position getPlayerPosition() {
+        return player.getPosition();
     }
 
     /**
@@ -52,27 +50,30 @@ public class Dungeon {
      */
     private DungeonSpace[][] generateDungeon() throws GameNotification {
 
-        int width = gameSession.getDugeonConfiguration().getDungeonWidth();
+        int width = dungeonConfiguration.getDungeonWidth();
         int height = width;
 
         dungeon = new DungeonSpace[width][width];
 
+        int centerX = width / 2;
+        int centerY = height / 2;
+
         //Fill the maze
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                dungeon[col][row] = new DungeonSpace(new Position(col, row), new Wall());
+                dungeon[col][row] = new DungeonSpace(new Position(col, row));
+                if (col != centerX && row != centerY) {
+                    dungeon[col][row].addDungeonObject(new Wall());
+                }
             }
         }
 
-        int startX = width / 2;
-        int startY = height / 2;
-
-        DungeonConfiguration dungeonConfiguration = gameSession.getDugeonConfiguration();
-
-        //place the player at the start of the maze
-        Position startPosition = new Position(startX, startY);
-        player = new Player(gameSession.getPlayerName(), dungeonConfiguration.getPlayerVisibility());
-        dungeon[startPosition.getPositionX()][startPosition.getPositionY()] = new DungeonSpace(startPosition, player);
+        //place the player at the center of the dungeon
+        //Currently only support one player, TODO add support for multiple players
+        Position startPosition = new Position(centerX, centerY);
+        player = new Player(dungeonConfiguration.getPlayerNames().get(0), dungeonConfiguration.getPlayerVisibility());
+        dungeon[startPosition.getPositionX()][startPosition.getPositionY()] = new DungeonSpace(startPosition);
+        dungeon[startPosition.getPositionX()][startPosition.getPositionY()].addDungeonObject(player);
 
         //Cut out the exit paths
         dungeon = DungeonConstructionUtil.cutExitPaths(dungeon, dungeonConfiguration.getDungeonExitCount());
@@ -83,32 +84,46 @@ public class Dungeon {
         targetBoundaries.addTargetBoundary(new TargetBoundary(width / 4 + 1, width / 2, .4));
 
         //lay the freeze mines
-        dungeon = DungeonConstructionUtil.placeFreezeMines(dungeon, 
-                dungeonConfiguration.getNumberOfFreezeMines(), dungeonConfiguration.getMaxFreezeTime(), targetBoundaries);
+        dungeon = DungeonConstructionUtil.placeFreezeMines(dungeon,
+                dungeonConfiguration.getNumberOfFreezeMines(), dungeonConfiguration.getMaxFreezeMineTime(), targetBoundaries);
 
         //lay the teleport mines
-        dungeon = DungeonConstructionUtil.placeTeleportMines(dungeon, 
+        dungeon = DungeonConstructionUtil.placeTeleportMines(dungeon,
                 dungeonConfiguration.getNumberOfTeleportMines(), targetBoundaries);
-        
+
         //place the guards
-        guards = DungeonCharacterUtil.placeGuards(dungeon, dungeonConfiguration.getNumberOfGuards());
+        nonPlayerCharacters.addAll(DungeonCharacterUtil.placeGuards(dungeon, dungeonConfiguration.getNumberOfGuards()));
 
         //place the ghosts, offset 1/4 of the total dungeon width from the border
-        int offset = dungeon.length / 4;
-        ghosts = DungeonCharacterUtil.placeGhosts(dungeon, dungeonConfiguration.getNumberOfGhosts(), offset);
+        int borderOffset = dungeon.length / 4;
+        nonPlayerCharacters.addAll(DungeonCharacterUtil.placeGhosts(dungeon, 
+                dungeonConfiguration.getNumberOfGhosts(), dungeonConfiguration.getGhostFreezeTime(), borderOffset));
 
         System.out.println(DungeonMapViewUtil.getFullDungeonAsString(dungeon, null));
         return dungeon;
     }
 
-    
+    public void movePlayer(Direction direction) throws GameNotification {
+        player.move(direction, dungeon);
+        moveNonPlayerCharacters();
+        dungeonTimeElapsed++;
 
-    public String movePlayer(Direction direction) throws GameNotification {
+        while (player.isFrozen()) {
+            moveNonPlayerCharacters();
+            player.decrementFrozenTimeRemaining(1, TimeUnit.MILLISECONDS);
+            dungeonTimeElapsed++;
+        }
 
-        player.move(direction);
-        
-        int playerVisibility = gameSession.getDugeonConfiguration().getPlayerVisibility();
-        return DungeonMapViewUtil.getPlayerMiniMap(dungeon, player, playerVisibility);
+    }
+
+    private void moveNonPlayerCharacters() throws GameNotification {
+        for (DungeonCharacter npc : nonPlayerCharacters) {
+            npc.move(null, dungeon);
+        }
+    }
+
+    public String generatePlayerMiniMap() {
+        return DungeonMapViewUtil.getPlayerMiniMap(dungeon, player, dungeonConfiguration.getMiniMapVisibility());
     }
 
 }

@@ -6,7 +6,7 @@
 package dungeonescape.dungeonobject;
 
 import dungeonescape.dungeon.notifications.GameNotification;
-import dungeonescape.dungeonobject.actions.Action;
+import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import dungeonescape.space.Position;
 
@@ -16,33 +16,22 @@ import dungeonescape.space.Position;
  */
 public abstract class DungeonObject {
     
-    Position position;
-    Action action;
-    
-    public void setPosition(Position position) {
-        this.position = position;
+    private DungeonSpace dungeonSpace;
+
+    public DungeonSpace getDungeonSpace() {
+        return dungeonSpace;
+    }
+
+    public void setDungeonSpace(DungeonSpace dungeonSpace) {
+        this.dungeonSpace = dungeonSpace;
     }
     
     public Position getPosition() {
-        return position;
-    }
-    
-    public DungeonObject position(Position position) {
-        setPosition(position);
-        return this;
-    }
-
-    public Action getAction() {
-        return action;
-    }
-
-    public void setAction(Action action) {
-        this.action = action;
-    }
-    
-    public DungeonObject action(Action action) {
-        setAction(action);
-        return this;
+        if (dungeonSpace == null) {
+            return null;
+        }
+        
+        return dungeonSpace.getPosition();
     }
     
     public abstract void interact(DungeonObject dungeonObject) throws GameNotification;

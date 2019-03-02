@@ -7,7 +7,7 @@ package dungeonescape.dungeonobject.characters;
 
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.actions.move.Direction;
+import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 
 /**

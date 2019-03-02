@@ -21,21 +21,11 @@ import java.util.List;
 public class DungeonSpace {
 
     private Position position;
-    private List<DungeonObject> dungeonObjects;
+    private final List<DungeonObject> dungeonObjects;
 
     public DungeonSpace(Position position) {
         this.position = position;
-    }
-
-    public DungeonSpace(Position position, DungeonObject dungeonObject) {
-        this.position = position;
-
-        if (dungeonObject != null && dungeonObject.getPosition() == null) {
-            dungeonObject.setPosition(position);
-        }
-
         dungeonObjects = new ArrayList<>();
-        dungeonObjects.add(dungeonObject);
     }
 
     public Position getPosition() {
@@ -46,7 +36,7 @@ public class DungeonSpace {
         this.position = position;
 
         dungeonObjects.forEach(dungeonObject -> {
-            dungeonObject.setPosition(position);
+            dungeonObject.setDungeonSpace(this);
         });
     }
 
@@ -57,7 +47,7 @@ public class DungeonSpace {
     public void addDungeonObject(DungeonObject dungeonObject) throws GameNotification {
         if (dungeonObject != null) {
             for (DungeonObject existingDungeonObject : dungeonObjects) {
-//                existingDungeonObject.interact(dungeonObject);
+                existingDungeonObject.interact(dungeonObject);
             }
             dungeonObjects.add(dungeonObject);
         }

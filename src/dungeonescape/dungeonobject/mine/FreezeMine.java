@@ -5,14 +5,19 @@
  */
 package dungeonescape.dungeonobject.mine;
 
+import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.space.DungeonSpaceType;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
  * @author Andrew
  */
 public class FreezeMine extends Mine {
+    
+    public static final FreezeTime DEFAULT_MAX_FREEZE_TIME = new FreezeTime(5, TimeUnit.MINUTES);
     
     FreezeTime freezeTime;
     
@@ -35,7 +40,9 @@ public class FreezeMine extends Mine {
 
     @Override
     public void interact(DungeonObject dungeonObject) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (dungeonObject instanceof Player) {
+            ((Player) dungeonObject).addFrozenTime(freezeTime);
+        }
     }
 
     @Override

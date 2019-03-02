@@ -5,11 +5,17 @@
  */
 package dungeonescape.dungeonobject.characters;
 
+import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.actions.move.Direction;
+import dungeonescape.dungeonobject.FreezeTime;
+import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.space.Position;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -19,10 +25,13 @@ public class Player extends DungeonCharacter {
     
     private final String playerName;
     private final int playerVisibility;
+    private long frozenTimeRemainingInSeconds;
     
     public Player(String playerName, int playerVisibility) {
         this.playerName = playerName;
         this.playerVisibility = playerVisibility;
+        
+        frozenTimeRemainingInSeconds = 0L;
     }
     
     public String getPlayerName() {
@@ -33,8 +42,20 @@ public class Player extends DungeonCharacter {
         return playerVisibility;
     }
     
-    public void move(Direction direction) {
-        
+    public boolean isFrozen() {
+        return frozenTimeRemainingInSeconds == 0;
+    }
+
+    public FreezeTime getFrozenTimeRemaining() {
+        return new FreezeTime(frozenTimeRemainingInSeconds, TimeUnit.SECONDS);
+    }
+
+    public void addFrozenTime(FreezeTime frozenTime) {
+        frozenTimeRemainingInSeconds += frozenTime.getFreezeTimeForTimeUnit(TimeUnit.SECONDS);
+    }
+    
+    public void decrementFrozenTimeRemaining(long time, TimeUnit timeUnit) {
+        frozenTimeRemainingInSeconds -= timeUnit.toSeconds(time);
     }
 
     @Override
@@ -49,7 +70,35 @@ public class Player extends DungeonCharacter {
 
     @Override
     public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        DungeonSpace currentDungeonSpace 
+                = dungeon[getPosition().getPositionX()][getPosition().getPositionY()];
+        
+        Position nextPosition = determineNextPosition(getPosition(), direction);
+        
+        if (nextPosition.getPositionX() < 0 || nextPosition.getPositionY() < 0) {
+            throw new WinNotification();
+        }
+        DungeonSpace nextDungeonSpace = dungeon[nextPosition.getPositionX()][nextPosition.getPositionY()];
+        nextDungeonSpace.addDungeonObject(this);
+        currentDungeonSpace.removeDungeonObject(this);
+    }
+    
+    private Position determineNextPosition(Position currentPlayerPosition, Direction direction) throws ActionNotAllowedNotification {
+        switch (direction) {
+            case NORTH:
+                return new Position(currentPlayerPosition.getPositionX(), currentPlayerPosition.getPositionY() - 1);
+            case SOUTH:
+                return new Position(currentPlayerPosition.getPositionX(), currentPlayerPosition.getPositionY() + 1);
+            case EAST:
+                return new Position(currentPlayerPosition.getPositionX() + 1, currentPlayerPosition.getPositionY());
+            case WEST:
+                return new Position(currentPlayerPosition.getPositionX() - 1, currentPlayerPosition.getPositionY());
+            default:
+                String errorMessage = direction.getValue() + " is not a valid direction. Allowed directions are: " 
+                        + Arrays.toString(Direction.values());
+                throw new ActionNotAllowedNotification(errorMessage);
+        }
     }
     
 }

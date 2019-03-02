@@ -6,6 +6,7 @@
 package dungeonescape.dungeon;
 
 import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import dungeonescape.dungeonobject.characters.Ghost;
 import dungeonescape.dungeonobject.characters.Guard;
@@ -38,7 +39,7 @@ public class DungeonCharacterUtil {
 
         List<Guard> guards = new ArrayList<>();
         List<DungeonSpace> dungeonExits = DungeonConstructionUtil.determineDungeonExits(dungeon);
-
+        DungeonSpace jailCellSpace = dungeon[dungeon.length / 2][dungeon.length / 2];
         //place guards at the exits
         Set<Integer> usedSpaces = new HashSet<>();
         for (int guardNumber = 0; guardNumber < numberOfGuardsToPlace; guardNumber++) {
@@ -47,9 +48,8 @@ public class DungeonCharacterUtil {
                 dungeonExitNumber = ThreadLocalRandom.current().nextInt(0, dungeonExits.size());
             }
 
-            DungeonSpace dungeonExitSpace = dungeonExits.get(dungeonExitNumber);
-
-            Guard guard = new Guard();
+            DungeonSpace dungeonExitSpace = dungeonExits.get(dungeonExitNumber);            
+            Guard guard = new Guard(jailCellSpace);
             dungeonExitSpace.addDungeonObject(guard);
             guards.add(guard);
             System.out.println("Placed guard at ["
@@ -74,7 +74,7 @@ public class DungeonCharacterUtil {
                 while (usedSpaces.contains(emptyDungeonSpaceNumber)) {
                     emptyDungeonSpaceNumber = ThreadLocalRandom.current().nextInt(0, emptyDungeonSpaces.size());
                 }
-                Guard guard = new Guard();
+                Guard guard = new Guard(jailCellSpace);
                 DungeonSpace dungeonSpace = emptyDungeonSpaces.get(emptyDungeonSpaceNumber);
                 dungeonSpace.addDungeonObject(guard);
                 guards.add(guard);
@@ -97,11 +97,13 @@ public class DungeonCharacterUtil {
      *
      * @param dungeon
      * @param numberOfGhostsToPlace
+     * @param ghostFreezeTime
+     * @param offsetFromBorder
      * @return
      * @throws dungeonescape.dungeon.notifications.GameNotification
      */
     protected static List<Ghost> placeGhosts(DungeonSpace[][] dungeon,
-            int numberOfGhostsToPlace, int offsetFromBorder) throws GameNotification {
+            int numberOfGhostsToPlace, FreezeTime ghostFreezeTime, int offsetFromBorder) throws GameNotification {
 
         //place ghosts
         int numberOfGhostsPerBorder = numberOfGhostsToPlace / 4;
@@ -127,24 +129,24 @@ public class DungeonCharacterUtil {
 
             //northern border
             if (borderNumber == 0) {
-                ghosts = placeGhosts(offsetFromBorder, null, dungeon, numberOfGhostsToPlaceOnThisBorder, ghosts);
+                ghosts = placeGhosts(offsetFromBorder, null, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
             }
 
             //eastern border
             if (borderNumber == 1) {
                 col = (dungeon.length - 1) - offsetFromBorder;
-                ghosts = placeGhosts(null, col, dungeon, numberOfGhostsToPlaceOnThisBorder, ghosts);
+                ghosts = placeGhosts(null, col, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
             }
 
             //southern border
             if (borderNumber == 2) {
                 row = (dungeon.length - 1) - offsetFromBorder;
-                ghosts = placeGhosts(row, null, dungeon, numberOfGhostsToPlaceOnThisBorder, ghosts);
+                ghosts = placeGhosts(row, null, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
             }
 
             //western border
             if (borderNumber == 3) {
-                ghosts = placeGhosts(null, offsetFromBorder, dungeon, numberOfGhostsToPlaceOnThisBorder, ghosts);
+                ghosts = placeGhosts(null, offsetFromBorder, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
             }
 
             if (ghosts.size() == numberOfGhostsToPlace) {
@@ -157,7 +159,7 @@ public class DungeonCharacterUtil {
     }
 
     private static List<Ghost> placeGhosts(Integer row, Integer col, DungeonSpace[][] dungeon,
-            int numberOfGhostsToPlaceOnThisBorder, List<Ghost> ghosts) throws GameNotification {
+            int numberOfGhostsToPlaceOnThisBorder, FreezeTime ghostFreezeTime, List<Ghost> ghosts) throws GameNotification {
 
         boolean selectRow = row == null;
         for (int ghostNumber = 0; ghostNumber < numberOfGhostsToPlaceOnThisBorder; ghostNumber++) {
@@ -175,7 +177,7 @@ public class DungeonCharacterUtil {
                 }
                 dungeonBorderSpace = dungeon[col][row];
             }
-            Ghost ghost = new Ghost();
+            Ghost ghost = new Ghost(ghostFreezeTime);
             dungeonBorderSpace.addDungeonObject(ghost);
             ghosts.add(ghost);
         }

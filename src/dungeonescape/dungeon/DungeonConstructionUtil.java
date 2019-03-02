@@ -7,7 +7,7 @@ package dungeonescape.dungeon;
 
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.mine.FreezeMine;
-import dungeonescape.dungeonobject.mine.FreezeTime;
+import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.mine.Mine;
 import dungeonescape.dungeonobject.mine.TargetBoundaries;
 import dungeonescape.dungeonobject.mine.TargetBoundary;
@@ -101,7 +101,7 @@ public class DungeonConstructionUtil {
 
         List<Mine> freezeMines = new ArrayList<>();
         for (int i = 0; i < numberOfFreezeMines; i++) {
-            int freezeTime = ThreadLocalRandom.current().nextInt(1, maxFreezeTime.getTime() + 1);
+            int freezeTime = ThreadLocalRandom.current().nextInt(1, (int) maxFreezeTime.getTime() + 1);
             freezeMines.add(new FreezeMine(new FreezeTime(freezeTime, maxFreezeTime.getTimeUnit())));
         }
 
