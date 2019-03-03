@@ -24,6 +24,8 @@ public class GameSession {
     private final DungeonConfiguration dungeonConfiguration;
 
     private final Dungeon dungeon;
+    
+    private final String playerName;//TODO: Allow the user to place multiple users.
 
     //Game status
     private boolean won = false;
@@ -33,6 +35,7 @@ public class GameSession {
         this.dungeonConfiguration = dungeonConfiguration;
 
         dungeon = new Dungeon(dungeonConfiguration);
+        playerName = dungeonConfiguration.getPlayerNames().get(0);
     }
 
     public DungeonConfiguration getDungeonConfiguration() {
@@ -51,7 +54,7 @@ public class GameSession {
         }
         
         try {
-            dungeon.movePlayer(direction);
+            dungeon.movePlayer(direction, playerName);
         } catch (GameNotification gameNotification) {
             if (gameNotification instanceof WinNotification) {
                 won = true;
@@ -62,7 +65,7 @@ public class GameSession {
         }
         
 
-        return dungeon.generatePlayerMiniMap();
+        return dungeon.generatePlayerMiniMap(playerName);
     }
 
 }

@@ -5,12 +5,10 @@
  */
 package dungeonescape.dungeon;
 
-import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import dungeonescape.space.DungeonSpaceTypeFilters;
-import java.util.List;
 
 /**
  *

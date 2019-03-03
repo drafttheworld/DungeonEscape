@@ -49,5 +49,15 @@ public class Guard extends DungeonCharacter {
     public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public boolean canOccupySpace(DungeonSpace dungeonSpace) {
+        return dungeonSpace.getDungeonObjects().stream()
+                .noneMatch(dungeonObject -> {
+                    return dungeonObject instanceof Construction
+                            || (dungeonObject instanceof DungeonCharacter
+                            && !(dungeonObject instanceof Ghost));
+                });
+    }
     
 }

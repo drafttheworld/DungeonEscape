@@ -9,13 +9,9 @@ package dungeonescape.dungeon.notifications;
  *
  * @author Andrew
  */
-public class LossNotification extends GameNotification {
+public class PlayerNotFoundNotification extends GameNotification {
     
-    public LossNotification() {
-        this("Sorry, you did not escape the dungeon.");
-    }
-    
-    public LossNotification(String message) {
+    public PlayerNotFoundNotification(String message) {
         super(message);
     }
     

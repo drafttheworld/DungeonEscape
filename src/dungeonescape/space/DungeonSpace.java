@@ -21,6 +21,7 @@ import java.util.List;
 public class DungeonSpace {
 
     private Position position;
+    private boolean visible;
     private final List<DungeonObject> dungeonObjects;
 
     public DungeonSpace(Position position) {
@@ -38,6 +39,14 @@ public class DungeonSpace {
         dungeonObjects.forEach(dungeonObject -> {
             dungeonObject.setDungeonSpace(this);
         });
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     public List<DungeonObject> getDungeonObjects() {

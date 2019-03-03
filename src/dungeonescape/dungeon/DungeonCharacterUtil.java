@@ -48,7 +48,7 @@ public class DungeonCharacterUtil {
                 dungeonExitNumber = ThreadLocalRandom.current().nextInt(0, dungeonExits.size());
             }
 
-            DungeonSpace dungeonExitSpace = dungeonExits.get(dungeonExitNumber);            
+            DungeonSpace dungeonExitSpace = dungeonExits.get(dungeonExitNumber);
             Guard guard = new Guard(jailCellSpace);
             dungeonExitSpace.addDungeonObject(guard);
             guards.add(guard);
@@ -127,26 +127,21 @@ public class DungeonCharacterUtil {
                 }
             }
 
-            //northern border
-            if (borderNumber == 0) {
-                ghosts = placeGhosts(offsetFromBorder, null, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
-            }
-
-            //eastern border
-            if (borderNumber == 1) {
-                col = (dungeon.length - 1) - offsetFromBorder;
-                ghosts = placeGhosts(null, col, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
-            }
-
-            //southern border
-            if (borderNumber == 2) {
-                row = (dungeon.length - 1) - offsetFromBorder;
-                ghosts = placeGhosts(row, null, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
-            }
-
-            //western border
-            if (borderNumber == 3) {
-                ghosts = placeGhosts(null, offsetFromBorder, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
+            switch (borderNumber) {
+                case 0://northern border
+                    ghosts = placeGhosts(offsetFromBorder, null, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
+                    break;
+                case 1://eastern border
+                    col = (dungeon.length - 1) - offsetFromBorder;
+                    ghosts = placeGhosts(null, col, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
+                    break;
+                case 2://southern border
+                    row = (dungeon.length - 1) - offsetFromBorder;
+                    ghosts = placeGhosts(row, null, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
+                    break;
+                case 3://western border
+                    ghosts = placeGhosts(null, offsetFromBorder, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
+                    break;
             }
 
             if (ghosts.size() == numberOfGhostsToPlace) {

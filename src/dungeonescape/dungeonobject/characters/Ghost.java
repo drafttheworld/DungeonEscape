@@ -43,5 +43,10 @@ public class Ghost extends DungeonCharacter {
     public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public boolean canOccupySpace(DungeonSpace dungeonSpace) {
+        return true;
+    }
     
 }

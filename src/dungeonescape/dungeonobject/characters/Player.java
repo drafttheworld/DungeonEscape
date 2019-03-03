@@ -7,9 +7,11 @@ package dungeonescape.dungeonobject.characters;
 
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.FreezeTime;
+import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
@@ -60,7 +62,13 @@ public class Player extends DungeonCharacter {
 
     @Override
     public void interact(DungeonObject dungeonObject) throws GameNotification {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (dungeonObject instanceof DungeonMaster) {
+            ((DungeonMaster) dungeonObject).interact(this);
+        } else if (dungeonObject instanceof Guard) {
+            ((Guard) dungeonObject).interact(this);
+        } else if (dungeonObject instanceof Ghost) {
+            ((Ghost) dungeonObject).interact(this);
+        }
     }
 
     @Override
@@ -99,6 +107,16 @@ public class Player extends DungeonCharacter {
                         + Arrays.toString(Direction.values());
                 throw new ActionNotAllowedNotification(errorMessage);
         }
+    }
+
+    @Override
+    public boolean canOccupySpace(DungeonSpace dungeonSpace) {
+        return dungeonSpace.getDungeonObjects().stream()
+                .noneMatch(dungeonObject -> {
+                    return dungeonObject instanceof Construction
+                            || (dungeonObject instanceof DungeonCharacter
+                            && !(dungeonObject instanceof Ghost));
+                });
     }
     
 }

@@ -6,6 +6,7 @@
 package dungeonescape.dungeon;
 
 import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.play.Direction;
 import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import dungeonescape.dungeonobject.characters.Player;
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Dungeon {
 
-    private Player player;
+    private List<Player> players;
     private int dungeonTimeElapsed;
     private DungeonSpace[][] dungeon;
     private final List<DungeonCharacter> nonPlayerCharacters;
@@ -39,8 +40,8 @@ public class Dungeon {
         dungeonTimeElapsed = 0;
     }
 
-    public Position getPlayerPosition() {
-        return player.getPosition();
+    public Player getPlayer() {
+        return players.get(0);
     }
 
     /**
@@ -71,9 +72,12 @@ public class Dungeon {
         //place the player at the center of the dungeon
         //Currently only support one player, TODO add support for multiple players
         Position startPosition = new Position(centerX, centerY);
-        player = new Player(dungeonConfiguration.getPlayerNames().get(0), dungeonConfiguration.getPlayerVisibility());
-        dungeon[startPosition.getPositionX()][startPosition.getPositionY()] = new DungeonSpace(startPosition);
-        dungeon[startPosition.getPositionX()][startPosition.getPositionY()].addDungeonObject(player);
+        for (String playerName : dungeonConfiguration.getPlayerNames()) {
+            Player player = new Player(playerName, dungeonConfiguration.getPlayerVisibility());
+            dungeon[startPosition.getPositionX()][startPosition.getPositionY()] = new DungeonSpace(startPosition);
+            dungeon[startPosition.getPositionX()][startPosition.getPositionY()].addDungeonObject(player);
+            players.add(player);
+        }
 
         //Cut out the exit paths
         dungeon = DungeonConstructionUtil.cutExitPaths(dungeon, dungeonConfiguration.getDungeonExitCount());
@@ -96,15 +100,17 @@ public class Dungeon {
 
         //place the ghosts, offset 1/4 of the total dungeon width from the border
         int borderOffset = dungeon.length / 4;
-        nonPlayerCharacters.addAll(DungeonCharacterUtil.placeGhosts(dungeon, 
+        nonPlayerCharacters.addAll(DungeonCharacterUtil.placeGhosts(dungeon,
                 dungeonConfiguration.getNumberOfGhosts(), dungeonConfiguration.getGhostFreezeTime(), borderOffset));
 
         System.out.println(DungeonMapViewUtil.getFullDungeonAsString(dungeon, null));
         return dungeon;
     }
 
-    public void movePlayer(Direction direction) throws GameNotification {
-        player.move(direction, dungeon);
+    public void movePlayer(Direction direction, String playerName) throws GameNotification {
+        Player player = getPlayer(playerName);
+        
+        players.get(0).move(direction, dungeon);
         moveNonPlayerCharacters();
         dungeonTimeElapsed++;
 
@@ -122,8 +128,15 @@ public class Dungeon {
         }
     }
 
-    public String generatePlayerMiniMap() {
-        return DungeonMapViewUtil.getPlayerMiniMap(dungeon, player, dungeonConfiguration.getMiniMapVisibility());
+    public String generatePlayerMiniMap(String playerName) throws PlayerNotFoundNotification {
+        return DungeonMapViewUtil.getPlayerMiniMap(dungeon, getPlayer(playerName), dungeonConfiguration.getMiniMapVisibility());
+    }
+    
+    private Player getPlayer(String playerName) throws PlayerNotFoundNotification {
+        return players.stream()
+                .filter(playerN -> playerName.equals(playerN.getPlayerName()))
+                .findFirst()
+                .orElseThrow(() -> new PlayerNotFoundNotification("Player " + playerName + " not found."));
     }
 
 }
