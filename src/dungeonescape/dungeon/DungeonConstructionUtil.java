@@ -220,7 +220,7 @@ public class DungeonConstructionUtil {
 
         //check the western boundary
         for (int row = 0; row < dungeon.length; row++) {
-            if (dungeon[0][row].isNotPermanentlyOccupied()) {
+            if (dungeon[row][0].isNotPermanentlyOccupied()) {
                 dungeonExits.add(dungeon[row][0]);
             }
         }

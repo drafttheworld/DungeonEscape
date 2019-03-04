@@ -9,6 +9,7 @@ import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.InteractionNotification;
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
@@ -18,7 +19,7 @@ import dungeonescape.space.DungeonSpaceType;
  *
  * @author Andrew
  */
-public class Guard extends DungeonCharacter {
+public class Guard extends DungeonCharacter implements TeleportObject {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 5;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
@@ -33,8 +34,8 @@ public class Guard extends DungeonCharacter {
 
     @Override
     public int getNumberOfSpacesToMoveWhenPatrolling() {
-        return super.getNumberOfSpacesToMoveWhenPatrolling() == 0 ? 
-                DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
+        return super.getNumberOfSpacesToMoveWhenPatrolling() == 0
+                ? DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
     }
 
     public Guard numberOfMovesWhenPatrolling(int numberOfMovesWhenPatrolling) {
@@ -44,8 +45,8 @@ public class Guard extends DungeonCharacter {
 
     @Override
     public int getNumberOfSpacesToMoveWhenHunting() {
-        return super.getNumberOfSpacesToMoveWhenHunting() == 0 ? 
-                DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
+        return super.getNumberOfSpacesToMoveWhenHunting() == 0
+                ? DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
     }
 
     public Guard numberOfMovesWhenHunting(int numberOfMovesWhenHunting) {
@@ -73,9 +74,7 @@ public class Guard extends DungeonCharacter {
         } else if (dungeonObject instanceof DungeonMaster) {
             throw new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master.");
         } else if (dungeonObject instanceof Player) {
-            Player player = (Player) dungeonObject;
-            player.getDungeonSpace().removeDungeonObject(dungeonObject);
-            jailCellSpace.addDungeonObject(player);
+            teleport(dungeonObject);
             throw new InteractionNotification("A guard has caught you and moved you back to your cell.");
         }
     }
@@ -98,6 +97,16 @@ public class Guard extends DungeonCharacter {
                             || (dungeonObject instanceof DungeonCharacter
                             && !(dungeonObject instanceof Ghost));
                 });
+    }
+
+    @Override
+    public void teleport(DungeonObject dungeonObject) throws GameNotification {
+        Player player = (Player) dungeonObject;
+        
+        //move the player and then remove the player from the previous location
+        DungeonSpace currentSpace = player.getDungeonSpace();
+        jailCellSpace.addDungeonObject(player);
+        currentSpace.removeDungeonObject(player);
     }
 
 }

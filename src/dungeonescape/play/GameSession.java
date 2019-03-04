@@ -61,7 +61,6 @@ public class GameSession {
         }
 
         try {
-            System.out.println("Moving player: "+playerName);
             dungeon.movePlayer(direction, playerName);
             
             Integer turnCount = turnCounts.get(playerName) + 1;
@@ -78,7 +77,6 @@ public class GameSession {
             }
             throw gameNotification;
         }
-        System.out.println("Finished turn.");
         return dungeon.generatePlayerMiniMap(playerName);
     }
     

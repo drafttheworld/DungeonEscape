@@ -32,19 +32,19 @@ public class FreezeTime {
     public long getFreezeTimeForTimeUnit(TimeUnit timeUnit) {
         switch (timeUnit) {
             case DAYS:
-                return timeUnit.toDays(time);
+                return this.timeUnit.toDays(time);
             case HOURS:
-                return timeUnit.toHours(time);
+                return this.timeUnit.toHours(time);
             case MICROSECONDS:
-                return timeUnit.toMicros(time);
+                return this.timeUnit.toMicros(time);
             case MILLISECONDS:
-                return timeUnit.toMillis(time);
+                return this.timeUnit.toMillis(time);
             case MINUTES:
-                return timeUnit.toMinutes(time);
+                return this.timeUnit.toMinutes(time);
             case NANOSECONDS:
-                return timeUnit.toNanos(time);
+                return this.timeUnit.toNanos(time);
             case SECONDS:
-                return timeUnit.toSeconds(time);
+                return this.timeUnit.toSeconds(time);
         }
 
         throw new IllegalArgumentException("Unsupported time unit: " + timeUnit.name());

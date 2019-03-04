@@ -6,11 +6,15 @@
 package dungeonescape.space;
 
 import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeon.notifications.InteractionNotification;
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.TeleportObject;
+import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.dungeonobject.mine.Mine;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -54,18 +58,35 @@ public class DungeonSpace {
 
     public void addDungeonObject(DungeonObject dungeonObject) throws GameNotification {
         if (dungeonObject != null) {
-            for (DungeonObject existingDungeonObject : dungeonObjects) {
-                existingDungeonObject.interact(dungeonObject);
+            boolean isTeleported = false;
+            Iterator<DungeonObject> existingDungeonObjects = dungeonObjects.iterator();
+            while (existingDungeonObjects.hasNext()) {
+                DungeonObject existingDungeonObject = existingDungeonObjects.next();
+                if (existingDungeonObject instanceof TeleportObject) {
+                    isTeleported = true;
+                }
+                try {
+                    existingDungeonObject.interact(dungeonObject);
+                } catch (InteractionNotification n) {
+                    System.out.println("Notification: " + n.getMessage());
+                }
+                if (dungeonObject instanceof Player && existingDungeonObject instanceof Mine) {
+                    existingDungeonObjects.remove();
+                }
             }
-            dungeonObject.setDungeonSpace(this);
-            dungeonObjects.add(dungeonObject);
+            
+
+            if (!isTeleported) {
+                dungeonObject.setDungeonSpace(this);
+                dungeonObjects.add(dungeonObject);
+            }
         }
     }
 
     public void removeDungeonObject(DungeonObject dungeonObject) {
         dungeonObjects.remove(dungeonObject);
     }
-    
+
     public void clearDungeonObjects() {
         dungeonObjects.clear();
     }

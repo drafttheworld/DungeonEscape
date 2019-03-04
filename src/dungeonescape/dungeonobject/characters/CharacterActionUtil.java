@@ -5,12 +5,14 @@
  */
 package dungeonescape.dungeonobject.characters;
 
+import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.characters.pathfinder.EnemyPathfinder;
 import dungeonescape.space.DungeonSpace;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -110,10 +112,11 @@ public class CharacterActionUtil {
         List<DungeonSpace> path = EnemyPathfinder.findShortestPathForEnemy(dungeon, enemy, player);
         int nextDungeonSpaceIndex = path.size() < numberOfMoves ? path.size() - 1 : numberOfMoves - 1;
         DungeonSpace nextDungeonSpace = path.get(nextDungeonSpaceIndex);
-
-        //exit the current space before entering the next space
-        enemy.getDungeonSpace().removeDungeonObject(enemy);
+        
+        DungeonSpace currentDungeonSpace = enemy.getDungeonSpace();
         nextDungeonSpace.addDungeonObject(enemy);
+        enemy.setPreviousDungeonSpace(currentDungeonSpace);
+        enemy.getDungeonSpace().removeDungeonObject(enemy);
     }
 
     /**
@@ -124,8 +127,15 @@ public class CharacterActionUtil {
      */
     private static void patrol(DungeonSpace[][] dungeon, DungeonCharacter enemy) throws GameNotification {
         DungeonSpace nextDungeonSpace = determineNextPatrolSpace(dungeon, enemy);
-        enemy.setPreviousDungeonSpace(enemy.getDungeonSpace());
+        if (nextDungeonSpace == null) {
+            throw new ActionNotAllowedNotification("Unable to find next patrol space for "
+                    +enemy.getClass().getSimpleName()+" at ["+enemy.getPosition().getPositionX()+","
+                    +enemy.getPosition().getPositionY()+"]");
+        }
+        
+        DungeonSpace currentDungeonSpace = enemy.getDungeonSpace();
         enemy.getDungeonSpace().removeDungeonObject(enemy);
+        enemy.setPreviousDungeonSpace(currentDungeonSpace);
         nextDungeonSpace.addDungeonObject(enemy);
     }
 
@@ -138,39 +148,37 @@ public class CharacterActionUtil {
         //north
         if (enemy.getPosition().getPositionY() > 0
                 && enemy.canOccupySpace(dungeon[enemyPosY - 1][enemyPosX])) {
-//                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX][enemyPosY - 1])) {
-//            System.out.println("Can move north.");
             availableDungeonSpaces.add(dungeon[enemyPosY - 1][enemyPosX]);
         }
         //south
         if (enemy.getPosition().getPositionY() < dungeon.length - 1
                 && enemy.canOccupySpace(dungeon[enemyPosY + 1][enemyPosX])) {
-//                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX][enemyPosY + 1])) {
-//            System.out.println("Can move south.");
             availableDungeonSpaces.add(dungeon[enemyPosY + 1][enemyPosX]);
         }
         //east
         if (enemy.getPosition().getPositionX() < dungeon.length - 1
                 && enemy.canOccupySpace(dungeon[enemyPosY][enemyPosX + 1])) {
-//                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX + 1][enemyPosY])) {
-//            System.out.println("Can move east.");
             availableDungeonSpaces.add(dungeon[enemyPosY][enemyPosX + 1]);
         }
         //west
         if (enemy.getPosition().getPositionX() > 0
                 && enemy.canOccupySpace(dungeon[enemyPosY][enemyPosX - 1])) {
-//                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX - 1][enemyPosY])) {
-//            System.out.println("Can move west.");
             availableDungeonSpaces.add(dungeon[enemyPosY][enemyPosX - 1]);
         }
 
-        if (availableDungeonSpaces.isEmpty()) {
-            return null;
+        DungeonSpace nextDungeonSpace = null;
+        if (availableDungeonSpaces.size() > 1) {
+            Integer nextSpaceIndex = ThreadLocalRandom.current().nextInt(0, availableDungeonSpaces.size());
+            nextDungeonSpace = availableDungeonSpaces.get(nextSpaceIndex);
+            while (Objects.equals(enemy.getPreviousDungeonSpace(), nextDungeonSpace)) {
+                nextSpaceIndex = ThreadLocalRandom.current().nextInt(0, availableDungeonSpaces.size());
+                nextDungeonSpace = availableDungeonSpaces.get(nextSpaceIndex);
+            }
+        } else if (availableDungeonSpaces.size() == 1) {
+            nextDungeonSpace = availableDungeonSpaces.get(0);
         }
 
-        Integer nextSpaceIndex = ThreadLocalRandom.current().nextInt(0, availableDungeonSpaces.size());
-
-        return availableDungeonSpaces.get(nextSpaceIndex);
+        return nextDungeonSpace;
     }
 
 }

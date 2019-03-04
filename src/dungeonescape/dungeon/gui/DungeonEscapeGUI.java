@@ -8,16 +8,20 @@ package dungeonescape.dungeon.gui;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.play.Direction;
 import dungeonescape.play.GameSession;
+import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Action;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -31,17 +35,17 @@ import javax.swing.table.TableColumn;
  * @author Andrew
  */
 public class DungeonEscapeGUI extends JFrame {
-    
+
+    private static final int CELL_SIZE = 16;
+
     private static final int NORTH_KEY_CODE = 38;
     private static final int SOUTH_KEY_CODE = 40;
     private static final int EAST_KEY_CODE = 39;
     private static final int WEST_KEY_CODE = 37;
 
-    private JButton buttonMoveWest;
-    private JButton buttonMoveNorth;
-    private JButton buttonMoveSouth;
-    private JButton buttonMoveEast;
-    private JPanel jPanel1;
+    private JLayeredPane jLayeredPane;
+    private JPanel startPage;
+    private JButton startButton;
     private JScrollPane mapScrollPane;
     private JTable mapTable;
 
@@ -55,13 +59,12 @@ public class DungeonEscapeGUI extends JFrame {
     }
 
     private void initComponents(int dungeonSize) {
+
+        jLayeredPane = new JLayeredPane();
+        startPage = new JPanel();
+        startButton = new JButton();
         mapScrollPane = new JScrollPane();
         mapTable = new JTable();
-        jPanel1 = new JPanel();
-        buttonMoveWest = new JButton();
-        buttonMoveNorth = new JButton();
-        buttonMoveSouth = new JButton();
-        buttonMoveEast = new JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -73,7 +76,7 @@ public class DungeonEscapeGUI extends JFrame {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                switch(e.getKeyCode()) {
+                switch (e.getKeyCode()) {
                     case NORTH_KEY_CODE:
                         movePlayer(Direction.NORTH);
                         break;
@@ -111,67 +114,19 @@ public class DungeonEscapeGUI extends JFrame {
         buildMapTable(dungeonMap, dungeonSize, mapTable);
         mapScrollPane.setViewportView(mapTable);
 
-        buttonMoveWest.setText("West");
-        buttonMoveWest.addActionListener((ActionEvent e) -> {
-            movePlayer(Direction.WEST);
+        startButton.setText("Start Game");
+        startButton.addActionListener((ActionEvent e) -> {
+            jLayeredPane.setLayer(mapScrollPane, 0);
         });
+        startPage.setLayout(new BorderLayout());
+        startPage.add(startButton, BorderLayout.CENTER);
 
-        buttonMoveNorth.setText("North");
-        buttonMoveNorth.addActionListener((ActionEvent e) -> {
-            movePlayer(Direction.NORTH);
-        });
+        jLayeredPane.setLayer(startPage, 0, 0);
+        jLayeredPane.setLayer(mapScrollPane, 1, 0);
 
-        buttonMoveSouth.setText("South");
-        buttonMoveSouth.addActionListener((ActionEvent e) -> {
-            movePlayer(Direction.SOUTH);
-        });
-
-        buttonMoveEast.setText("East");
-        buttonMoveEast.addActionListener((ActionEvent e) -> {
-            movePlayer(Direction.EAST);
-        });
-
-        GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(364, 364, 364)
-                                .addComponent(buttonMoveWest)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buttonMoveNorth)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buttonMoveSouth)
-                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(buttonMoveEast)
-                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.CENTER)//BASELINE
-                                        .addComponent(buttonMoveWest)
-                                        .addComponent(buttonMoveNorth)
-                                        .addComponent(buttonMoveSouth)
-                                        .addComponent(buttonMoveEast)))
-        );
-
-        GroupLayout layout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addComponent(mapScrollPane)
-                .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel1)
-                        .addGap(89, 89, 89))
-        );
-        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                        .addComponent(mapScrollPane)
-                        .addGap(20, 20, 20)
-                        .addComponent(jPanel1)
-                        .addContainerGap(19, Short.MAX_VALUE))
-        );
-
+        this.setLayout(new BorderLayout());
+//        this.add(jLayeredPane);
+        this.add(mapScrollPane);
         pack();
 
         //scroll to the center of the map
@@ -209,16 +164,15 @@ public class DungeonEscapeGUI extends JFrame {
             }
         });
 
-        int cellSize = 15;
-        mapTable.setRowHeight(cellSize);
+        mapTable.setRowHeight(CELL_SIZE);
         Enumeration<TableColumn> tableColumns = mapTable.getColumnModel().getColumns();
         while (tableColumns.hasMoreElements()) {
             TableColumn tableColumn = tableColumns.nextElement();
             tableColumn.setResizable(false);
-            tableColumn.setMinWidth(cellSize);
-            tableColumn.setMaxWidth(cellSize);
-            tableColumn.setPreferredWidth(cellSize);
-            tableColumn.setWidth(cellSize);
+            tableColumn.setMinWidth(CELL_SIZE);
+            tableColumn.setMaxWidth(CELL_SIZE);
+            tableColumn.setPreferredWidth(CELL_SIZE);
+            tableColumn.setWidth(CELL_SIZE);
         }
 
         mapTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);

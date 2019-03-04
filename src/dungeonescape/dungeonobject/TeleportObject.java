@@ -3,14 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dungeonescape.dungeonobject.mine;
+package dungeonescape.dungeonobject;
 
-import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeon.notifications.GameNotification;
 
 /**
  *
  * @author Andrew
  */
-public abstract class Mine extends DungeonObject {
-    
+public interface TeleportObject {
+
+    public void teleport(DungeonObject dungeonObject) throws GameNotification;
+
 }

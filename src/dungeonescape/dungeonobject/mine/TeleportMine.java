@@ -6,7 +6,9 @@
 package dungeonescape.dungeonobject.mine;
 
 import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeon.notifications.InteractionNotification;
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
@@ -15,23 +17,23 @@ import dungeonescape.space.DungeonSpaceType;
  *
  * @author Andrew
  */
-public class TeleportMine extends Mine {
-    
+public class TeleportMine extends Mine implements TeleportObject {
+
     private DungeonSpace teleportSpace;
-    
+
     public TeleportMine(DungeonSpace teleportSpace) {
         this.teleportSpace = teleportSpace;
     }
-    
+
     public void setTeleportPosition(DungeonSpace teleportSpace) {
         this.teleportSpace = teleportSpace;
     }
-    
+
     public TeleportMine teleportPosition(DungeonSpace teleportSpace) {
         setTeleportPosition(teleportSpace);
         return this;
     }
-    
+
     public DungeonSpace getTeleportPosition() {
         return teleportSpace;
     }
@@ -39,9 +41,10 @@ public class TeleportMine extends Mine {
     @Override
     public void interact(DungeonObject dungeonObject) throws GameNotification {
         if (dungeonObject instanceof Player) {
-            Player player = (Player) dungeonObject;
-            player.getDungeonSpace().removeDungeonObject(player);
-            teleportSpace.addDungeonObject(player);
+            teleport(dungeonObject);
+            
+            throw new InteractionNotification("You stepped on a teleport mine and have been transported to ["
+                + getPosition().getPositionX() + "," + getPosition().getPositionY() + "]");
         }
     }
 
@@ -49,5 +52,13 @@ public class TeleportMine extends Mine {
     public DungeonSpaceType getDungeonSpaceType() {
         return DungeonSpaceType.TELEPORT_MINE;
     }
-    
+
+    @Override
+    public void teleport(DungeonObject dungeonObject) throws GameNotification {
+        Player player = (Player) dungeonObject;
+        
+        //move the player to the next location
+        teleportSpace.addDungeonObject(player);
+    }
+
 }

@@ -7,7 +7,6 @@ package dungeonescape.dungeonobject.characters;
 
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
-import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.FreezeTime;
@@ -89,10 +88,11 @@ public class Player extends DungeonCharacter {
         DungeonSpace nextDungeonSpace = dungeon[nextPosition.getPositionY()][nextPosition.getPositionX()];
         
         if (nextDungeonSpace.containsWall()) {
-            return;
+            throw new ActionNotAllowedNotification("Cannot move into a wall.");
         }
-        currentDungeonSpace.removeDungeonObject(this);
+        
         nextDungeonSpace.addDungeonObject(this);
+        currentDungeonSpace.removeDungeonObject(this);
     }
 
     private Position determineNextPosition(Position currentPlayerPosition, Direction direction) throws ActionNotAllowedNotification {

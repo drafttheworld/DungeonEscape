@@ -5,6 +5,7 @@
  */
 package dungeonescape.dungeon;
 
+import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.dungeonobject.characters.DungeonCharacter;
@@ -117,21 +118,21 @@ public class Dungeon {
     public void movePlayer(Direction direction, String playerName) throws GameNotification {
         Player player = getPlayer(playerName);
 
-        players.get(0).move(direction, dungeon);
-        moveNonPlayerCharacters();
-        dungeonTimeElapsed++;
-
-        while (player.isFrozen()) {
+        if (!player.isFrozen()) {
+            try {
+                players.get(0).move(direction, dungeon);
+            } catch (ActionNotAllowedNotification n) {
+                return;
+            }
             moveNonPlayerCharacters();
-            player.decrementFrozenTimeRemaining(1, TimeUnit.MINUTES);
             dungeonTimeElapsed++;
+        } else if (player.getFrozenTimeRemaining().getFreezeTimeForTimeUnit(TimeUnit.MINUTES) > 0) {
+            player.decrementFrozenTimeRemaining(1, TimeUnit.MINUTES);
         }
-
     }
 
     private void moveNonPlayerCharacters() throws GameNotification {
         try {
-            System.out.println("Moving " + nonPlayerCharacters.size() + " non player characters.");
             for (DungeonCharacter npc : nonPlayerCharacters) {
                 npc.move(null, dungeon);
             }
@@ -149,7 +150,6 @@ public class Dungeon {
 
     public String generatePlayerMiniMap(String playerName) throws PlayerNotFoundNotification {
 //        return DungeonMapViewUtil.getPlayerMiniMap(dungeon, getPlayer(playerName), dungeonConfiguration.getMiniMapVisibility());
-        System.out.println("symbol at map center: " + dungeon[dungeon.length / 2][dungeon.length / 2].getVisibleSpaceSymbol());
         return DungeonMapViewUtil.getFullDungeonAsString(dungeon, null);
     }
 
