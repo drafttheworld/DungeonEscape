@@ -9,6 +9,7 @@ import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.play.Direction;
 import dungeonescape.play.GameSession;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +44,6 @@ public class DungeonEscapeGUI extends JFrame {
     private static final int EAST_KEY_CODE = 39;
     private static final int WEST_KEY_CODE = 37;
 
-    private JLayeredPane jLayeredPane;
     private JPanel startPage;
     private JButton startButton;
     private JScrollPane mapScrollPane;
@@ -60,7 +60,6 @@ public class DungeonEscapeGUI extends JFrame {
 
     private void initComponents(int dungeonSize) {
 
-        jLayeredPane = new JLayeredPane();
         startPage = new JPanel();
         startButton = new JButton();
         mapScrollPane = new JScrollPane();
@@ -68,7 +67,7 @@ public class DungeonEscapeGUI extends JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        mapTable.addKeyListener(new KeyListener() {
+        mapScrollPane.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
                 //do nothing
@@ -113,24 +112,25 @@ public class DungeonEscapeGUI extends JFrame {
 
         buildMapTable(dungeonMap, dungeonSize, mapTable);
         mapScrollPane.setViewportView(mapTable);
+        mapScrollPane.setPreferredSize(new Dimension(480, 480));
+        mapScrollPane.setVisible(false);
 
-        startButton.setText("Start Game");
+        startButton.setText("Start New Game");
         startButton.addActionListener((ActionEvent e) -> {
-            jLayeredPane.setLayer(mapScrollPane, 0);
+            mapScrollPane.setVisible(true);
+            mapScrollPane.requestFocus();
+            this.revalidate();
+            this.repaint();
+            scroll(mapTable);
         });
         startPage.setLayout(new BorderLayout());
-        startPage.add(startButton, BorderLayout.CENTER);
-
-        jLayeredPane.setLayer(startPage, 0, 0);
-        jLayeredPane.setLayer(mapScrollPane, 1, 0);
+        startPage.setPreferredSize(new Dimension(480, 480));
+        startPage.add(startButton, BorderLayout.NORTH);
+        startPage.add(mapScrollPane);
 
         this.setLayout(new BorderLayout());
-//        this.add(jLayeredPane);
-        this.add(mapScrollPane);
+        this.add(startPage);
         pack();
-
-        //scroll to the center of the map
-        scroll(mapTable);
     }
 
     private void movePlayer(Direction direction) {

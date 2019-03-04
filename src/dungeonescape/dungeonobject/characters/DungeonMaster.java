@@ -76,7 +76,7 @@ public class DungeonMaster extends DungeonCharacter {
         if (dungeonObject instanceof Construction) {
             throw new ActionNotAllowedNotification("A dungeon master cannot move through obstacles.");
         } else if (dungeonObject instanceof DungeonMaster) {
-            throw new ActionNotAllowedNotification("A dungeon master cannot occupy the same space as a guard.");
+            throw new ActionNotAllowedNotification("A dungeon master cannot occupy the same space as another dungeon master.");
         } else if (dungeonObject instanceof Player) {
             throw new LossNotification(CAPTURE_NOTIFICATION);
         }

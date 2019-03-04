@@ -71,13 +71,16 @@ public class EnemyPathfinder {
         dungeonAreaEastX += PATH_AREA_BUFFER;
         dungeonAreaEastX = dungeonAreaEastX > dungeon.length - 1 ? dungeon.length - 1 : dungeonAreaEastX;
 
-        DungeonSpace[][] dungeonArea = new DungeonSpace[dungeonAreaEastX - dungeonAreaWestX + 1][dungeonAreaSouthY - dungeonAreaNorthY + 1];
-
+        DungeonSpace[][] dungeonArea = new DungeonSpace[dungeonAreaSouthY - dungeonAreaNorthY + 1][dungeonAreaEastX - dungeonAreaWestX + 1];
+        System.out.println("dungeonArea row size: " + (dungeonAreaSouthY - dungeonAreaNorthY + 1)
+                + " dungeonArea column size: " + (dungeonAreaEastX - dungeonAreaWestX + 1)
+                + "dungeonAreaSouthY: " + dungeonAreaSouthY + ", dungeonAreaEastX: " + dungeonAreaEastX);
         int dungeonAreaRow = 0;
         for (int dungeonRow = dungeonAreaNorthY; dungeonRow <= dungeonAreaSouthY; dungeonRow++) {
             int dungeonAreaCol = 0;
-            for (int dungeonCol = dungeonAreaWestX; dungeonCol < dungeonAreaEastX; dungeonCol++) {
+            for (int dungeonCol = dungeonAreaWestX; dungeonCol <= dungeonAreaEastX; dungeonCol++) {
                 dungeonArea[dungeonAreaRow][dungeonAreaCol] = dungeon[dungeonRow][dungeonCol];
+                System.out.println("dungeonArea["+dungeonAreaRow+"]["+dungeonAreaCol+"] = "+dungeon[dungeonRow][dungeonCol].getVisibleSpaceSymbol());
                 dungeonAreaCol++;
             }
             dungeonAreaRow++;
@@ -91,7 +94,8 @@ public class EnemyPathfinder {
         PathNode startNode = null;
         PathNode endNode = null;
         for (int row = 0; row < dungeonArea.length; row++) {
-            for (int col = 0; col < dungeonArea.length; col++) {
+            for (int col = 0; col < dungeonArea[row].length; col++) {
+                System.out.println("dungeonArea["+row+"]["+col+"]: "+dungeonArea[row][col]);
                 visited[row][col] = !(dungeonArea[row][col].isEmpty() || containsOnlyGhosts(dungeonArea[row][col]));
                 if (dungeonArea[row][col].getDungeonObjects().contains(enemy)) {
                     startNode = new PathNode(row, col, 0);

@@ -200,7 +200,7 @@ public class DungeonCharacterUtil {
             for (int row = 0; row < count + (iteration * 2); row++) {
                 for (int col = 0; col < count + (iteration * 2); col++) {
                     if (dungeon[startY + row][startX + col].isEmpty()) {
-                        availableDungeonSpaces.add(dungeon[startX + col][startY + row]);
+                        availableDungeonSpaces.add(dungeon[startY + row][startX + col]);
                     }
                 }
             }

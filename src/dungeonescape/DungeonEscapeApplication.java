@@ -35,7 +35,6 @@ public class DungeonEscapeApplication {
         DungeonConfiguration dungeonConfiguration = gameDifficulty.getDungeonConfiguration()
                 .playerName(playerName)
                 .dungeonWidth(dungeonSize.getDungeonWidth());
-        System.out.println("Starting poop");
         GameSession gameSession = new GameSession(dungeonConfiguration);
         gameSessions.put(gameSession.getSessionId(), gameSession);
         return gameSession;
@@ -59,6 +58,7 @@ public class DungeonEscapeApplication {
         String playerName = "Andrew";
 
         GameSession gameSession = dungeonEscapeApplication.startNewGame(playerName, GameDifficulty.HARD, DungeonSize.XLARGE);
+        
         new DungeonEscapeGUI(gameSession).setVisible(true);
         //play game
 //        gameSession.movePlayer(Direction.NORTH, playerName);

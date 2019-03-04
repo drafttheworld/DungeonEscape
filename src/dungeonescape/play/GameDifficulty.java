@@ -42,6 +42,7 @@ public enum GameDifficulty {
                 .miniMapVisibility(25)
                 .dungeonExitCount(5)
                 .numberOfDungeonMasters(1)
+                .spawnDungeonMastersTurnCount(25)
                 .numberOfGuards(3)
                 .numberOfGhosts(10)
                 .numberOfFreezeMines(5000)
