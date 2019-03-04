@@ -20,11 +20,54 @@ import java.util.concurrent.TimeUnit;
 public class Ghost extends DungeonCharacter {
     
     public static final FreezeTime DEFAULT_FREEZE_TIME = new FreezeTime(30, TimeUnit.MINUTES);
+    public static int DEFAULT_MOVES_WHEN_PATROLLING = 2;
+    public static int DEFAULT_MOVES_WHEN_HUNTING = 3;
+    public static int DEFAULT_DETECTION_DISTANCE = 10;
     
     private final FreezeTime freezeTime;
+    private int detectionDistance;
     
     public Ghost(FreezeTime freezeTime) {
         this.freezeTime = freezeTime;
+    }
+    
+    public FreezeTime getFreezeTime() {
+        return freezeTime;
+    }
+
+    @Override
+    public int getNumberOfSpacesToMoveWhenPatrolling() {
+        return super.getNumberOfSpacesToMoveWhenPatrolling() == 0 ? 
+                DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
+    }
+    
+    public Ghost numberOfSpacesToMoveWhenPatrolling(int numberOfMovesWhenPatrolling) {
+        setNumberOfSpacesToMoveWhenPatrolling(numberOfMovesWhenPatrolling);
+        return this;
+    }
+
+    @Override
+    public int getNumberOfSpacesToMoveWhenHunting() {
+        return super.getNumberOfSpacesToMoveWhenHunting() == 0 ? 
+                DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
+    }
+    
+    public Ghost numberOfSpacesToMoveWhenHunting(int numberOfMovesWhenHunting) {
+        setNumberOfSpacesToMoveWhenHunting(numberOfMovesWhenHunting);
+        return this;
+    }
+
+    public int getDetectionDistance() {
+        return detectionDistance == 0 ? DEFAULT_DETECTION_DISTANCE : detectionDistance;
+    }
+
+    public void setDetectionDistance(int detectionDistance) {
+        this.detectionDistance = detectionDistance;
+    }
+    
+    public Ghost detectionDistance(int detectionDistance) {
+        setDetectionDistance(detectionDistance);
+        return this;
     }
 
     @Override
@@ -41,7 +84,7 @@ public class Ghost extends DungeonCharacter {
 
     @Override
     public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
     }
 
     @Override

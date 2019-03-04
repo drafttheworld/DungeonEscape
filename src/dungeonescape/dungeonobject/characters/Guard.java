@@ -19,11 +19,51 @@ import dungeonescape.space.DungeonSpaceType;
  * @author Andrew
  */
 public class Guard extends DungeonCharacter {
-    
+
+    public static int DEFAULT_MOVES_WHEN_PATROLLING = 5;
+    public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
+    public static int DEFAULT_DETECTION_DISTANCE = 50;
+
     private final DungeonSpace jailCellSpace;
-    
+    private int detectionDistance;
+
     public Guard(DungeonSpace jailCellSpace) {
         this.jailCellSpace = jailCellSpace;
+    }
+
+    @Override
+    public int getNumberOfSpacesToMoveWhenPatrolling() {
+        return super.getNumberOfSpacesToMoveWhenPatrolling() == 0 ? 
+                DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
+    }
+
+    public Guard numberOfMovesWhenPatrolling(int numberOfMovesWhenPatrolling) {
+        setNumberOfSpacesToMoveWhenPatrolling(numberOfMovesWhenPatrolling);
+        return this;
+    }
+
+    @Override
+    public int getNumberOfSpacesToMoveWhenHunting() {
+        return super.getNumberOfSpacesToMoveWhenHunting() == 0 ? 
+                DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
+    }
+
+    public Guard numberOfMovesWhenHunting(int numberOfMovesWhenHunting) {
+        setNumberOfSpacesToMoveWhenHunting(numberOfMovesWhenHunting);
+        return this;
+    }
+
+    public int getDetectionDistance() {
+        return detectionDistance == 0 ? DEFAULT_DETECTION_DISTANCE : detectionDistance;
+    }
+
+    public void setDetectionDistance(int detectionDistance) {
+        this.detectionDistance = detectionDistance;
+    }
+
+    public Guard detectionDistance(int detectionDistance) {
+        setDetectionDistance(detectionDistance);
+        return this;
     }
 
     @Override
@@ -47,7 +87,7 @@ public class Guard extends DungeonCharacter {
 
     @Override
     public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
     }
 
     @Override
@@ -59,5 +99,5 @@ public class Guard extends DungeonCharacter {
                             && !(dungeonObject instanceof Ghost));
                 });
     }
-    
+
 }

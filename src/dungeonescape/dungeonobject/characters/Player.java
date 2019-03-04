@@ -24,18 +24,18 @@ import java.util.concurrent.TimeUnit;
  * @author Andrew
  */
 public class Player extends DungeonCharacter {
-    
+
     private final String playerName;
     private final int playerVisibility;
     private long frozenTimeRemainingInSeconds;
-    
+
     public Player(String playerName, int playerVisibility) {
         this.playerName = playerName;
         this.playerVisibility = playerVisibility;
-        
+
         frozenTimeRemainingInSeconds = 0L;
     }
-    
+
     public String getPlayerName() {
         return playerName;
     }
@@ -43,9 +43,9 @@ public class Player extends DungeonCharacter {
     public int getPlayerVisibility() {
         return playerVisibility;
     }
-    
+
     public boolean isFrozen() {
-        return frozenTimeRemainingInSeconds == 0;
+        return frozenTimeRemainingInSeconds > 0;
     }
 
     public FreezeTime getFrozenTimeRemaining() {
@@ -55,7 +55,7 @@ public class Player extends DungeonCharacter {
     public void addFrozenTime(FreezeTime frozenTime) {
         frozenTimeRemainingInSeconds += frozenTime.getFreezeTimeForTimeUnit(TimeUnit.SECONDS);
     }
-    
+
     public void decrementFrozenTimeRemaining(long time, TimeUnit timeUnit) {
         frozenTimeRemainingInSeconds -= timeUnit.toSeconds(time);
     }
@@ -78,20 +78,23 @@ public class Player extends DungeonCharacter {
 
     @Override
     public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
-        
-        DungeonSpace currentDungeonSpace 
-                = dungeon[getPosition().getPositionX()][getPosition().getPositionY()];
-        
+
+        DungeonSpace currentDungeonSpace
+                = dungeon[getPosition().getPositionY()][getPosition().getPositionX()];
         Position nextPosition = determineNextPosition(getPosition(), direction);
-        
+
         if (nextPosition.getPositionX() < 0 || nextPosition.getPositionY() < 0) {
             throw new WinNotification();
         }
-        DungeonSpace nextDungeonSpace = dungeon[nextPosition.getPositionX()][nextPosition.getPositionY()];
-        nextDungeonSpace.addDungeonObject(this);
+        DungeonSpace nextDungeonSpace = dungeon[nextPosition.getPositionY()][nextPosition.getPositionX()];
+        
+        if (nextDungeonSpace.containsWall()) {
+            return;
+        }
         currentDungeonSpace.removeDungeonObject(this);
+        nextDungeonSpace.addDungeonObject(this);
     }
-    
+
     private Position determineNextPosition(Position currentPlayerPosition, Direction direction) throws ActionNotAllowedNotification {
         switch (direction) {
             case NORTH:
@@ -103,7 +106,7 @@ public class Player extends DungeonCharacter {
             case WEST:
                 return new Position(currentPlayerPosition.getPositionX() - 1, currentPlayerPosition.getPositionY());
             default:
-                String errorMessage = direction.getValue() + " is not a valid direction. Allowed directions are: " 
+                String errorMessage = direction.getValue() + " is not a valid direction. Allowed directions are: "
                         + Arrays.toString(Direction.values());
                 throw new ActionNotAllowedNotification(errorMessage);
         }
@@ -118,5 +121,5 @@ public class Player extends DungeonCharacter {
                             && !(dungeonObject instanceof Ghost));
                 });
     }
-    
+
 }

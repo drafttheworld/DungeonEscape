@@ -11,7 +11,6 @@ import dungeonescape.dungeonobject.characters.pathfinder.EnemyPathfinder;
 import dungeonescape.space.DungeonSpace;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -38,7 +37,7 @@ public class CharacterActionUtil {
      */
     protected static void moveEnemy(DungeonSpace[][] dungeon, DungeonCharacter enemy,
             int numberOfSpacesToMoveWhenPatrolling, int numberOfSpacesToMoveWhenHunting, int detectionDistance) throws GameNotification {
-        
+
         Player player = findPlayerInView(dungeon, enemy, detectionDistance);
         if (player != null) {
             hunt(dungeon, enemy, player, numberOfSpacesToMoveWhenHunting);
@@ -56,6 +55,7 @@ public class CharacterActionUtil {
                 int numberOfMovesRemaining = numberOfSpacesToMoveWhenHunting - movesExecuted;
                 hunt(dungeon, enemy, player, numberOfMovesRemaining);
             }
+//            System.out.println("Moved " + enemy.getClass().getSimpleName() + " " + movesExecuted + " times.");
         }
     }
 
@@ -69,10 +69,10 @@ public class CharacterActionUtil {
      * @return
      */
     protected static Player findPlayerInView(DungeonSpace[][] dungeon, DungeonCharacter enemy, int detectionDistance) {
-        
+
         int enemyPosX = enemy.getPosition().getPositionX();
         int enemyPosY = enemy.getPosition().getPositionY();
-        
+
         int northWestX = enemyPosX - detectionDistance;
         northWestX = northWestX < 0 ? 0 : northWestX;
         int northWestY = enemyPosY - detectionDistance;
@@ -81,15 +81,15 @@ public class CharacterActionUtil {
         southEastX = southEastX > dungeon.length - 1 ? dungeon.length - 1 : southEastX;
         int southWestY = enemyPosY + detectionDistance;
         southWestY = southWestY > dungeon.length - 1 ? dungeon.length - 1 : southWestY;
-        
+
         for (int row = northWestY; row <= southWestY; row++) {
             for (int col = northWestX; col <= southEastX; col++) {
-                for (DungeonObject dungeonObject : dungeon[col][row].getDungeonObjects()) {
+                for (DungeonObject dungeonObject : dungeon[row][col].getDungeonObjects()) {
                     if (dungeonObject instanceof Player) {
                         return (Player) dungeonObject;
                     }
                 }
-                
+
             }
         }
 
@@ -98,19 +98,19 @@ public class CharacterActionUtil {
 
     /**
      * Moves the enemy toward the player.
-     * 
+     *
      * @param dungeon
      * @param enemy
      * @param player
      * @param numberOfMoves
-     * @throws GameNotification 
+     * @throws GameNotification
      */
     private static void hunt(DungeonSpace[][] dungeon, DungeonCharacter enemy, Player player, int numberOfMoves) throws GameNotification {
         //determine the shortest path to the player and move down that path.
         List<DungeonSpace> path = EnemyPathfinder.findShortestPathForEnemy(dungeon, enemy, player);
         int nextDungeonSpaceIndex = path.size() < numberOfMoves ? path.size() - 1 : numberOfMoves - 1;
         DungeonSpace nextDungeonSpace = path.get(nextDungeonSpaceIndex);
-        
+
         //exit the current space before entering the next space
         enemy.getDungeonSpace().removeDungeonObject(enemy);
         nextDungeonSpace.addDungeonObject(enemy);
@@ -118,8 +118,9 @@ public class CharacterActionUtil {
 
     /**
      * Move one random adjacent space, excluding the previously occupied space.
+     *
      * @param dungeon
-     * @param enemy 
+     * @param enemy
      */
     private static void patrol(DungeonSpace[][] dungeon, DungeonCharacter enemy) throws GameNotification {
         DungeonSpace nextDungeonSpace = determineNextPatrolSpace(dungeon, enemy);
@@ -127,40 +128,48 @@ public class CharacterActionUtil {
         enemy.getDungeonSpace().removeDungeonObject(enemy);
         nextDungeonSpace.addDungeonObject(enemy);
     }
-    
+
     private static DungeonSpace determineNextPatrolSpace(DungeonSpace[][] dungeon, DungeonCharacter enemy) {
-        
+//        System.out.println("Determining patrol spaces for enemy at [" + enemy.getPosition().getPositionX() + "," + enemy.getPosition().getPositionY() + "].");
         List<DungeonSpace> availableDungeonSpaces = new ArrayList<>();
-        
+
         int enemyPosX = enemy.getPosition().getPositionX();
         int enemyPosY = enemy.getPosition().getPositionY();
         //north
         if (enemy.getPosition().getPositionY() > 0
-                && enemy.canOccupySpace(dungeon[enemyPosX][enemyPosY - 1])
-                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX][enemyPosY - 1])) {
-            availableDungeonSpaces.add(dungeon[enemyPosX][enemyPosY - 1]);
+                && enemy.canOccupySpace(dungeon[enemyPosY - 1][enemyPosX])) {
+//                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX][enemyPosY - 1])) {
+//            System.out.println("Can move north.");
+            availableDungeonSpaces.add(dungeon[enemyPosY - 1][enemyPosX]);
         }
         //south
         if (enemy.getPosition().getPositionY() < dungeon.length - 1
-                && enemy.canOccupySpace(dungeon[enemyPosX][enemyPosY + 1])
-                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX][enemyPosY + 1])) {
-            availableDungeonSpaces.add(dungeon[enemyPosX][enemyPosY + 1]);
+                && enemy.canOccupySpace(dungeon[enemyPosY + 1][enemyPosX])) {
+//                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX][enemyPosY + 1])) {
+//            System.out.println("Can move south.");
+            availableDungeonSpaces.add(dungeon[enemyPosY + 1][enemyPosX]);
         }
         //east
         if (enemy.getPosition().getPositionX() < dungeon.length - 1
-                && enemy.canOccupySpace(dungeon[enemyPosX + 1][enemyPosY])
-                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX + 1][enemyPosY])) {
-            availableDungeonSpaces.add(dungeon[enemyPosX + 1][enemyPosY]);
+                && enemy.canOccupySpace(dungeon[enemyPosY][enemyPosX + 1])) {
+//                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX + 1][enemyPosY])) {
+//            System.out.println("Can move east.");
+            availableDungeonSpaces.add(dungeon[enemyPosY][enemyPosX + 1]);
         }
         //west
         if (enemy.getPosition().getPositionX() > 0
-                && enemy.canOccupySpace(dungeon[enemyPosX - 1][enemyPosY])
-                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX - 1][enemyPosY])) {
-            availableDungeonSpaces.add(dungeon[enemyPosX - 1][enemyPosY]);
+                && enemy.canOccupySpace(dungeon[enemyPosY][enemyPosX - 1])) {
+//                && !Objects.equals(enemy.getPreviousDungeonSpace(), dungeon[enemyPosX - 1][enemyPosY])) {
+//            System.out.println("Can move west.");
+            availableDungeonSpaces.add(dungeon[enemyPosY][enemyPosX - 1]);
         }
-        
+
+        if (availableDungeonSpaces.isEmpty()) {
+            return null;
+        }
+
         Integer nextSpaceIndex = ThreadLocalRandom.current().nextInt(0, availableDungeonSpaces.size());
-        
+
         return availableDungeonSpaces.get(nextSpaceIndex);
     }
 

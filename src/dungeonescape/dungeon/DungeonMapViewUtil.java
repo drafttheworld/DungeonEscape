@@ -21,13 +21,13 @@ public class DungeonMapViewUtil {
         StringBuilder dungeonAsString = new StringBuilder();
         for (int row = 0; row < dungeon.length; row++) {
             for (int col = 0; col < dungeon.length; col++) {
-                if (dungeon[col][row].isEmpty()) {
+                if (dungeon[row][col].isEmpty()) {
                     dungeonAsString.append(DungeonSpaceType.OPEN_SPACE.getValue());
                 } else {
                     if (dungeonSpaceTypeFilters == null) {
-                        dungeonAsString.append(dungeon[col][row].getVisibleSpaceSymbol());
+                        dungeonAsString.append(dungeon[row][col].getVisibleSpaceSymbol());
                     } else if (dungeonSpaceTypeFilters.allow(dungeon[col][row].getVisibleDungeonSpaceType())) {
-                        dungeonAsString.append(dungeon[col][row].getVisibleSpaceSymbol());
+                        dungeonAsString.append(dungeon[row][col].getVisibleSpaceSymbol());
                     } else {
                         dungeonAsString.append(DungeonSpaceType.OPEN_SPACE.getValue());
                     }

@@ -6,6 +6,7 @@
 package dungeonescape;
 
 import dungeonescape.dungeon.DungeonConfiguration;
+import dungeonescape.dungeon.gui.DungeonEscapeGUI;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.play.DungeonSize;
 import dungeonescape.play.GameDifficulty;
@@ -53,25 +54,27 @@ public class DungeonEscapeApplication {
     public static void main(String[] args) throws GameNotification {
         DungeonEscapeApplication dungeonEscapeApplication = new DungeonEscapeApplication();
 
+        String playerName = "Andrew";
         DungeonConfiguration dungeonConfiguration
                 = new DungeonConfiguration()
-                        .playerName("Andrew")
+                        .playerName(playerName)
                         .playerVisibility(3)
                         .miniMapVisibility(25)
                         .dungeonWidth(1000)
                         .dungeonExitCount(5)
                         .numberOfDungeonMasters(1)
-                        .numberOfGuards(10)
-                        .numberOfGhosts(4)
+                        .numberOfGuards(3)
+                        .numberOfGhosts(10)
                         .numberOfFreezeMines(5000)
                         .numberOfTeleportMines(500);
 
         GameSession gameSession = dungeonEscapeApplication.startNewCustomGame(dungeonConfiguration);
-
+        new DungeonEscapeGUI(gameSession).setVisible(true);
         //play game
+//        gameSession.movePlayer(Direction.NORTH, playerName);
 //        System.out.println(gameSession.movePlayer(Direction.NORTH));
         //Delete the session once complete (optional)
-        dungeonEscapeApplication.deleteGameSession(gameSession.getSessionId());
+//        dungeonEscapeApplication.deleteGameSession(gameSession.getSessionId());
     }
 
 }

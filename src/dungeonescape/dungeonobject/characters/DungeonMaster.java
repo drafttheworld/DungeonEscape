@@ -25,34 +25,28 @@ public class DungeonMaster extends DungeonCharacter {
     public static int DEFAULT_DETECTION_DISTANCE = 10;
     
     public static final String CAPTURE_NOTIFICATION = "You have been caught and executed by a DUNGEON MASTER!";
-    
-    private int numberOfMovesWhenPatrolling;
-    private int numberOfMovesWhenHunting;
+
     private int detectionDistance;
 
-    public int getNumberOfMovesWhenPatrolling() {
-        return numberOfMovesWhenPatrolling == 0 ? DEFAULT_MOVES_WHEN_PATROLLING : numberOfMovesWhenPatrolling;
-    }
-
-    public void setNumberOfMovesWhenPatrolling(int numberOfMovesWhenPatrolling) {
-        this.numberOfMovesWhenPatrolling = numberOfMovesWhenPatrolling;
+    @Override
+    public int getNumberOfSpacesToMoveWhenPatrolling() {
+        return super.getNumberOfSpacesToMoveWhenPatrolling() == 0 ? 
+                DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
     }
     
     public DungeonMaster numberOfMovesWhenPatrolling(int numberOfMovesWhenPatrolling) {
-        setNumberOfMovesWhenPatrolling(numberOfMovesWhenPatrolling);
+        setNumberOfSpacesToMoveWhenPatrolling(numberOfMovesWhenPatrolling);
         return this;
     }
 
-    public int getNumberOfMovesWhenHunting() {
-        return numberOfMovesWhenHunting == 0 ? DEFAULT_MOVES_WHEN_HUNTING : numberOfMovesWhenHunting;
-    }
-
-    public void setNumberOfMovesWhenHunting(int numberOfMovesWhenHunting) {
-        this.numberOfMovesWhenHunting = numberOfMovesWhenHunting;
+    @Override
+    public int getNumberOfSpacesToMoveWhenHunting() {
+        return super.getNumberOfSpacesToMoveWhenHunting() == 0 ? 
+                DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
     }
     
     public DungeonMaster numberOfMovesWhenHunting(int numberOfMovesWhenHunting) {
-        setNumberOfMovesWhenHunting(numberOfMovesWhenHunting);
+        setNumberOfSpacesToMoveWhenHunting(numberOfMovesWhenHunting);
         return this;
     }
 
@@ -100,7 +94,7 @@ public class DungeonMaster extends DungeonCharacter {
      */
     @Override
     public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
-        CharacterActionUtil.moveEnemy(dungeon, this, getDetectionDistance(), getNumberOfSpacesToMoveWhenPatrolling(), getNumberOfSpacesToMoveWhenHunting());
+        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
     }
 
     @Override

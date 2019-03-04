@@ -10,7 +10,10 @@ import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.GameOverNotification;
 import dungeonescape.dungeon.notifications.LossNotification;
+import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.dungeon.notifications.WinNotification;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -20,14 +23,11 @@ import java.util.UUID;
 public class GameSession {
 
     private final String sessionId = UUID.randomUUID().toString();
-
     private final DungeonConfiguration dungeonConfiguration;
-
     private final Dungeon dungeon;
-    
-    private final String playerName;//TODO: Allow the user to place multiple users.
 
     //Game status
+    private Map<String, Integer> turnCounts;
     private boolean won = false;
     private boolean lost = false;
 
@@ -35,7 +35,11 @@ public class GameSession {
         this.dungeonConfiguration = dungeonConfiguration;
 
         dungeon = new Dungeon(dungeonConfiguration);
-        playerName = dungeonConfiguration.getPlayerNames().get(0);
+        turnCounts = new HashMap<>();
+        dungeonConfiguration.getPlayerNames().forEach((pName) -> {
+            turnCounts.put(pName, 0);
+        });
+
     }
 
     public DungeonConfiguration getDungeonConfiguration() {
@@ -46,15 +50,26 @@ public class GameSession {
         return sessionId;
     }
 
-    public String movePlayer(Direction direction) throws GameNotification {
-        
+    public String movePlayer(Direction direction, String playerName) throws GameNotification {
+
         if (won || lost) {
             String gameResult = won ? "You Won!" : "You lost.";
             throw new GameOverNotification("Cannot move player after game has ended (" + gameResult + ").");
+        } else if (!dungeonConfiguration.getPlayerNames().contains(playerName)) {
+            throw new PlayerNotFoundNotification("Player " + playerName 
+                    + " does not exist. Valid players: " + dungeonConfiguration.getPlayerNames().toString());
         }
-        
+
         try {
+            System.out.println("Moving player: "+playerName);
             dungeon.movePlayer(direction, playerName);
+            
+            Integer turnCount = turnCounts.get(playerName) + 1;
+            turnCounts.put(playerName, turnCount);
+            
+            if (turnCount == dungeonConfiguration.getSpawnDungeonMastersTurnCount()) {
+                dungeon.spawnDungeonMasters();
+            }
         } catch (GameNotification gameNotification) {
             if (gameNotification instanceof WinNotification) {
                 won = true;
@@ -63,9 +78,14 @@ public class GameSession {
             }
             throw gameNotification;
         }
-        
-
+        System.out.println("Finished turn.");
         return dungeon.generatePlayerMiniMap(playerName);
+    }
+    
+    public String getPlayerMap(String playerName) throws PlayerNotFoundNotification {
+        String miniMap = dungeon.generatePlayerMiniMap(playerName);
+//        System.out.println(miniMap);
+        return miniMap;
     }
 
 }

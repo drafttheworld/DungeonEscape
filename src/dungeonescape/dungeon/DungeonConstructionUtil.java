@@ -139,8 +139,8 @@ public class DungeonConstructionUtil {
             for (int row = 0; row < dungeon.length; row++) {
                 for (int col = 0; col < dungeon.length; col++) {
                     if (inTargetBoundary(row, col, targetBoundary.getMinDistanceFromCenter(), targetBoundary.getMaxDistanceFromCenter(), dungeon.length)
-                            && dungeon[col][row].isNotPermanentlyOccupied()) {
-                        emptyDungeonSpacesInTargetArea.add(dungeon[col][row]);
+                            && dungeon[row][col].isNotPermanentlyOccupied()) {
+                        emptyDungeonSpacesInTargetArea.add(dungeon[row][col]);
                     }
                 }
             }
@@ -199,29 +199,29 @@ public class DungeonConstructionUtil {
         List<DungeonSpace> dungeonExits = new ArrayList<>();
         //check the northern boundary
         for (int column = 0; column < dungeon.length; column++) {
-            if (dungeon[column][0].isNotPermanentlyOccupied()) {
-                dungeonExits.add(dungeon[column][0]);
+            if (dungeon[0][column].isNotPermanentlyOccupied()) {
+                dungeonExits.add(dungeon[0][column]);
             }
         }
 
         //check the eastern boundary
         for (int row = 0; row < dungeon.length; row++) {
-            if (dungeon[dungeon.length - 1][row].isNotPermanentlyOccupied()) {
-                dungeonExits.add(dungeon[dungeon.length - 1][row]);
+            if (dungeon[row][dungeon.length - 1].isNotPermanentlyOccupied()) {
+                dungeonExits.add(dungeon[row][dungeon.length - 1]);
             }
         }
 
         //check the southern boundary
         for (int column = 0; column < dungeon.length; column++) {
-            if (dungeon[column][dungeon.length - 1].isNotPermanentlyOccupied()) {
-                dungeonExits.add(dungeon[column][dungeon.length - 1]);
+            if (dungeon[dungeon.length - 1][column].isNotPermanentlyOccupied()) {
+                dungeonExits.add(dungeon[dungeon.length - 1][column]);
             }
         }
 
         //check the western boundary
         for (int row = 0; row < dungeon.length; row++) {
             if (dungeon[0][row].isNotPermanentlyOccupied()) {
-                dungeonExits.add(dungeon[0][row]);
+                dungeonExits.add(dungeon[row][0]);
             }
         }
 

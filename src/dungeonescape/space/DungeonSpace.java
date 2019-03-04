@@ -7,7 +7,6 @@ package dungeonescape.space;
 
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.characters.Ghost;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.dungeonobject.mine.Mine;
 import java.util.ArrayList;
@@ -58,6 +57,7 @@ public class DungeonSpace {
             for (DungeonObject existingDungeonObject : dungeonObjects) {
                 existingDungeonObject.interact(dungeonObject);
             }
+            dungeonObject.setDungeonSpace(this);
             dungeonObjects.add(dungeonObject);
         }
     }
@@ -119,22 +119,6 @@ public class DungeonSpace {
                     return obj instanceof Construction
                             || obj instanceof Mine;
                 });
-    }
-
-    private boolean isAllowedToOccupySpace(DungeonObject dungeonObject) {
-        if (dungeonObject instanceof Ghost) {
-            return true;
-        }
-
-        if (isEmpty()) {
-            DungeonObject occupant = dungeonObjects.stream()
-                    .filter(dungeonObj -> !(dungeonObj instanceof Ghost))
-                    .findAny()
-                    .orElse(null);
-            return occupant == null;
-        }
-
-        return false;
     }
 
 }

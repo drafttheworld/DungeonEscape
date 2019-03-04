@@ -77,7 +77,7 @@ public class EnemyPathfinder {
         for (int dungeonRow = dungeonAreaNorthY; dungeonRow <= dungeonAreaSouthY; dungeonRow++) {
             int dungeonAreaCol = 0;
             for (int dungeonCol = dungeonAreaWestX; dungeonCol < dungeonAreaEastX; dungeonCol++) {
-                dungeonArea[dungeonAreaCol][dungeonAreaRow] = dungeon[dungeonCol][dungeonRow];
+                dungeonArea[dungeonAreaRow][dungeonAreaCol] = dungeon[dungeonRow][dungeonCol];
                 dungeonAreaCol++;
             }
             dungeonAreaRow++;
@@ -92,10 +92,10 @@ public class EnemyPathfinder {
         PathNode endNode = null;
         for (int row = 0; row < dungeonArea.length; row++) {
             for (int col = 0; col < dungeonArea.length; col++) {
-                visited[col][row] = !(dungeonArea[row][col].isEmpty() || containsOnlyGhosts(dungeonArea[row][col]));
-                if (dungeonArea[col][row].getDungeonObjects().contains(enemy)) {
+                visited[row][col] = !(dungeonArea[row][col].isEmpty() || containsOnlyGhosts(dungeonArea[row][col]));
+                if (dungeonArea[row][col].getDungeonObjects().contains(enemy)) {
                     startNode = new PathNode(row, col, 0);
-                } else if (dungeonArea[col][row].getDungeonObjects().contains(player)) {
+                } else if (dungeonArea[row][col].getDungeonObjects().contains(player)) {
                     endNode = new PathNode(row, col, -1);
                 }
             }
@@ -143,7 +143,7 @@ public class EnemyPathfinder {
             int dungeonAreaLength, boolean[][] visited, Queue<PathNode> pathQueue) {
         if (col >= 0 && col < dungeonAreaLength && row >= 0 && row < dungeonAreaLength) {
             pathQueue.add(new PathNode(col, row, distanceFromEnemy));
-            visited[col + 1][row] = true;
+            visited[row][col + 1] = true;
         }
     }
 
