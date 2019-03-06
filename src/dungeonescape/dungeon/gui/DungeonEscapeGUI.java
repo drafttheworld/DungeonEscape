@@ -75,7 +75,7 @@ public class DungeonEscapeGUI extends JFrame {
         imageTableCellRenderer = new DungeonTableCellRenderer();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
+        
         mapScrollPane.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -139,6 +139,7 @@ public class DungeonEscapeGUI extends JFrame {
         recenterButton.setText("Recenter Map");
         recenterButton.setVisible(false);
         recenterButton.addActionListener((ActionEvent e) -> {
+            mapScrollPane.requestFocus();
             scroll(mapTable);
         });
         startPage.setLayout(new BorderLayout());
@@ -195,9 +196,9 @@ public class DungeonEscapeGUI extends JFrame {
         }
 
         mapTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        mapTable.setFocusable(false);
         mapTable.setRowSelectionAllowed(false);
         mapTable.setCellSelectionEnabled(false);
-
     }
 
     private void updateMapTable(List<DungeonObjectTrack> dungeonObjectTracks) {
