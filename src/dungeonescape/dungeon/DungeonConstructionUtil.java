@@ -97,7 +97,7 @@ public class DungeonConstructionUtil {
         return dungeon;
     }
     
-    protected static DungeonSpace[][] placeFreezeMines(DungeonSpace[][] dungeon, int numberOfFreezeMines, FreezeTime maxFreezeTime, TargetBoundaries targetBoundaries) throws GameNotification {
+    protected static List<Mine> placeFreezeMines(DungeonSpace[][] dungeon, int numberOfFreezeMines, FreezeTime maxFreezeTime, TargetBoundaries targetBoundaries) throws GameNotification {
 
         List<Mine> freezeMines = new ArrayList<>();
         for (int i = 0; i < numberOfFreezeMines; i++) {
@@ -108,7 +108,7 @@ public class DungeonConstructionUtil {
         return deployMines(dungeon, freezeMines, targetBoundaries);
     }
 
-    protected static DungeonSpace[][] placeTeleportMines(DungeonSpace[][] dungeon, int numberOfTeleportMines, TargetBoundaries targetBoundaries) throws GameNotification {
+    protected static List<Mine> placeTeleportMines(DungeonSpace[][] dungeon, int numberOfTeleportMines, TargetBoundaries targetBoundaries) throws GameNotification {
 
         List<Mine> teleportMines = new ArrayList<>();
         List<DungeonSpace> openSpaces = DungeonConstructionUtil.getOpenSpaces(dungeon);
@@ -129,7 +129,7 @@ public class DungeonConstructionUtil {
         return deployMines(dungeon, teleportMines, targetBoundaries);
     }
 
-    protected static DungeonSpace[][] deployMines(DungeonSpace[][] dungeon, List<Mine> mines, TargetBoundaries targetBoundaries) throws GameNotification {
+    protected static List<Mine> deployMines(DungeonSpace[][] dungeon, List<Mine> mines, TargetBoundaries targetBoundaries) throws GameNotification {
         Map<Double, List<DungeonSpace>> targetAreas = new HashMap<>();
 
         List<TargetBoundary> targeBoundaryAreas = targetBoundaries.getTargetBoundaries();
@@ -172,7 +172,7 @@ public class DungeonConstructionUtil {
             }
         }
         System.out.println("Placed " + minesPlaced + " mines of type: " + mines.get(0).getDungeonSpaceType().name());
-        return dungeon;
+        return mines;
     }
 
     private static boolean inTargetBoundary(int row, int col, int minTargetBoundary, int maxTargetBoundary, int dungeonWidth) {

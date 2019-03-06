@@ -23,6 +23,7 @@ public class FreezeMine extends Mine {
     
     public FreezeMine(FreezeTime freezeTime) {
         this.freezeTime = freezeTime;
+        super.setActive(true);
     }
     
     public void setFreezeDuration(FreezeTime freezeTime) {
@@ -42,6 +43,7 @@ public class FreezeMine extends Mine {
     public void interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTime(freezeTime);
+            setActive(false);
         }
     }
 

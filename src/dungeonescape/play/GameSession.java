@@ -12,9 +12,12 @@ import dungeonescape.dungeon.notifications.GameOverNotification;
 import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.dungeon.notifications.WinNotification;
+import dungeonescape.dungeonobject.DungeonObjectTrack;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -50,22 +53,34 @@ public class GameSession {
         return sessionId;
     }
 
-    public String movePlayer(Direction direction, String playerName) throws GameNotification {
+    public List<DungeonObjectTrack> movePlayerGui(Direction direction, String playerName) throws GameNotification {
+        movePlayer(direction, playerName);
+        return dungeon.getDungeonObjectTracks()
+                .stream()
+                .filter(track -> track.isMoved())
+                .collect(Collectors.toList());
+    }
 
+    public String movePlayerHeadless(Direction direction, String playerName) throws GameNotification {
+        movePlayer(direction, playerName);
+        return dungeon.generatePlayerMiniMap(playerName);
+    }
+
+    private void movePlayer(Direction direction, String playerName) throws GameNotification {
         if (won || lost) {
             String gameResult = won ? "You Won!" : "You lost.";
             throw new GameOverNotification("Cannot move player after game has ended (" + gameResult + ").");
         } else if (!dungeonConfiguration.getPlayerNames().contains(playerName)) {
-            throw new PlayerNotFoundNotification("Player " + playerName 
+            throw new PlayerNotFoundNotification("Player " + playerName
                     + " does not exist. Valid players: " + dungeonConfiguration.getPlayerNames().toString());
         }
 
         try {
             dungeon.movePlayer(direction, playerName);
-            
+
             Integer turnCount = turnCounts.get(playerName) + 1;
             turnCounts.put(playerName, turnCount);
-            
+
             if (turnCount == dungeonConfiguration.getSpawnDungeonMastersTurnCount()) {
                 dungeon.spawnDungeonMasters();
             }
@@ -77,9 +92,8 @@ public class GameSession {
             }
             throw gameNotification;
         }
-        return dungeon.generatePlayerMiniMap(playerName);
     }
-    
+
     public String getPlayerMap(String playerName) throws PlayerNotFoundNotification {
         String miniMap = dungeon.generatePlayerMiniMap(playerName);
 //        System.out.println(miniMap);

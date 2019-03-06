@@ -62,7 +62,8 @@ public class DungeonSpace {
             Iterator<DungeonObject> existingDungeonObjects = dungeonObjects.iterator();
             while (existingDungeonObjects.hasNext()) {
                 DungeonObject existingDungeonObject = existingDungeonObjects.next();
-                if (existingDungeonObject instanceof TeleportObject) {
+                if (existingDungeonObject instanceof TeleportObject 
+                        && dungeonObject instanceof Player) {
                     isTeleported = true;
                 }
                 try {
@@ -97,12 +98,11 @@ public class DungeonSpace {
     }
 
     public DungeonSpaceType getVisibleDungeonSpaceType() {
-        DungeonSpaceType visibleDungeonSpaceType = DungeonSpaceType.OPEN_SPACE;
-        if (!dungeonObjects.isEmpty()) {
-            visibleDungeonSpaceType = dungeonObjects.get(dungeonObjects.size() - 1).getDungeonSpaceType();
+        if (dungeonObjects.isEmpty()) {
+            return DungeonSpaceType.OPEN_SPACE;
         }
 
-        return visibleDungeonSpaceType;
+        return dungeonObjects.get(dungeonObjects.size() - 1).getDungeonSpaceType();
     }
 
     public boolean containsDungeonSpaceType(DungeonSpaceType dungeonSpaceType) {

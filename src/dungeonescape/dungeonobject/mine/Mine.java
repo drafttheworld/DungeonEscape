@@ -13,4 +13,14 @@ import dungeonescape.dungeonobject.DungeonObject;
  */
 public abstract class Mine extends DungeonObject {
     
+    private boolean active;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    
 }

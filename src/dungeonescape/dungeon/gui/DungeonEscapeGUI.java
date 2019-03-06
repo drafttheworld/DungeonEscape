@@ -6,29 +6,29 @@
 package dungeonescape.dungeon.gui;
 
 import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.play.Direction;
 import dungeonescape.play.GameSession;
+import dungeonescape.space.DungeonSpaceType;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Action;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 /**
@@ -37,7 +37,7 @@ import javax.swing.table.TableColumn;
  */
 public class DungeonEscapeGUI extends JFrame {
 
-    private static final int CELL_SIZE = 16;
+    public static final int CELL_SIZE = 30;
 
     private static final int NORTH_KEY_CODE = 38;
     private static final int SOUTH_KEY_CODE = 40;
@@ -45,9 +45,13 @@ public class DungeonEscapeGUI extends JFrame {
     private static final int WEST_KEY_CODE = 37;
 
     private JPanel startPage;
+    private JLabel loadingLabel;
     private JButton startButton;
+    private JButton recenterButton;
     private JScrollPane mapScrollPane;
     private JTable mapTable;
+
+    private TableCellRenderer imageTableCellRenderer;
 
     private final GameSession gameSession;
     private int mapCenterX;
@@ -61,9 +65,14 @@ public class DungeonEscapeGUI extends JFrame {
     private void initComponents(int dungeonSize) {
 
         startPage = new JPanel();
+        loadingLabel = new JLabel();
         startButton = new JButton();
+        recenterButton = new JButton();
+        mapTable = new JTable();
         mapScrollPane = new JScrollPane();
         mapTable = new JTable();
+
+        imageTableCellRenderer = new DungeonTableCellRenderer();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -110,23 +119,33 @@ public class DungeonEscapeGUI extends JFrame {
             System.out.println("There was a problem: " + gameNotification.getMessage());
         }
 
-        buildMapTable(dungeonMap, dungeonSize, mapTable);
+        buildMapTable(dungeonMap, dungeonSize);
         mapScrollPane.setViewportView(mapTable);
         mapScrollPane.setPreferredSize(new Dimension(480, 480));
         mapScrollPane.setVisible(false);
 
+        loadingLabel.setText("Loading map...");
+
         startButton.setText("Start New Game");
         startButton.addActionListener((ActionEvent e) -> {
             mapScrollPane.setVisible(true);
+            recenterButton.setVisible(true);
             mapScrollPane.requestFocus();
             this.revalidate();
             this.repaint();
             scroll(mapTable);
         });
+
+        recenterButton.setText("Recenter Map");
+        recenterButton.setVisible(false);
+        recenterButton.addActionListener((ActionEvent e) -> {
+            scroll(mapTable);
+        });
         startPage.setLayout(new BorderLayout());
         startPage.setPreferredSize(new Dimension(480, 480));
         startPage.add(startButton, BorderLayout.NORTH);
-        startPage.add(mapScrollPane);
+        startPage.add(mapScrollPane, BorderLayout.CENTER);
+        startPage.add(recenterButton, BorderLayout.SOUTH);
 
         this.setLayout(new BorderLayout());
         this.add(startPage);
@@ -135,17 +154,16 @@ public class DungeonEscapeGUI extends JFrame {
 
     private void movePlayer(Direction direction) {
         try {
-            String mapString = gameSession.movePlayer(direction, "Andrew");
+            List<DungeonObjectTrack> dungeonObjectTracks = gameSession.movePlayerGui(direction, "Andrew");
             SwingUtilities.invokeLater(() -> {
-                buildMapTable(mapString, gameSession.getDungeonConfiguration().getDungeonWidth(), mapTable);
-                scroll(mapTable);
+                updateMapTable(dungeonObjectTracks);
             });
         } catch (GameNotification ex) {
             Logger.getLogger(DungeonEscapeGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private void buildMapTable(String map, int dungeonSize, JTable mapTable) {
+    private void buildMapTable(String map, int dungeonSize) {
 
         String[][] rows = populateMapRows(map, dungeonSize);
 
@@ -173,11 +191,36 @@ public class DungeonEscapeGUI extends JFrame {
             tableColumn.setMaxWidth(CELL_SIZE);
             tableColumn.setPreferredWidth(CELL_SIZE);
             tableColumn.setWidth(CELL_SIZE);
+            tableColumn.setCellRenderer(imageTableCellRenderer);
         }
 
         mapTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         mapTable.setRowSelectionAllowed(false);
         mapTable.setCellSelectionEnabled(false);
+
+    }
+
+    private void updateMapTable(List<DungeonObjectTrack> dungeonObjectTracks) {
+        dungeonObjectTracks.forEach(dungeonObjectTrack -> {
+            String mapSymbol;
+            int row, col;
+            if (dungeonObjectTrack.getPreviousPosition() != null) {
+                mapSymbol = dungeonObjectTrack.getPreviousPositionSymbol();
+                row = dungeonObjectTrack.getPreviousPosition().getPositionY();
+                col = dungeonObjectTrack.getPreviousPosition().getPositionX();
+                mapTable.setValueAt(mapSymbol, row, col);
+            }
+            
+            mapSymbol = dungeonObjectTrack.getCurrentPositionSymbol();
+            row = dungeonObjectTrack.getCurrentPosition().getPositionY();
+            col = dungeonObjectTrack.getCurrentPosition().getPositionX();
+            mapTable.setValueAt(mapSymbol, row, col);
+
+            if (DungeonSpaceType.PLAYER.getValueString().equals(mapSymbol)) {
+                mapCenterX = col;
+                mapCenterY = row;
+            }
+        });
     }
 
     private String[][] populateMapRows(String mapString, int dungeonSize) {
@@ -214,32 +257,6 @@ public class DungeonEscapeGUI extends JFrame {
         visible.y = (int) (totalRowHeight - (visible.getHeight() / 2));
         visible.x = (int) (totalColWidth - (visible.getWidth() / 2));
         c.scrollRectToVisible(visible);
-    }
-
-    public static void main(String[] args) {
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(DungeonAppGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(DungeonAppGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(DungeonAppGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(DungeonAppGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new DungeonEscapeGUI().setVisible(true);
-//            }
-//        });
     }
 
 }

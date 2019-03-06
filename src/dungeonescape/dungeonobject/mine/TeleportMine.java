@@ -42,7 +42,7 @@ public class TeleportMine extends Mine implements TeleportObject {
     public void interact(DungeonObject dungeonObject) throws GameNotification {
         if (dungeonObject instanceof Player) {
             teleport(dungeonObject);
-            
+            setActive(false);
             throw new InteractionNotification("You stepped on a teleport mine and have been transported to ["
                 + getPosition().getPositionX() + "," + getPosition().getPositionY() + "]");
         }

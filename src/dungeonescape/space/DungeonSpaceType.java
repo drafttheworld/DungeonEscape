@@ -5,6 +5,8 @@
  */
 package dungeonescape.space;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Andrew
@@ -30,6 +32,17 @@ public enum DungeonSpaceType {
 
     public char getValue() {
         return value;
+    }
+
+    public String getValueString() {
+        return "" + value;
+    }
+
+    public static DungeonSpaceType getDungeonSpaceType(String symbol) {
+        return Arrays.asList(DungeonSpaceType.values()).stream()
+                .filter(dst -> dst.getValue() == symbol.charAt(0))
+                .findFirst()
+                .orElse(null);
     }
 
 }
