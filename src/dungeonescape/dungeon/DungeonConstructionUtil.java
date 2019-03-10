@@ -96,7 +96,7 @@ public class DungeonConstructionUtil {
 
         return dungeon;
     }
-    
+
     protected static List<Mine> placeFreezeMines(DungeonSpace[][] dungeon, int numberOfFreezeMines, FreezeTime maxFreezeTime, TargetBoundaries targetBoundaries) throws GameNotification {
 
         List<Mine> freezeMines = new ArrayList<>();
@@ -152,24 +152,34 @@ public class DungeonConstructionUtil {
             }
         });
 
-        int mineIndex = 0;
         int minesPlaced = 0;
+        Set<Integer> usedIndices = new HashSet<>();
         for (Map.Entry<Double, List<DungeonSpace>> entry : targetAreas.entrySet()) {
             if (entry.getValue().isEmpty()) {
                 continue;
             }
 
-            Set<Integer> usedIndices = new HashSet<>();
             int numberOfMinesToPlace = (int) (mines.size() * entry.getKey());
             for (int i = 0; i < numberOfMinesToPlace; i++) {
                 int index = ThreadLocalRandom.current().nextInt(0, entry.getValue().size());
                 while (usedIndices.contains(index)) {
                     index = ThreadLocalRandom.current().nextInt(0, entry.getValue().size());
                 }
-                entry.getValue().get(index).addDungeonObject(mines.get(mineIndex++));
-                minesPlaced++;
+                entry.getValue().get(index).addDungeonObject(mines.get(minesPlaced++));
                 usedIndices.add(index);
             }
+
+            usedIndices.clear();
+        }
+
+        if (minesPlaced < mines.size()) {
+            List<DungeonSpace> availableSpaces = DungeonConstructionUtil.getOpenSpaces(dungeon);
+            int index = ThreadLocalRandom.current().nextInt(0, availableSpaces.size());
+            while (usedIndices.contains(index)) {
+                index = ThreadLocalRandom.current().nextInt(0, availableSpaces.size());
+            }
+            availableSpaces.get(index).addDungeonObject(mines.get(minesPlaced++));
+            usedIndices.add(index);
         }
         System.out.println("Placed " + minesPlaced + " mines of type: " + mines.get(0).getDungeonSpaceType().name());
         return mines;

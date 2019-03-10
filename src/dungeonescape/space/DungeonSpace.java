@@ -62,8 +62,10 @@ public class DungeonSpace {
             Iterator<DungeonObject> existingDungeonObjects = dungeonObjects.iterator();
             while (existingDungeonObjects.hasNext()) {
                 DungeonObject existingDungeonObject = existingDungeonObjects.next();
-                if (existingDungeonObject instanceof TeleportObject 
-                        && dungeonObject instanceof Player) {
+                if ((existingDungeonObject instanceof TeleportObject 
+                        && dungeonObject instanceof Player)
+                        || (existingDungeonObject instanceof Player 
+                        && dungeonObject instanceof TeleportObject)) {
                     isTeleported = true;
                 }
                 try {

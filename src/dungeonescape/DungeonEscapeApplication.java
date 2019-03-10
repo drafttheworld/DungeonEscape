@@ -53,18 +53,7 @@ public class DungeonEscapeApplication {
     }
 
     public static void main(String[] args) throws GameNotification {
-        DungeonEscapeApplication dungeonEscapeApplication = new DungeonEscapeApplication();
-
-        String playerName = "Andrew";
-
-        GameSession gameSession = dungeonEscapeApplication.startNewGame(playerName, GameDifficulty.HARD, DungeonSize.XLARGE);
-        
-        new DungeonEscapeGUI(gameSession).setVisible(true);
-        //play game
-//        gameSession.movePlayer(Direction.NORTH, playerName);
-//        System.out.println(gameSession.movePlayer(Direction.NORTH));
-        //Delete the session once complete (optional)
-//        dungeonEscapeApplication.deleteGameSession(gameSession.getSessionId());
+        new DungeonEscapeGUI().setVisible(true);
     }
 
 }

@@ -23,29 +23,29 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class DungeonTableCellRenderer extends DefaultTableCellRenderer {
 
-    private static final String IMAGES_DIRECTORY = "images/";//"src/dungeonescape/dungeon/gui/images/"
+    private static final String IMAGES_DIRECTORY = "images/";
     private static ImageIcon[] images;
-    
+
     static {
         try {
             images = new ImageIcon[]{
-                new ImageIcon(getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(IMAGES_DIRECTORY + "wall.png")), DungeonEscapeGUI.CELL_SIZE, DungeonEscapeGUI.CELL_SIZE)),
-                new ImageIcon(getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(IMAGES_DIRECTORY + "open_space.png")), DungeonEscapeGUI.CELL_SIZE, DungeonEscapeGUI.CELL_SIZE)),
-                new ImageIcon(getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(IMAGES_DIRECTORY + "nonvisible_space.png")), DungeonEscapeGUI.CELL_SIZE, DungeonEscapeGUI.CELL_SIZE)),
-                new ImageIcon(getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(IMAGES_DIRECTORY + "freeze_mine.png")), DungeonEscapeGUI.CELL_SIZE, DungeonEscapeGUI.CELL_SIZE)),
-                new ImageIcon(getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(IMAGES_DIRECTORY + "teleport_mine.png")), DungeonEscapeGUI.CELL_SIZE, DungeonEscapeGUI.CELL_SIZE)),
-                new ImageIcon(getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(IMAGES_DIRECTORY + "ghost.png")), DungeonEscapeGUI.CELL_SIZE, DungeonEscapeGUI.CELL_SIZE)),
-                new ImageIcon(getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(IMAGES_DIRECTORY + "guard.png")), DungeonEscapeGUI.CELL_SIZE, DungeonEscapeGUI.CELL_SIZE)),
-                new ImageIcon(getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(IMAGES_DIRECTORY + "player.png")), DungeonEscapeGUI.CELL_SIZE, DungeonEscapeGUI.CELL_SIZE)),
-                new ImageIcon(getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(IMAGES_DIRECTORY + "dungeon_master.png")), DungeonEscapeGUI.CELL_SIZE, DungeonEscapeGUI.CELL_SIZE))
-            };  } catch (IOException ex) {
-                images = null;
+                new ImageIcon(getImage(IMAGES_DIRECTORY + "wall.png")),
+                new ImageIcon(getImage(IMAGES_DIRECTORY + "open_space.png")),
+                new ImageIcon(getImage(IMAGES_DIRECTORY + "nonvisible_space.png")),
+                new ImageIcon(getImage(IMAGES_DIRECTORY + "freeze_mine.png")),
+                new ImageIcon(getImage(IMAGES_DIRECTORY + "teleport_mine.png")),
+                new ImageIcon(getImage(IMAGES_DIRECTORY + "ghost.png")),
+                new ImageIcon(getImage(IMAGES_DIRECTORY + "guard.png")),
+                new ImageIcon(getImage(IMAGES_DIRECTORY + "player.png")),
+                new ImageIcon(getImage(IMAGES_DIRECTORY + "dungeon_master.png"))};
+        } catch (IOException ex) {
             Logger.getLogger(DungeonTableCellRenderer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public void setValue(Object value) {
+    public void setValue(Object value
+    ) {
 
         if (value == null) {
             System.out.println("setValue value is null.");
@@ -59,68 +59,55 @@ public class DungeonTableCellRenderer extends DefaultTableCellRenderer {
             return;
         }
 
-        String imagePath;
         switch (dungeonSpaceType) {
             case WALL:
                 setIcon(images[0]);
-//                imagePath = IMAGES_DIRECTORY + "wall.png";
                 break;
             case OPEN_SPACE:
                 setIcon(images[1]);
-//                imagePath = IMAGES_DIRECTORY + "open_space.png";
                 break;
             case NON_VISIBLE_SPACE:
                 setIcon(images[2]);
-//                imagePath = IMAGES_DIRECTORY + "nonvisibile_space.png";
                 break;
             case FREEZE_MINE:
                 setIcon(images[3]);
-//                imagePath = IMAGES_DIRECTORY + "freeze_mine.png";
                 break;
             case TELEPORT_MINE:
                 setIcon(images[4]);
-//                imagePath = IMAGES_DIRECTORY + "teleport_mine.png";
                 break;
             case GHOST:
                 setIcon(images[5]);
-//                imagePath = IMAGES_DIRECTORY + "ghost.png";
                 break;
             case GUARD:
                 setIcon(images[6]);
-//                imagePath = IMAGES_DIRECTORY + "guard.png";
                 break;
             case PLAYER:
                 setIcon(images[7]);
-//                imagePath = IMAGES_DIRECTORY + "player.png";
                 break;
             case DUNGEON_MASTER:
                 setIcon(images[8]);
-//                imagePath = IMAGES_DIRECTORY + "dungeon_master.png";
                 break;
             default:
                 setText("?");
                 System.out.println("Unrecognized dungeon space type: " + dungeonSpaceType.getValue());
-                return;
         }
 
-//        try {
-//            BufferedImage image = ImageIO.read(getClass().getResource(imagePath));
-//            setIcon(new ImageIcon(getScaledImage(image, 25, 25)));
-//        } catch (IOException ex) {
-//            setText("?");
-//        }
-        
     }
-    
-    private static Image getScaledImage(Image srcImg, int w, int h){
-    BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-    Graphics2D g2 = resizedImg.createGraphics();
 
-    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-    g2.drawImage(srcImg, 0, 0, w, h, null);
-    g2.dispose();
+    private static Image getImage(String path) throws IOException {
+        return getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(path)),
+                DungeonTable.CELL_SIZE, DungeonTable.CELL_SIZE);
+    }
 
-    return resizedImg;
-}
+    private static Image getScaledImage(Image srcImg, int w, int h) {
+        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = resizedImg.createGraphics();
+
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(srcImg, 0, 0, w, h, null);
+        g2.dispose();
+
+        return resizedImg;
+    }
 
 }

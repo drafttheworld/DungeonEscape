@@ -30,26 +30,25 @@ public class DungeonConfiguration {
     private int dungeonExitCount;
 
     //Enemy settings
-    private int numberOfDungeonMasters;
+    private double dungeonMasterPercentage;
     private int dungeonMasterNumberOfMovesWhenPatrolling;
     private int dungeonMasterNumberOfMovesWhenHunting;
     private int dungeonMasterDetectionDistance;
     private int spawnDungeonMastersTurnCount;
-    private int numberOfGuards;
+    private double guardPercentage;
     private int guardNumberOfMovesWhenPatrolling;
     private int guardNumberOfMovesWhenHunting;
     private int guardDetectionDistance;
-    private int numberOfGhosts;
+    private double ghostPercentage;
     private int ghostNumberOfMovesWhenPatrolling;
     private int ghostNumberOfMovesWhenHunting;
     private int ghostDetectionDistance;
     private FreezeTime ghostFreezeTime;
 
     //Mine settings
-    private int numberOfFreezeMines;
+    private double freezeMinePercentage;
     private FreezeTime maxFreezeMineTime;
-
-    private int numberOfTeleportMines;
+    private double teleportMinePercentage;
 
     public DungeonConfiguration() {
         playerNames = new ArrayList<>();
@@ -126,16 +125,16 @@ public class DungeonConfiguration {
         return this;
     }
 
-    public int getNumberOfDungeonMasters() {
-        return numberOfDungeonMasters;
+    public double getDungeonMasterPercentage() {
+        return dungeonMasterPercentage;
     }
 
-    public void setNumberOfDungeonMasters(int numberOfDungeonMasters) {
-        this.numberOfDungeonMasters = numberOfDungeonMasters;
+    public void setDungeonMasterPercentage(double dungeonMasterPercentage) {
+        this.dungeonMasterPercentage = dungeonMasterPercentage;
     }
 
-    public DungeonConfiguration numberOfDungeonMasters(int numberOfDungeonMasters) {
-        setNumberOfDungeonMasters(numberOfDungeonMasters);
+    public DungeonConfiguration dungeonMasterPercentage(double dungeonMasterPercentage) {
+        setDungeonMasterPercentage(dungeonMasterPercentage);
         return this;
     }
 
@@ -149,7 +148,7 @@ public class DungeonConfiguration {
     public void setDungeonMasterNumberOfMovesWhenPatrolling(int dungeonMasterNumberOfMovesWhenPatrolling) {
         this.dungeonMasterNumberOfMovesWhenPatrolling = dungeonMasterNumberOfMovesWhenPatrolling;
     }
-    
+
     public DungeonConfiguration dungeonMasterNumberOfMovesWhenPatrolling(int dungeonMasterNumberOfMovesWhenPatrolling) {
         setDungeonMasterNumberOfMovesWhenPatrolling(dungeonMasterNumberOfMovesWhenPatrolling);
         return this;
@@ -165,7 +164,7 @@ public class DungeonConfiguration {
     public void setDungeonMasterNumberOfMovesWhenHunting(int dungeonMasterNumberOfMovesWhenHunting) {
         this.dungeonMasterNumberOfMovesWhenHunting = dungeonMasterNumberOfMovesWhenHunting;
     }
-    
+
     public DungeonConfiguration dungeonMasterNumberOfMovesWhenHunting(int dungeonMasterNumberOfMovesWhenHunting) {
         setDungeonMasterNumberOfMovesWhenHunting(dungeonMasterNumberOfMovesWhenPatrolling);
         return this;
@@ -181,7 +180,7 @@ public class DungeonConfiguration {
     public void setDungeonMasterDetectionDistance(int dungeonMasterDetectionDistance) {
         this.dungeonMasterDetectionDistance = dungeonMasterDetectionDistance;
     }
-    
+
     public DungeonConfiguration dungeonMasterDetectionDistance(int dungeonMasterDetectionDistance) {
         setDungeonMasterDetectionDistance(dungeonMasterDetectionDistance);
         return this;
@@ -194,22 +193,22 @@ public class DungeonConfiguration {
     public void setSpawnDungeonMastersTurnCount(int spawnDungeonMastersTurnCount) {
         this.spawnDungeonMastersTurnCount = spawnDungeonMastersTurnCount;
     }
-    
+
     public DungeonConfiguration spawnDungeonMastersTurnCount(int spawnDungeonMastersTurnCount) {
         setSpawnDungeonMastersTurnCount(spawnDungeonMastersTurnCount);
         return this;
     }
 
-    public int getNumberOfGuards() {
-        return numberOfGuards;
+    public double getGuardPercentage() {
+        return guardPercentage;
     }
 
-    public void setNumberOfGuards(int numberOfGuards) {
-        this.numberOfGuards = numberOfGuards;
+    public void setGuardPercentage(double guardPercentage) {
+        this.guardPercentage = guardPercentage;
     }
 
-    public DungeonConfiguration numberOfGuards(int numberOfGuards) {
-        setNumberOfGuards(numberOfGuards);
+    public DungeonConfiguration guardPercentage(double guardPercentage) {
+        setGuardPercentage(guardPercentage);
         return this;
     }
 
@@ -223,7 +222,7 @@ public class DungeonConfiguration {
     public void setGuardNumberOfMovesWhenPatrolling(int guardNumberOfMovesWhenPatrolling) {
         this.guardNumberOfMovesWhenPatrolling = guardNumberOfMovesWhenPatrolling;
     }
-    
+
     public DungeonConfiguration guardNumberOfMovesWhenPatrolling(int guardNumberOfMovesWhenPatrolling) {
         setGuardNumberOfMovesWhenPatrolling(guardNumberOfMovesWhenPatrolling);
         return this;
@@ -239,7 +238,7 @@ public class DungeonConfiguration {
     public void setGuardNumberOfMovesWhenHunting(int guardNumberOfMovesWhenHunting) {
         this.guardNumberOfMovesWhenHunting = guardNumberOfMovesWhenHunting;
     }
-    
+
     public DungeonConfiguration guardNumberOfMovesWhenHunting(int guardNumberOfMovesWhenHunting) {
         setGuardNumberOfMovesWhenHunting(guardNumberOfMovesWhenHunting);
         return this;
@@ -255,22 +254,22 @@ public class DungeonConfiguration {
     public void setGuardDetectionDistance(int guardDetectionDistance) {
         this.guardDetectionDistance = guardDetectionDistance;
     }
-    
+
     public DungeonConfiguration guardDetectionDistance(int guardDetectionDistance) {
         setGuardDetectionDistance(guardDetectionDistance);
         return this;
     }
 
-    public int getNumberOfGhosts() {
-        return numberOfGhosts;
+    public double getGhostPercentage() {
+        return ghostPercentage;
     }
 
-    public void setNumberOfGhosts(int numberOfGhosts) {
-        this.numberOfGhosts = numberOfGhosts;
+    public void setGhostPercentage(double ghostPercentage) {
+        this.ghostPercentage = ghostPercentage;
     }
 
-    public DungeonConfiguration numberOfGhosts(int numberOfGhosts) {
-        setNumberOfGhosts(numberOfGhosts);
+    public DungeonConfiguration ghostPercentage(double ghostPercentage) {
+        setGhostPercentage(ghostPercentage);
         return this;
     }
 
@@ -300,7 +299,7 @@ public class DungeonConfiguration {
     public void setGhostNumberOfMovesWhenPatrolling(int ghostNumberOfMovesWhenPatrolling) {
         this.ghostNumberOfMovesWhenPatrolling = ghostNumberOfMovesWhenPatrolling;
     }
-    
+
     public DungeonConfiguration ghostNumberOfMovesWhenPatrolling(int ghostNumberOfMovesWhenPatrolling) {
         setGhostNumberOfMovesWhenPatrolling(ghostNumberOfMovesWhenPatrolling);
         return this;
@@ -316,7 +315,7 @@ public class DungeonConfiguration {
     public void setGhostNumberOfMovesWhenHunting(int ghostNumberOfMovesWhenHunting) {
         this.ghostNumberOfMovesWhenHunting = ghostNumberOfMovesWhenHunting;
     }
-    
+
     public DungeonConfiguration ghostNumberOfMovesWhenHunting(int ghostNumberOfMovesWhenHunting) {
         setGhostNumberOfMovesWhenHunting(ghostNumberOfMovesWhenHunting);
         return this;
@@ -332,22 +331,22 @@ public class DungeonConfiguration {
     public void setGhostDetectionDistance(int ghostDetectionDistance) {
         this.ghostDetectionDistance = ghostDetectionDistance;
     }
-    
+
     public DungeonConfiguration ghostDetectionDistance(int ghostDetectionDistance) {
         setGhostDetectionDistance(ghostDetectionDistance);
         return this;
     }
 
-    public int getNumberOfFreezeMines() {
-        return numberOfFreezeMines;
+    public double getFreezeMinePercentage() {
+        return freezeMinePercentage;
     }
 
-    public void setNumberOfFreezeMines(int numberOfFreezeMines) {
-        this.numberOfFreezeMines = numberOfFreezeMines;
+    public void setFreezeMinePercentage(double freezeMinePercentage) {
+        this.freezeMinePercentage = freezeMinePercentage;
     }
 
-    public DungeonConfiguration numberOfFreezeMines(int numberOfFreezeMines) {
-        setNumberOfFreezeMines(numberOfFreezeMines);
+    public DungeonConfiguration freezeMinePercentage(double freezeMinePercentage) {
+        setFreezeMinePercentage(freezeMinePercentage);
         return this;
     }
 
@@ -367,17 +366,26 @@ public class DungeonConfiguration {
         return this;
     }
 
-    public int getNumberOfTeleportMines() {
-        return numberOfTeleportMines;
+    public double getTeleportMinePercentage() {
+        return teleportMinePercentage;
     }
 
-    public void setNumberOfTeleportMines(int numberOfTeleportMines) {
-        this.numberOfTeleportMines = numberOfTeleportMines;
+    public void setTeleportMinePercentage(double teleportMinePercentage) {
+        this.teleportMinePercentage = teleportMinePercentage;
     }
 
-    public DungeonConfiguration numberOfTeleportMines(int numberOfTeleportMines) {
-        setNumberOfTeleportMines(numberOfTeleportMines);
+    public DungeonConfiguration teleportMinePercentage(double teleportMinePercentage) {
+        setTeleportMinePercentage(teleportMinePercentage);
         return this;
+    }
+
+    public boolean enemyAndMinePercentagesAreValid() {
+        return Math.ceil(getDungeonMasterPercentage()
+                + getGuardPercentage()
+                + getGhostPercentage()
+                + getFreezeMinePercentage()
+                + getTeleportMinePercentage())
+                <= 100;
     }
 
 }

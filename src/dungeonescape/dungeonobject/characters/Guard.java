@@ -23,7 +23,7 @@ public class Guard extends DungeonCharacter implements TeleportObject {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 5;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
-    public static int DEFAULT_DETECTION_DISTANCE = 50;
+    public static int DEFAULT_DETECTION_DISTANCE = 5;
 
     private final DungeonSpace jailCellSpace;
     private int detectionDistance;

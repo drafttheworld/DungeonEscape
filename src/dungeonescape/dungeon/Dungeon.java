@@ -36,6 +36,7 @@ public class Dungeon {
     private final List<Player> players;
     private int dungeonTimeElapsed;
     private DungeonSpace[][] dungeon;
+    private int numberOfOpenDungeonSpaces;
     private final List<DungeonCharacter> nonPlayerCharacters;
     private final List<DungeonObject> moveableDungeonObjects;
     private final List<DungeonObjectTrack> dungeonObjectTracks;
@@ -89,23 +90,32 @@ public class Dungeon {
             moveableDungeonObjects.add(player);
         }
 
+        numberOfOpenDungeonSpaces = DungeonConstructionUtil.getOpenSpaces(dungeon).size();
+        System.out.println("Number of open dungeon spaces: " + numberOfOpenDungeonSpaces);
+
         //Define the target boundaries for the mines
         TargetBoundaries targetBoundaries = new TargetBoundaries();
         targetBoundaries.addTargetBoundary(new TargetBoundary(1, width / 4, .6));
         targetBoundaries.addTargetBoundary(new TargetBoundary(width / 4 + 1, width / 2, .4));
 
         //lay the freeze mines
+        int numberOfFreezeMines = calculateDungeonObjectCount(dungeonConfiguration.getFreezeMinePercentage());
+        System.out.println("Laying " + numberOfFreezeMines + " freeze mines.");
         List<Mine> freezeMines = DungeonConstructionUtil.placeFreezeMines(dungeon,
-                dungeonConfiguration.getNumberOfFreezeMines(), dungeonConfiguration.getMaxFreezeMineTime(), targetBoundaries);
+                numberOfFreezeMines, dungeonConfiguration.getMaxFreezeMineTime(), targetBoundaries);
         moveableDungeonObjects.addAll(freezeMines);
 
         //lay the teleport mines
+        int numberOfTeleportMines = calculateDungeonObjectCount(dungeonConfiguration.getTeleportMinePercentage());
+        System.out.println("Laying " + numberOfTeleportMines + " teleport mines.");
         List<Mine> teleportMines = DungeonConstructionUtil.placeTeleportMines(dungeon,
-                dungeonConfiguration.getNumberOfTeleportMines(), targetBoundaries);
+                numberOfTeleportMines, targetBoundaries);
         moveableDungeonObjects.addAll(teleportMines);
 
         //place the guards
-        List<Guard> guards = DungeonCharacterUtil.placeGuards(dungeon, dungeonConfiguration.getNumberOfGuards());
+        int numberOfGuards = calculateDungeonObjectCount(dungeonConfiguration.getGuardPercentage());
+        System.out.println("Placing " + numberOfGuards + " guards.");
+        List<Guard> guards = DungeonCharacterUtil.placeGuards(dungeon, numberOfGuards);
         guards.forEach(guard -> {
             guard.setDetectionDistance(dungeonConfiguration.getGuardDetectionDistance());
             guard.setNumberOfSpacesToMoveWhenHunting(dungeonConfiguration.getGuardNumberOfMovesWhenHunting());
@@ -116,8 +126,10 @@ public class Dungeon {
 
         //place the ghosts, offset 1/4 of the total dungeon width from the border
         int borderOffset = dungeon.length / 4;
+        int numberOfGhosts = calculateDungeonObjectCount(dungeonConfiguration.getGhostPercentage());
+        System.out.println("Placing " + numberOfGhosts + " ghosts.");
         List<Ghost> ghosts = DungeonCharacterUtil.placeGhosts(dungeon,
-                dungeonConfiguration.getNumberOfGhosts(), dungeonConfiguration.getGhostFreezeTime(), borderOffset);
+                numberOfGhosts, dungeonConfiguration.getGhostFreezeTime(), borderOffset);
         ghosts.forEach(ghost -> {
             ghost.setDetectionDistance(dungeonConfiguration.getGhostDetectionDistance());
             ghost.setNumberOfSpacesToMoveWhenHunting(dungeonConfiguration.getGhostNumberOfMovesWhenHunting());
@@ -127,7 +139,10 @@ public class Dungeon {
         moveableDungeonObjects.addAll(ghosts);
 
         moveableDungeonObjects.forEach(dungeonObject -> {
-            dungeonObjectTracks.add(new DungeonObjectTrack(dungeonObject, 
+            if (dungeonObject.getDungeonSpace() == null) {
+                System.out.println("dungeonObject.getDungeonSpace() is null");
+            }
+            dungeonObjectTracks.add(new DungeonObjectTrack(dungeonObject,
                     dungeonObject.getDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
         });
 
@@ -184,12 +199,12 @@ public class Dungeon {
     }
 
     public void spawnDungeonMasters() throws GameNotification {
-        int numberOfDungeonMasters = dungeonConfiguration.getNumberOfDungeonMasters();
+        int numberOfDungeonMasters = calculateDungeonObjectCount(dungeonConfiguration.getDungeonMasterPercentage());
         List<DungeonMaster> dungeonMasters = DungeonCharacterUtil.placeDungeonMasters(dungeon, numberOfDungeonMasters);
         nonPlayerCharacters.addAll(dungeonMasters);
         moveableDungeonObjects.addAll(dungeonMasters);
         dungeonMasters.forEach(dungeonMaster -> {
-            dungeonObjectTracks.add(new DungeonObjectTrack(dungeonMaster, 
+            dungeonObjectTracks.add(new DungeonObjectTrack(dungeonMaster,
                     dungeonMaster.getDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
         });
     }
@@ -209,7 +224,11 @@ public class Dungeon {
                 .findFirst()
                 .orElseThrow(() -> new PlayerNotFoundNotification("Player " + playerName + " not found."));
     }
-    
+
+    private int calculateDungeonObjectCount(double objectPercentage) {
+        return (int) (Math.ceil(numberOfOpenDungeonSpaces * (objectPercentage / 100)));
+    }
+
     public int getDungeonTimeElapsed() {
         return dungeonTimeElapsed;
     }

@@ -9,6 +9,7 @@ import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.GameOverNotification;
+import dungeonescape.dungeon.notifications.InvalidConfigurationNotification;
 import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.dungeon.notifications.WinNotification;
@@ -35,6 +36,9 @@ public class GameSession {
     private boolean lost = false;
 
     public GameSession(DungeonConfiguration dungeonConfiguration) throws GameNotification {
+        if (!dungeonConfiguration.enemyAndMinePercentagesAreValid()) {
+            throw new InvalidConfigurationNotification("Enemy and mine percentages must total between 0 and 100");
+        }
         this.dungeonConfiguration = dungeonConfiguration;
 
         dungeon = new Dungeon(dungeonConfiguration);

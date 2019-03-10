@@ -178,47 +178,33 @@ public class DungeonCharacterUtil {
         return !dungeonSpace.getDungeonObjects().stream()
                 .noneMatch(dungeonObject -> dungeonObject instanceof DungeonCharacter);
     }
-    
+
     protected static List<DungeonMaster> placeDungeonMasters(DungeonSpace[][] dungeon, int numberOfDungeonMasters) throws GameNotification {
         int center = dungeon.length / 2;
-        
+
         List<DungeonMaster> dungeonMasters = new ArrayList<>();
-        
+
         //First dungeon master will spawn at the center of the map
         DungeonMaster dungeonMaster = new DungeonMaster();
         dungeon[center][center].addDungeonObject(dungeonMaster);
         dungeonMasters.add(dungeonMaster);
 
-        //The remainder of the dungeon masters will be placed in the open spaces around the center
+        //The remainder of the dungeon masters will be placed randomly throughout the map
         int numberOfRemainingDungeonMasters = numberOfDungeonMasters - 1;
-        int iteration = 1;
-        int count = 1;
-        List<DungeonSpace> availableDungeonSpaces = new ArrayList<>();
-        while (numberOfRemainingDungeonMasters > 0) {
-            int startX = center - iteration;
-            int startY = center - iteration;
-            for (int row = 0; row < count + (iteration * 2); row++) {
-                for (int col = 0; col < count + (iteration * 2); col++) {
-                    if (dungeon[startY + row][startX + col].isEmpty()) {
-                        availableDungeonSpaces.add(dungeon[startY + row][startX + col]);
-                    }
-                }
+        List<DungeonSpace> availableDungeonSpaces = DungeonConstructionUtil.getOpenSpaces(dungeon);
+        Set<Integer> usedSpaces = new HashSet<>();
+        for (int remainingDungeonMaster = 0; remainingDungeonMaster < numberOfRemainingDungeonMasters; remainingDungeonMaster++) {
+            Integer position = ThreadLocalRandom.current().nextInt(0, availableDungeonSpaces.size());
+            while (usedSpaces.contains(position)) {
+                position = ThreadLocalRandom.current().nextInt(0, availableDungeonSpaces.size());
             }
-            
-            for (DungeonSpace availableDungeonSpace : availableDungeonSpaces) {
-                Integer position = ThreadLocalRandom.current().nextInt(0, availableDungeonSpaces.size());
-                DungeonSpace dungeonSpace = availableDungeonSpaces.get(position);
-                dungeonMaster = new DungeonMaster();
-                dungeonSpace.addDungeonObject(dungeonMaster);
-                dungeonMasters.add(dungeonMaster);
-                availableDungeonSpaces.remove(dungeonSpace);
-                numberOfRemainingDungeonMasters--;
-            }
-            
-            availableDungeonSpaces.clear();
+            dungeonMaster = new DungeonMaster();
+            availableDungeonSpaces.get(position).addDungeonObject(dungeonMaster);
+            dungeonMasters.add(dungeonMaster);
+            usedSpaces.add(position);
         }
-        
-        System.out.println("Placed "+dungeonMasters.size()+" dungeon masters.");
+
+        System.out.println("Placed " + dungeonMasters.size() + " dungeon masters.");
         return dungeonMasters;
     }
 

@@ -13,19 +13,23 @@ import dungeonescape.dungeon.DungeonConfiguration;
  */
 public enum GameDifficulty {
 
-    EASY(EASY()),
-    NORMAL(NORMAL()),
-    HARD(HARD()),
-    INSANE(INSANE());
-
-    private final DungeonConfiguration dungeonConfiguration;
-
-    private GameDifficulty(DungeonConfiguration dungeonConfiguration) {
-        this.dungeonConfiguration = dungeonConfiguration;
-    }
+    EASY(),
+    NORMAL(),
+    HARD(),
+    INSANE();
 
     public DungeonConfiguration getDungeonConfiguration() {
-        return dungeonConfiguration;
+        switch(this) {
+            case EASY:
+                return EASY();
+            case NORMAL:
+                return NORMAL();
+            case HARD:
+                return HARD();
+            case INSANE:
+                return INSANE();
+        }
+        return null;
     }
 
     private static DungeonConfiguration EASY() {
@@ -41,12 +45,12 @@ public enum GameDifficulty {
                 .playerVisibility(3)
                 .miniMapVisibility(25)
                 .dungeonExitCount(5)
-                .numberOfDungeonMasters(1)
+                .dungeonMasterPercentage(.005)
                 .spawnDungeonMastersTurnCount(25)
-                .numberOfGuards(3)
-                .numberOfGhosts(10)
-                .numberOfFreezeMines(5000)
-                .numberOfTeleportMines(500);
+                .guardPercentage(.01)
+                .ghostPercentage(1.0)
+                .freezeMinePercentage(1)
+                .teleportMinePercentage(.5);
     }
 
     private static DungeonConfiguration INSANE() {

@@ -9,8 +9,10 @@ import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import dungeonescape.dungeonobject.characters.Ghost;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.space.DungeonSpace;
+import dungeonescape.space.DungeonSpaceType;
 import dungeonescape.space.Position;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,7 +24,7 @@ import java.util.Queue;
  */
 public class EnemyPathfinder {
 
-    public static final int PATH_AREA_BUFFER = 20;
+    public static final int PATH_AREA_BUFFER = 5;
 
     /**
      *
@@ -37,7 +39,7 @@ public class EnemyPathfinder {
         }
 
         DungeonSpace[][] dungeonArea = narrowDungeonArea(dungeon, enemy.getPosition(), player.getPosition());
-        return findShortestPathUsingBFS(dungeonArea, enemy, player);
+        return findShortestPathUsingBFS(dungeonArea, enemy);
 
     }
 
@@ -72,15 +74,11 @@ public class EnemyPathfinder {
         dungeonAreaEastX = dungeonAreaEastX > dungeon.length - 1 ? dungeon.length - 1 : dungeonAreaEastX;
 
         DungeonSpace[][] dungeonArea = new DungeonSpace[dungeonAreaSouthY - dungeonAreaNorthY + 1][dungeonAreaEastX - dungeonAreaWestX + 1];
-//        System.out.println("dungeonArea row size: " + (dungeonAreaSouthY - dungeonAreaNorthY + 1)
-//                + " dungeonArea column size: " + (dungeonAreaEastX - dungeonAreaWestX + 1)
-//                + "dungeonAreaSouthY: " + dungeonAreaSouthY + ", dungeonAreaEastX: " + dungeonAreaEastX);
         int dungeonAreaRow = 0;
         for (int dungeonRow = dungeonAreaNorthY; dungeonRow <= dungeonAreaSouthY; dungeonRow++) {
             int dungeonAreaCol = 0;
             for (int dungeonCol = dungeonAreaWestX; dungeonCol <= dungeonAreaEastX; dungeonCol++) {
                 dungeonArea[dungeonAreaRow][dungeonAreaCol] = dungeon[dungeonRow][dungeonCol];
-//                System.out.println("dungeonArea["+dungeonAreaRow+"]["+dungeonAreaCol+"] = "+dungeon[dungeonRow][dungeonCol].getVisibleSpaceSymbol());
                 dungeonAreaCol++;
             }
             dungeonAreaRow++;
@@ -89,71 +87,91 @@ public class EnemyPathfinder {
         return dungeonArea;
     }
 
-    private static List<DungeonSpace> findShortestPathUsingBFS(DungeonSpace[][] dungeonArea, DungeonCharacter enemy, Player player) {
+    private static List<DungeonSpace> findShortestPathUsingBFS(DungeonSpace[][] dungeonArea, DungeonCharacter enemy) {
         boolean[][] visited = new boolean[dungeonArea.length][dungeonArea[0].length];
         PathNode startNode = null;
-        PathNode endNode = null;
         for (int row = 0; row < dungeonArea.length; row++) {
             for (int col = 0; col < dungeonArea[row].length; col++) {
-//                System.out.println("dungeonArea["+row+"]["+col+"]: "+dungeonArea[row][col]);
-                visited[row][col] = !(dungeonArea[row][col].isEmpty() || containsOnlyGhosts(dungeonArea[row][col]));
+                visited[row][col] = !(dungeonArea[row][col].isEmpty() || containsOnlyGhostsOrPlayers(dungeonArea[row][col]));
                 if (dungeonArea[row][col].getDungeonObjects().contains(enemy)) {
-                    startNode = new PathNode(row, col, 0);
-                } else if (dungeonArea[row][col].getDungeonObjects().contains(player)) {
-                    endNode = new PathNode(row, col, -1);
+                    startNode = new PathNode(row, col, dungeonArea[row][col], null);
                 }
             }
         }
 
         if (startNode == null) {
             throw new IllegalArgumentException("Enemy was not found within dungeonArea.");
-        } else if (endNode == null) {
-            throw new IllegalArgumentException("Player was not found within dungeonArea.");
         }
 
         Queue<PathNode> pathQueue = new LinkedList();
         pathQueue.add(startNode);
 
-        List<DungeonSpace> shortestPath = new ArrayList<>();
         while (!pathQueue.isEmpty()) {
             PathNode pathNode = pathQueue.remove();
 
-            shortestPath.add(dungeonArea[pathNode.getCol()][pathNode.getRow()]);
-            if (pathNode.getCol() == endNode.getCol() && pathNode.getRow() == endNode.getRow()) {
-                break;
+            if (dungeonSpaceContainsPlayer(pathNode.getDungeonSpace())) {
+                return pathNode.getPathToDungeonSpace();
             }
 
             int row = pathNode.getRow();
             int col = pathNode.getCol();
-            int distanceFromEnemy = pathNode.getDistanceFromEnemy() + 1;
 
             // moving north
-            addNextPathNode(col, row - 1, distanceFromEnemy, dungeonArea.length, visited, pathQueue);
+            addNextPathNode(row - 1, col, dungeonArea, visited, pathNode, pathQueue);
 
             // moving south
-            addNextPathNode(col, row + 1, distanceFromEnemy, dungeonArea.length, visited, pathQueue);
+            addNextPathNode(row + 1, col, dungeonArea, visited, pathNode, pathQueue);
 
             // moving east
-            addNextPathNode(col + 1, row, distanceFromEnemy, dungeonArea.length, visited, pathQueue);
+            addNextPathNode(row, col + 1, dungeonArea, visited, pathNode, pathQueue);
 
             // moving west
-            addNextPathNode(col - 1, row, distanceFromEnemy, dungeonArea.length, visited, pathQueue);
+            addNextPathNode(row, col - 1, dungeonArea, visited, pathNode, pathQueue);
         }
-
-        return shortestPath;
+        
+        printDungeonArea(dungeonArea);
+        return Collections.emptyList();
+    }
+    
+    private static void printDungeonArea(DungeonSpace[][] dungeonArea) {
+        int playerCol = -1;
+        int playerRow = -1;
+        StringBuilder sb = new StringBuilder("dungeonArea: \n");
+        for (int row = 0; row < dungeonArea.length; row++) {
+            for (int col = 0; col < dungeonArea[row].length; col++) {
+                sb.append(dungeonArea[row][col].getVisibleSpaceSymbol());
+                if (dungeonArea[row][col].getVisibleSpaceSymbol() == DungeonSpaceType.PLAYER.getValue()) {
+                    playerCol = col;
+                    playerRow = row;
+                }
+            }
+            sb.append("\n");
+        }
+        sb.append("Player found at [").append(playerCol).append(",").append(playerRow).append("]");
+        System.out.println(sb.toString());
     }
 
-    private static void addNextPathNode(int col, int row, int distanceFromEnemy,
-            int dungeonAreaLength, boolean[][] visited, Queue<PathNode> pathQueue) {
-        if (col >= 0 && col < dungeonAreaLength && row >= 0 && row < dungeonAreaLength) {
-            pathQueue.add(new PathNode(col, row, distanceFromEnemy));
-            visited[row][col + 1] = true;
+    private static void addNextPathNode(int row, int col, DungeonSpace[][] dungeonArea,
+            boolean[][] visited, PathNode previousPathNode, Queue<PathNode> pathQueue) {
+        try {
+        if (col >= 0 && row >= 0 && row < dungeonArea.length && col < dungeonArea[row].length && !visited[row][col]) {
+            pathQueue.add(new PathNode(row, col, dungeonArea[row][col], previousPathNode));
+            visited[row][col] = true;
+        }
+        } catch (RuntimeException e) {
+            System.out.println("Error adding node at: ["+col+","+row+"]");
+            throw e;
         }
     }
 
-    private static boolean containsOnlyGhosts(DungeonSpace dungeonSpace) {
+    private static boolean dungeonSpaceContainsPlayer(DungeonSpace dungeonSpace) {
         return dungeonSpace.getDungeonObjects().stream()
-                .allMatch(dungeonObject -> dungeonObject instanceof Ghost);
+                .anyMatch(dungeonSpaceObject -> dungeonSpaceObject instanceof Player);
+    }
+
+    private static boolean containsOnlyGhostsOrPlayers(DungeonSpace dungeonSpace) {
+        return dungeonSpace.getDungeonObjects().stream()
+                .allMatch(dungeonObject -> dungeonObject instanceof Ghost || dungeonObject instanceof Player);
     }
 
     private static List<DungeonSpace> findNextDungeonSpaceForGhost(DungeonSpace[][] dungeon, Ghost enemy, Player player) {
@@ -198,26 +216,43 @@ public class EnemyPathfinder {
 
     private static class PathNode {
 
-        private final int col;
         private final int row;
-        private final int distanceFromEnemy;
+        private final int col;
+        private final DungeonSpace dungeonSpace;
+        private final PathNode previousPathNode;
 
-        public PathNode(int col, int row, int distanceFromEnemy) {
-            this.col = col;
+        public PathNode(int row, int col, DungeonSpace dungeonSpace, PathNode previousPathNode) {
             this.row = row;
-            this.distanceFromEnemy = distanceFromEnemy;
+            this.col = col;
+            this.dungeonSpace = dungeonSpace;
+            this.previousPathNode = previousPathNode;
+        }
+        
+        public int getRow() {
+            return row;
         }
 
         public int getCol() {
             return col;
         }
 
-        public int getRow() {
-            return row;
+        public DungeonSpace getDungeonSpace() {
+            return dungeonSpace;
         }
 
-        public int getDistanceFromEnemy() {
-            return distanceFromEnemy;
+        public PathNode getPreviousPathNode() {
+            return previousPathNode;
+        }
+
+        public List<DungeonSpace> getPathToDungeonSpace() {
+            List<DungeonSpace> pathToDungeonSpace = new ArrayList<>();
+            PathNode pathNode = this;
+            while (pathNode != null) {
+                pathToDungeonSpace.add(pathNode.getDungeonSpace());
+                pathNode = pathNode.getPreviousPathNode();
+            }
+            Collections.reverse(pathToDungeonSpace);
+            return pathToDungeonSpace;
         }
 
     }
