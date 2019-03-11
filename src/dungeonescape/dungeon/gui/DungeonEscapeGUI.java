@@ -7,7 +7,9 @@ package dungeonescape.dungeon.gui;
 
 import dungeonescape.DungeonEscapeApplication;
 import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.NotificationListener;
+import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.play.Direction;
 import dungeonescape.play.DungeonSize;
@@ -15,8 +17,6 @@ import dungeonescape.play.GameDifficulty;
 import dungeonescape.play.GameSession;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -24,8 +24,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -44,12 +45,14 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private static final int SOUTH_KEY_CODE = 40;
     private static final int EAST_KEY_CODE = 39;
     private static final int WEST_KEY_CODE = 37;
+    
+    private static final String APP_IMAGE = "images/hero_vs_dungeon_master.png";
+    private static final String LOSS_IMAGE = "images/game_lost.png";
 
     private JPanel applicationPane;
     private JLabel loadingLabel;
     private JButton startButton;
     private JButton recenterButton;
-//    private JScrollPane mapScrollPane;
     private List<DungeonTable> dungeonTables;
     private DungeonTable activeDungeonTable;
     private JComponent gamePane;
@@ -67,7 +70,6 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         loadingLabel = new JLabel();
         startButton = new JButton();
         recenterButton = new JButton();
-//        mapScrollPane = new JScrollPane();
         dungeonTables = new ArrayList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -144,7 +146,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
         });
 
-        BufferedImage backgroundImage = ImageIO.read(DungeonTableCellRenderer.class.getResource("images/HeroVsDungeonMaster.png"));
+        BufferedImage backgroundImage = ImageIO.read(DungeonEscapeGUI.class.getResource(APP_IMAGE));
         gamePane = new ImagePanel(backgroundImage);
 
         applicationPane.setLayout(new BorderLayout());
@@ -155,6 +157,8 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         this.add(applicationPane);
         this.setTitle("Dungeon Escape");
         pack();
+        
+        NotificationManager.registerNotificationListener(this);
     }
 
     private void movePlayer(Direction direction) {
@@ -166,7 +170,18 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
     @Override
     public void processNotification(GameNotification gameNotification) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (gameNotification instanceof LossNotification) {
+            try {
+                BufferedImage backgroundImage = ImageIO.read(DungeonEscapeGUI.class.getResource(LOSS_IMAGE));
+                ImagePanel lossPanel = new ImagePanel(backgroundImage);
+                applicationPane.remove(gamePane);
+                applicationPane.remove(recenterButton);
+                applicationPane.add(lossPanel, BorderLayout.CENTER);
+                refresh();
+            } catch (IOException ex) {
+                Logger.getLogger(DungeonEscapeGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 
     private void refresh() {
