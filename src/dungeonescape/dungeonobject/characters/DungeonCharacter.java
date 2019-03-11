@@ -53,7 +53,7 @@ public abstract class DungeonCharacter extends DungeonObject {
         this.previousDungeonSpace = previousDungeonSpace;
     }
     
-    public abstract void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification;
+    public abstract void move(Direction direction, DungeonSpace[][] dungeon);
     public abstract boolean canOccupySpace(DungeonSpace dungeonSpace);
     
 }

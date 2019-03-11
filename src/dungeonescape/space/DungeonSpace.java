@@ -56,28 +56,24 @@ public class DungeonSpace {
         return Collections.unmodifiableList(dungeonObjects);
     }
 
-    public void addDungeonObject(DungeonObject dungeonObject) throws GameNotification {
+    public void addDungeonObject(DungeonObject dungeonObject) {
         if (dungeonObject != null) {
             boolean isTeleported = false;
             Iterator<DungeonObject> existingDungeonObjects = dungeonObjects.iterator();
             while (existingDungeonObjects.hasNext()) {
                 DungeonObject existingDungeonObject = existingDungeonObjects.next();
-                if ((existingDungeonObject instanceof TeleportObject 
+                if ((existingDungeonObject instanceof TeleportObject
                         && dungeonObject instanceof Player)
-                        || (existingDungeonObject instanceof Player 
+                        || (existingDungeonObject instanceof Player
                         && dungeonObject instanceof TeleportObject)) {
                     isTeleported = true;
                 }
-                try {
-                    existingDungeonObject.interact(dungeonObject);
-                } catch (InteractionNotification n) {
-                    System.out.println("Notification: " + n.getMessage());
-                }
+                existingDungeonObject.interact(dungeonObject);
+
                 if (dungeonObject instanceof Player && existingDungeonObject instanceof Mine) {
                     existingDungeonObjects.remove();
                 }
             }
-            
 
             if (!isTeleported) {
                 dungeonObject.setDungeonSpace(this);
@@ -94,7 +90,7 @@ public class DungeonSpace {
         dungeonObjects.clear();
     }
 
-    public DungeonSpace dungeonObject(DungeonObject dungeonObject) throws GameNotification {
+    public DungeonSpace dungeonObject(DungeonObject dungeonObject) {
         addDungeonObject(dungeonObject);
         return this;
     }

@@ -7,6 +7,8 @@ package dungeonescape.dungeonobject.mine;
 
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.InteractionNotification;
+import dungeonescape.dungeon.notifications.NotificationManager;
+import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.characters.Player;
@@ -39,12 +41,12 @@ public class TeleportMine extends Mine implements TeleportObject {
     }
 
     @Override
-    public void interact(DungeonObject dungeonObject) throws GameNotification {
+    public void interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
             teleport(dungeonObject);
             setActive(false);
-            throw new InteractionNotification("You stepped on a teleport mine and have been transported to ["
-                + getPosition().getPositionX() + "," + getPosition().getPositionY() + "]");
+            NotificationManager.notify(new InteractionNotification("You stepped on a teleport mine and have been transported to ["
+                + getPosition().getPositionX() + "," + getPosition().getPositionY() + "]"));
         }
     }
 
@@ -54,10 +56,11 @@ public class TeleportMine extends Mine implements TeleportObject {
     }
 
     @Override
-    public void teleport(DungeonObject dungeonObject) throws GameNotification {
+    public void teleport(DungeonObject dungeonObject) {
         Player player = (Player) dungeonObject;
         
         //move the player to the next location
+        player.getDungeonSpace().removeDungeonObject(player);
         teleportSpace.addDungeonObject(player);
     }
 

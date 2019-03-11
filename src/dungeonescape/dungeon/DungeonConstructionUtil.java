@@ -97,7 +97,8 @@ public class DungeonConstructionUtil {
         return dungeon;
     }
 
-    protected static List<Mine> placeFreezeMines(DungeonSpace[][] dungeon, int numberOfFreezeMines, FreezeTime maxFreezeTime, TargetBoundaries targetBoundaries) throws GameNotification {
+    protected static List<Mine> placeFreezeMines(DungeonSpace[][] dungeon, int numberOfFreezeMines, 
+            FreezeTime maxFreezeTime, TargetBoundaries targetBoundaries) {
 
         List<Mine> freezeMines = new ArrayList<>();
         for (int i = 0; i < numberOfFreezeMines; i++) {
@@ -108,7 +109,8 @@ public class DungeonConstructionUtil {
         return deployMines(dungeon, freezeMines, targetBoundaries);
     }
 
-    protected static List<Mine> placeTeleportMines(DungeonSpace[][] dungeon, int numberOfTeleportMines, TargetBoundaries targetBoundaries) throws GameNotification {
+    protected static List<Mine> placeTeleportMines(DungeonSpace[][] dungeon, 
+            int numberOfTeleportMines, TargetBoundaries targetBoundaries) {
 
         List<Mine> teleportMines = new ArrayList<>();
         List<DungeonSpace> openSpaces = DungeonConstructionUtil.getOpenSpaces(dungeon);
@@ -129,7 +131,9 @@ public class DungeonConstructionUtil {
         return deployMines(dungeon, teleportMines, targetBoundaries);
     }
 
-    protected static List<Mine> deployMines(DungeonSpace[][] dungeon, List<Mine> mines, TargetBoundaries targetBoundaries) throws GameNotification {
+    protected static List<Mine> deployMines(DungeonSpace[][] dungeon, List<Mine> mines, 
+            TargetBoundaries targetBoundaries) {
+        
         Map<Double, List<DungeonSpace>> targetAreas = new HashMap<>();
 
         List<TargetBoundary> targeBoundaryAreas = targetBoundaries.getTargetBoundaries();

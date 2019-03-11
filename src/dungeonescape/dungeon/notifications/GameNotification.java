@@ -9,10 +9,16 @@ package dungeonescape.dungeon.notifications;
  *
  * @author Andrew
  */
-public abstract class GameNotification extends Exception {
+public abstract class GameNotification {
     
-    public GameNotification(String message) {
-        super(message);
+    private final String notificationMessage;
+    
+    public GameNotification(String notificationMessage) {
+        this.notificationMessage = notificationMessage;
+    }
+    
+    public String getNotificationMessage() {
+        return notificationMessage;
     }
     
 }

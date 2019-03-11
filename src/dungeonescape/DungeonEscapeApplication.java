@@ -7,10 +7,12 @@ package dungeonescape;
 
 import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeon.gui.DungeonEscapeGUI;
-import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeon.notifications.ExecutionErrorNotification;
+import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.play.DungeonSize;
 import dungeonescape.play.GameDifficulty;
 import dungeonescape.play.GameSession;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +24,7 @@ public class DungeonEscapeApplication {
 
     private final Map<String, GameSession> gameSessions = new HashMap<>();
 
-    public GameSession startNewCustomGame(DungeonConfiguration dungeonConfiguration) throws GameNotification {
+    public GameSession startNewCustomGame(DungeonConfiguration dungeonConfiguration) {
         GameSession gameSession = new GameSession(dungeonConfiguration);
         gameSessions.put(gameSession.getSessionId(), gameSession);
         return gameSession;
@@ -30,13 +32,17 @@ public class DungeonEscapeApplication {
 
     //TODO: Create specific configurations
     public GameSession startNewGame(String playerName, GameDifficulty gameDifficulty,
-            DungeonSize dungeonSize) throws GameNotification {
-        
-        DungeonConfiguration dungeonConfiguration = gameDifficulty.getDungeonConfiguration()
-                .playerName(playerName)
-                .dungeonWidth(dungeonSize.getDungeonWidth());
-        GameSession gameSession = new GameSession(dungeonConfiguration);
-        gameSessions.put(gameSession.getSessionId(), gameSession);
+            DungeonSize dungeonSize) {
+        GameSession gameSession = null;
+        try {
+            DungeonConfiguration dungeonConfiguration = gameDifficulty.getDungeonConfiguration()
+                    .playerName(playerName)
+                    .dungeonWidth(dungeonSize.getDungeonWidth());
+            gameSession = new GameSession(dungeonConfiguration);
+            gameSessions.put(gameSession.getSessionId(), gameSession);
+        } catch (RuntimeException e) {
+            NotificationManager.notify(new ExecutionErrorNotification(e.getMessage()));
+        }
         return gameSession;
     }
 
@@ -52,7 +58,7 @@ public class DungeonEscapeApplication {
         gameSessions.clear();
     }
 
-    public static void main(String[] args) throws GameNotification {
+    public static void main(String[] args) throws IOException {
         new DungeonEscapeGUI().setVisible(true);
     }
 

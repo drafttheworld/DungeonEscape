@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dungeonescape.dungeonobject;
+package dungeonescape.dungeon.notifications;
 
 /**
  *
  * @author Andrew
  */
-public interface TeleportObject {
-
-    public void teleport(DungeonObject dungeonObject);
-
+public interface NotificationListener {
+    
+    public void processNotification(GameNotification gameNotification);
+    
 }

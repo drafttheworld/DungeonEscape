@@ -8,6 +8,7 @@ package dungeonescape.dungeonobject.characters;
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.LossNotification;
+import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
@@ -23,17 +24,18 @@ public class DungeonMaster extends DungeonCharacter {
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 3;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
     public static int DEFAULT_DETECTION_DISTANCE = 10;
-    
-    public static final String CAPTURE_NOTIFICATION = "You have been caught and executed by a DUNGEON MASTER!";
+
+    public static final String CAPTURE_NOTIFICATION 
+            = "You have been caught and executed by a DUNGEON MASTER!";
 
     private int detectionDistance;
 
     @Override
     public int getNumberOfSpacesToMoveWhenPatrolling() {
-        return super.getNumberOfSpacesToMoveWhenPatrolling() == 0 ? 
-                DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
+        return super.getNumberOfSpacesToMoveWhenPatrolling() == 0
+                ? DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
     }
-    
+
     public DungeonMaster numberOfMovesWhenPatrolling(int numberOfMovesWhenPatrolling) {
         setNumberOfSpacesToMoveWhenPatrolling(numberOfMovesWhenPatrolling);
         return this;
@@ -41,10 +43,10 @@ public class DungeonMaster extends DungeonCharacter {
 
     @Override
     public int getNumberOfSpacesToMoveWhenHunting() {
-        return super.getNumberOfSpacesToMoveWhenHunting() == 0 ? 
-                DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
+        return super.getNumberOfSpacesToMoveWhenHunting() == 0
+                ? DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
     }
-    
+
     public DungeonMaster numberOfMovesWhenHunting(int numberOfMovesWhenHunting) {
         setNumberOfSpacesToMoveWhenHunting(numberOfMovesWhenHunting);
         return this;
@@ -57,7 +59,7 @@ public class DungeonMaster extends DungeonCharacter {
     public void setDetectionDistance(int detectionDistance) {
         this.detectionDistance = detectionDistance;
     }
-    
+
     public DungeonMaster detectionDistance(int detectionDistance) {
         setDetectionDistance(detectionDistance);
         return this;
@@ -72,13 +74,18 @@ public class DungeonMaster extends DungeonCharacter {
      * @throws GameNotification
      */
     @Override
-    public void interact(DungeonObject dungeonObject) throws GameNotification {
+    public void interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Construction) {
-            throw new ActionNotAllowedNotification("A dungeon master cannot move through obstacles.");
+            NotificationManager.notify(
+                    new ActionNotAllowedNotification("A dungeon master cannot move "
+                            + "through obstacles."));
         } else if (dungeonObject instanceof DungeonMaster) {
-            throw new ActionNotAllowedNotification("A dungeon master cannot occupy the same space as another dungeon master.");
+            NotificationManager.notify(
+                    new ActionNotAllowedNotification("A dungeon master cannot occupy the "
+                            + "same space as another dungeon master."));
         } else if (dungeonObject instanceof Player) {
-            throw new LossNotification(CAPTURE_NOTIFICATION);
+            NotificationManager.notify(
+                    new LossNotification(CAPTURE_NOTIFICATION));
         }
     }
 
@@ -93,8 +100,9 @@ public class DungeonMaster extends DungeonCharacter {
      * @throws GameNotification
      */
     @Override
-    public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
-        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
+    public void move(Direction direction, DungeonSpace[][] dungeon) {
+        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), 
+                getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
     }
 
     @Override

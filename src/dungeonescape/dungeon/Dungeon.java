@@ -6,7 +6,10 @@
 package dungeonescape.dungeon;
 
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
+import dungeonescape.dungeon.notifications.ExecutionErrorNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeon.notifications.GameOverNotification;
+import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
@@ -43,7 +46,7 @@ public class Dungeon {
 
     private final DungeonConfiguration dungeonConfiguration;
 
-    public Dungeon(DungeonConfiguration dungeonConfiguration) throws GameNotification {
+    public Dungeon(DungeonConfiguration dungeonConfiguration) {
         this.dungeonConfiguration = dungeonConfiguration;
 
         players = new ArrayList<>();
@@ -59,7 +62,7 @@ public class Dungeon {
      *
      * @return
      */
-    private DungeonSpace[][] generateDungeon() throws GameNotification {
+    private DungeonSpace[][] generateDungeon() {
 
         int width = dungeonConfiguration.getDungeonWidth();
         int height = width;
@@ -149,14 +152,34 @@ public class Dungeon {
         return dungeon;
     }
 
-    public void movePlayer(Direction direction, String playerName) throws GameNotification {
+    public void movePlayer(Direction direction, String playerName) {
+        if (!dungeonConfiguration.getPlayerNames().contains(playerName)) {
+            NotificationManager.notify(new PlayerNotFoundNotification("Player " + playerName
+                    + " does not exist. Valid players: " + dungeonConfiguration.getPlayerNames().toString()));
+
+        }
+
         Player player = getPlayer(playerName);
+        if (player == null) {
+            NotificationManager.notify(new PlayerNotFoundNotification("Player " + playerName + " not found in dungeon."));
+            return;
+        }
+
+        //check to see if the player has been caught by a dungeon master
+        if (player.hasWon() || player.hasLost()) {
+            String gameResult = player.hasWon() ? "You Won!" : "You lost.";
+            NotificationManager.notify(
+                    new GameOverNotification("Cannot move player after game has ended (" + gameResult + ")."));
+            return;
+        }
 
         updateMoveableDungeonObjectTracksPreviousPositions();
+
         if (!player.isFrozen()) {
             try {
                 players.get(0).move(direction, dungeon);
-            } catch (ActionNotAllowedNotification n) {
+            } catch (UnsupportedOperationException e) {
+                NotificationManager.notify(new ActionNotAllowedNotification(e.getMessage()));
                 return;
             }
             moveNonPlayerCharacters();
@@ -187,18 +210,17 @@ public class Dungeon {
         });
     }
 
-    private void moveNonPlayerCharacters() throws GameNotification {
+    private void moveNonPlayerCharacters() {
         try {
             for (DungeonCharacter npc : nonPlayerCharacters) {
                 npc.move(null, dungeon);
             }
-        } catch (GameNotification | RuntimeException e) {
-            System.out.println("Caught exception: " + e.getMessage());
-            throw e;
+        } catch (RuntimeException e) {
+            NotificationManager.notify(new ExecutionErrorNotification(e.getMessage()));
         }
     }
 
-    public void spawnDungeonMasters() throws GameNotification {
+    public void spawnDungeonMasters() {
         int numberOfDungeonMasters = calculateDungeonObjectCount(dungeonConfiguration.getDungeonMasterPercentage());
         List<DungeonMaster> dungeonMasters = DungeonCharacterUtil.placeDungeonMasters(dungeon, numberOfDungeonMasters);
         nonPlayerCharacters.addAll(dungeonMasters);
@@ -209,7 +231,7 @@ public class Dungeon {
         });
     }
 
-    public String generatePlayerMiniMap(String playerName) throws PlayerNotFoundNotification {
+    public String generatePlayerMiniMap(String playerName) {
 //        return DungeonMapViewUtil.getPlayerMiniMap(dungeon, getPlayer(playerName), dungeonConfiguration.getMiniMapVisibility());
         return DungeonMapViewUtil.getFullDungeonAsString(dungeon, null);
     }
@@ -218,11 +240,11 @@ public class Dungeon {
         return Collections.unmodifiableList(dungeonObjectTracks);
     }
 
-    private Player getPlayer(String playerName) throws PlayerNotFoundNotification {
+    private Player getPlayer(String playerName) {
         return players.stream()
                 .filter(playerN -> playerName.equals(playerN.getPlayerName()))
                 .findFirst()
-                .orElseThrow(() -> new PlayerNotFoundNotification("Player " + playerName + " not found."));
+                .orElse(null);
     }
 
     private int calculateDungeonObjectCount(double objectPercentage) {

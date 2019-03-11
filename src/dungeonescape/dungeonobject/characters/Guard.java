@@ -6,8 +6,8 @@
 package dungeonescape.dungeonobject.characters;
 
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
-import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.InteractionNotification;
+import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.construction.Construction;
@@ -68,14 +68,17 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     }
 
     @Override
-    public void interact(DungeonObject dungeonObject) throws GameNotification {
+    public void interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Construction) {
-            throw new ActionNotAllowedNotification("Guards cannot move through obstacles.");
+            NotificationManager.notify(
+                    new ActionNotAllowedNotification("Guards cannot move through obstacles."));
         } else if (dungeonObject instanceof DungeonMaster) {
-            throw new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master.");
+            NotificationManager.notify(
+                    new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master."));
         } else if (dungeonObject instanceof Player) {
             teleport(dungeonObject);
-            throw new InteractionNotification("A guard has caught you and moved you back to your cell.");
+            NotificationManager.notify(
+                    new InteractionNotification("A guard has caught you and moved you back to your cell."));
         }
     }
 
@@ -85,8 +88,9 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     }
 
     @Override
-    public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
-        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
+    public void move(Direction direction, DungeonSpace[][] dungeon) {
+        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), 
+                getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
     }
 
     @Override
@@ -100,7 +104,7 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     }
 
     @Override
-    public void teleport(DungeonObject dungeonObject) throws GameNotification {
+    public void teleport(DungeonObject dungeonObject) {
         Player player = (Player) dungeonObject;
         
         //move the player and then remove the player from the previous location

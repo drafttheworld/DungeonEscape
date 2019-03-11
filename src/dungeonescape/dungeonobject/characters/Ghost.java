@@ -71,7 +71,7 @@ public class Ghost extends DungeonCharacter {
     }
 
     @Override
-    public void interact(DungeonObject dungeonObject) throws GameNotification {
+    public void interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTime(freezeTime);
         }
@@ -83,8 +83,9 @@ public class Ghost extends DungeonCharacter {
     }
 
     @Override
-    public void move(Direction direction, DungeonSpace[][] dungeon) throws GameNotification {
-        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
+    public void move(Direction direction, DungeonSpace[][] dungeon) {
+        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), 
+                getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
     }
 
     @Override

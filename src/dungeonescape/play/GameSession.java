@@ -7,12 +7,9 @@ package dungeonescape.play;
 
 import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.DungeonConfiguration;
-import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.GameOverNotification;
-import dungeonescape.dungeon.notifications.InvalidConfigurationNotification;
-import dungeonescape.dungeon.notifications.LossNotification;
+import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
-import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +32,10 @@ public class GameSession {
     private boolean won = false;
     private boolean lost = false;
 
-    public GameSession(DungeonConfiguration dungeonConfiguration) throws GameNotification {
+    public GameSession(DungeonConfiguration dungeonConfiguration) {
         if (!dungeonConfiguration.enemyAndMinePercentagesAreValid()) {
-            throw new InvalidConfigurationNotification("Enemy and mine percentages must total between 0 and 100");
+            throw new IllegalArgumentException("Enemy and mine percentages must "
+                    + "total between 0 and 100");
         }
         this.dungeonConfiguration = dungeonConfiguration;
 
@@ -57,7 +55,7 @@ public class GameSession {
         return sessionId;
     }
 
-    public List<DungeonObjectTrack> movePlayerGui(Direction direction, String playerName) throws GameNotification {
+    public List<DungeonObjectTrack> movePlayerGui(Direction direction, String playerName) {
         movePlayer(direction, playerName);
         return dungeon.getDungeonObjectTracks()
                 .stream()
@@ -65,40 +63,25 @@ public class GameSession {
                 .collect(Collectors.toList());
     }
 
-    public String movePlayerHeadless(Direction direction, String playerName) throws GameNotification {
+    public String movePlayerHeadless(Direction direction, String playerName) {
         movePlayer(direction, playerName);
         return dungeon.generatePlayerMiniMap(playerName);
     }
 
-    private void movePlayer(Direction direction, String playerName) throws GameNotification {
-        if (won || lost) {
-            String gameResult = won ? "You Won!" : "You lost.";
-            throw new GameOverNotification("Cannot move player after game has ended (" + gameResult + ").");
-        } else if (!dungeonConfiguration.getPlayerNames().contains(playerName)) {
-            throw new PlayerNotFoundNotification("Player " + playerName
-                    + " does not exist. Valid players: " + dungeonConfiguration.getPlayerNames().toString());
-        }
+    private void movePlayer(Direction direction, String playerName) {
+        
 
-        try {
-            dungeon.movePlayer(direction, playerName);
+        dungeon.movePlayer(direction, playerName);
 
-            Integer turnCount = turnCounts.get(playerName) + 1;
-            turnCounts.put(playerName, turnCount);
+        Integer turnCount = turnCounts.get(playerName) + 1;
+        turnCounts.put(playerName, turnCount);
 
-            if (turnCount == dungeonConfiguration.getSpawnDungeonMastersTurnCount()) {
-                dungeon.spawnDungeonMasters();
-            }
-        } catch (GameNotification gameNotification) {
-            if (gameNotification instanceof WinNotification) {
-                won = true;
-            } else if (gameNotification instanceof LossNotification) {
-                lost = true;
-            }
-            throw gameNotification;
+        if (turnCount == dungeonConfiguration.getSpawnDungeonMastersTurnCount()) {
+            dungeon.spawnDungeonMasters();
         }
     }
 
-    public String getPlayerMap(String playerName) throws PlayerNotFoundNotification {
+    public String getPlayerMap(String playerName) {
         String miniMap = dungeon.generatePlayerMiniMap(playerName);
 //        System.out.println(miniMap);
         return miniMap;

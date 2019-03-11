@@ -7,7 +7,6 @@ package dungeonescape.dungeon.gui;
 
 import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
-import dungeonescape.dungeonobject.characters.DungeonMaster;
 import dungeonescape.play.GameSession;
 import dungeonescape.space.DungeonSpaceType;
 import java.awt.Rectangle;
@@ -35,13 +34,13 @@ public class DungeonTable extends JTable {
     private int mapCenterX;
     private int mapCenterY;
 
-    public DungeonTable(GameSession gameSession) throws PlayerNotFoundNotification {
+    public DungeonTable(GameSession gameSession) {
         this.gameSession = gameSession;
         imageTableCellRenderer = new DungeonTableCellRenderer();
         initTable();
     }
 
-    private void initTable() throws PlayerNotFoundNotification {
+    private void initTable() {
         String player = gameSession.getDungeonConfiguration().getPlayerNames().get(0);
         int dungeonSize = gameSession.getDungeonConfiguration().getDungeonWidth();
 

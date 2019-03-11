@@ -36,7 +36,7 @@ public class DungeonCharacterUtil {
      * @return
      * @throws dungeonescape.dungeon.notifications.GameNotification
      */
-    protected static List<Guard> placeGuards(DungeonSpace[][] dungeon, int numberOfGuardsToPlace) throws GameNotification {
+    protected static List<Guard> placeGuards(DungeonSpace[][] dungeon, int numberOfGuardsToPlace) {
 
         List<Guard> guards = new ArrayList<>();
         List<DungeonSpace> dungeonExits = DungeonConstructionUtil.determineDungeonExits(dungeon);
@@ -98,7 +98,7 @@ public class DungeonCharacterUtil {
      * @throws dungeonescape.dungeon.notifications.GameNotification
      */
     protected static List<Ghost> placeGhosts(DungeonSpace[][] dungeon,
-            int numberOfGhostsToPlace, FreezeTime ghostFreezeTime, int offsetFromBorder) throws GameNotification {
+            int numberOfGhostsToPlace, FreezeTime ghostFreezeTime, int offsetFromBorder) {
 
         //place ghosts
         int numberOfGhostsPerBorder = numberOfGhostsToPlace / 4;
@@ -149,7 +149,7 @@ public class DungeonCharacterUtil {
     }
 
     private static List<Ghost> placeGhosts(Integer row, Integer col, DungeonSpace[][] dungeon,
-            int numberOfGhostsToPlaceOnThisBorder, FreezeTime ghostFreezeTime, List<Ghost> ghosts) throws GameNotification {
+            int numberOfGhostsToPlaceOnThisBorder, FreezeTime ghostFreezeTime, List<Ghost> ghosts) {
 
         boolean selectRow = row == null;
         for (int ghostNumber = 0; ghostNumber < numberOfGhostsToPlaceOnThisBorder; ghostNumber++) {
@@ -179,7 +179,7 @@ public class DungeonCharacterUtil {
                 .noneMatch(dungeonObject -> dungeonObject instanceof DungeonCharacter);
     }
 
-    protected static List<DungeonMaster> placeDungeonMasters(DungeonSpace[][] dungeon, int numberOfDungeonMasters) throws GameNotification {
+    protected static List<DungeonMaster> placeDungeonMasters(DungeonSpace[][] dungeon, int numberOfDungeonMasters) {
         int center = dungeon.length / 2;
 
         List<DungeonMaster> dungeonMasters = new ArrayList<>();

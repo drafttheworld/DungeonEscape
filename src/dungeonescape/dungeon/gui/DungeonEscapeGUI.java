@@ -7,8 +7,7 @@ package dungeonescape.dungeon.gui;
 
 import dungeonescape.DungeonEscapeApplication;
 import dungeonescape.dungeon.notifications.GameNotification;
-import dungeonescape.dungeon.notifications.NotificationManager;
-import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
+import dungeonescape.dungeon.notifications.NotificationListener;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.play.Direction;
 import dungeonescape.play.DungeonSize;
@@ -16,14 +15,19 @@ import dungeonescape.play.GameDifficulty;
 import dungeonescape.play.GameSession;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,7 +38,7 @@ import javax.swing.SwingUtilities;
  *
  * @author Andrew
  */
-public class DungeonEscapeGUI extends JFrame implements NotificationManager {
+public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
     private static final int NORTH_KEY_CODE = 38;
     private static final int SOUTH_KEY_CODE = 40;
@@ -45,26 +49,25 @@ public class DungeonEscapeGUI extends JFrame implements NotificationManager {
     private JLabel loadingLabel;
     private JButton startButton;
     private JButton recenterButton;
-    private JScrollPane mapScrollPane;
+//    private JScrollPane mapScrollPane;
     private List<DungeonTable> dungeonTables;
     private DungeonTable activeDungeonTable;
+    private JComponent gamePane;
 
     DungeonEscapeApplication dungeonEscapeApplication;
     private GameSession gameSession;
-    private int mapCenterX;
-    private int mapCenterY;
 
-    public DungeonEscapeGUI() {
+    public DungeonEscapeGUI() throws IOException {
         initComponents();
     }
 
-    private void initComponents() {
+    private void initComponents() throws IOException {
 
         applicationPane = new JPanel();
         loadingLabel = new JLabel();
         startButton = new JButton();
         recenterButton = new JButton();
-        mapScrollPane = new JScrollPane();
+//        mapScrollPane = new JScrollPane();
         dungeonTables = new ArrayList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -98,80 +101,67 @@ public class DungeonEscapeGUI extends JFrame implements NotificationManager {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                
+
             }
 
         });
 
         dungeonEscapeApplication = new DungeonEscapeApplication();
 
-        mapScrollPane.setColumnHeader(null);
-        mapScrollPane.setPreferredSize(new Dimension(480, 480));
-        mapScrollPane.setVisible(false);
-
         startButton.setText("Start New Game");
         startButton.addActionListener((ActionEvent e) -> {
 
-            applicationPane.remove(mapScrollPane);
+            applicationPane.remove(gamePane);
             loadingLabel.setText("Loading map...");
             applicationPane.add(loadingLabel, BorderLayout.CENTER);
             loadingLabel.setVisible(true);
             refresh();
             SwingUtilities.invokeLater(() -> {
-                try {
-                    //Create the game session
-                    gameSession = new DungeonEscapeApplication().startNewGame("Andrew", GameDifficulty.HARD, DungeonSize.XLARGE);
-                    activeDungeonTable = new DungeonTable(gameSession);
-                    dungeonTables.add(activeDungeonTable);
+                //Create the game session
+                gameSession = new DungeonEscapeApplication().startNewGame("Andrew", GameDifficulty.HARD, DungeonSize.XLARGE);
+                activeDungeonTable = new DungeonTable(gameSession);
+                dungeonTables.add(activeDungeonTable);
 
-                    //Once ready remove the loading label and add the map
-                    applicationPane.remove(loadingLabel);
-                    applicationPane.add(mapScrollPane, BorderLayout.CENTER);
-                    mapScrollPane.setViewportView(activeDungeonTable);
-                    mapScrollPane.setVisible(true);
-                    mapScrollPane.setFocusable(false);
+                //Once ready remove the loading label and add the map
+                gamePane = buildDungeonScrollPane();
+                applicationPane.remove(loadingLabel);
+                applicationPane.add(gamePane, BorderLayout.CENTER);
 
-                    //Add the recenter button
-                    applicationPane.add(recenterButton, BorderLayout.SOUTH);
-                    recenterButton.setVisible(true);
-                    recenterButton.setText("Recenter Map");
-                    recenterButton.addActionListener((ActionEvent ev) -> {
-                        mapScrollPane.requestFocus();
-                        activeDungeonTable.centerOnPlayer("Andrew");
-                        refresh();
-                    });
-
-                    //Refresh the map
-                    refresh();
+                //Add the recenter button
+                applicationPane.add(recenterButton, BorderLayout.SOUTH);
+                recenterButton.setVisible(true);
+                recenterButton.setText("Recenter Map");
+                recenterButton.addActionListener((ActionEvent ev) -> {
+                    gamePane.requestFocus();
                     activeDungeonTable.centerOnPlayer("Andrew");
-                    
-                } catch (PlayerNotFoundNotification ex) {
-                    Logger.getLogger(DungeonEscapeGUI.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (GameNotification ex) {
-                    Logger.getLogger(DungeonEscapeGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                    refresh();
+                });
+
+                //Refresh the map
+                refresh();
+                activeDungeonTable.centerOnPlayer("Andrew");
             });
 
         });
 
+        BufferedImage backgroundImage = ImageIO.read(DungeonTableCellRenderer.class.getResource("images/HeroVsDungeonMaster.png"));
+        gamePane = new ImagePanel(backgroundImage);
+
         applicationPane.setLayout(new BorderLayout());
-        applicationPane.setPreferredSize(new Dimension(480, 480));
         applicationPane.add(startButton, BorderLayout.NORTH);
+        applicationPane.add(gamePane, BorderLayout.CENTER);
 
         this.setLayout(new BorderLayout());
         this.add(applicationPane);
+        this.setTitle("Dungeon Escape");
         pack();
     }
 
     private void movePlayer(Direction direction) {
-        try {
-            List<DungeonObjectTrack> dungeonObjectTracks = gameSession.movePlayerGui(direction, "Andrew");
-            SwingUtilities.invokeLater(() -> {
-                activeDungeonTable.updateMap(dungeonObjectTracks);
-            });
-        } catch (GameNotification ex) {
-            Logger.getLogger(DungeonEscapeGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        List<DungeonObjectTrack> dungeonObjectTracks = gameSession.movePlayerGui(direction, "Andrew");
+        SwingUtilities.invokeLater(() -> {
+            activeDungeonTable.updateMap(dungeonObjectTracks);
+        });
     }
 
     @Override
@@ -183,6 +173,16 @@ public class DungeonEscapeGUI extends JFrame implements NotificationManager {
         this.revalidate();
         this.repaint();
         this.requestFocus();
+    }
+
+    private JComponent buildDungeonScrollPane() {
+        JScrollPane dungeonScrollPane = new JScrollPane();
+        dungeonScrollPane.setColumnHeader(null);
+        dungeonScrollPane.setPreferredSize(new Dimension(480, 480));
+        dungeonScrollPane.setViewportView(activeDungeonTable);
+        dungeonScrollPane.setVisible(true);
+        dungeonScrollPane.setFocusable(false);
+        return dungeonScrollPane;
     }
 
 }

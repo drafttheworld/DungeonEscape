@@ -7,6 +7,7 @@ package dungeonescape.dungeonobject.characters;
 
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
+import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.characters.pathfinder.EnemyPathfinder;
 import dungeonescape.space.DungeonSpace;
@@ -38,7 +39,7 @@ public class CharacterActionUtil {
      * @throws dungeonescape.dungeon.notifications.GameNotification
      */
     protected static void moveEnemy(DungeonSpace[][] dungeon, DungeonCharacter enemy,
-            int numberOfSpacesToMoveWhenPatrolling, int numberOfSpacesToMoveWhenHunting, int detectionDistance) throws GameNotification {
+            int numberOfSpacesToMoveWhenPatrolling, int numberOfSpacesToMoveWhenHunting, int detectionDistance) {
 //        System.out.println("Moving " + enemy.getClass().getSimpleName());
         Player player = findPlayerInView(dungeon, enemy, detectionDistance);
         if (player != null) {
@@ -107,16 +108,13 @@ public class CharacterActionUtil {
      * @param numberOfMoves
      * @throws GameNotification
      */
-    private static void hunt(DungeonSpace[][] dungeon, DungeonCharacter enemy, Player player, int numberOfMoves) throws GameNotification {
-        //determine the shortest path to the player and move down that path.
-//        System.out.println("Hunting, number of spaces to move: "+numberOfMoves);
+    private static void hunt(DungeonSpace[][] dungeon, DungeonCharacter enemy, Player player, int numberOfMoves) {
+
         List<DungeonSpace> path = EnemyPathfinder.findShortestPathForEnemy(dungeon, enemy, player);
         printPath(path);
         if (!path.isEmpty()) {
         int nextDungeonSpaceIndex = path.size() < numberOfMoves ? path.size() - 1 : numberOfMoves - 1;
         DungeonSpace nextDungeonSpace = path.get(nextDungeonSpaceIndex);
-//        System.out.println("Player is at ["+player.getPosition().getPositionX()+","+player.getPosition().getPositionY()+"]");
-//        System.out.println("Moving enemy from ["+enemy.getPosition().getPositionX()+","+enemy.getPosition().getPositionY()+"] to ["+nextDungeonSpace.getPosition().getPositionX()+","+nextDungeonSpace.getPosition().getPositionY()+"]");
         DungeonSpace currentDungeonSpace = enemy.getDungeonSpace();
         enemy.getDungeonSpace().removeDungeonObject(enemy);
         enemy.setPreviousDungeonSpace(currentDungeonSpace);
@@ -144,12 +142,14 @@ public class CharacterActionUtil {
      * @param dungeon
      * @param enemy
      */
-    private static void patrol(DungeonSpace[][] dungeon, DungeonCharacter enemy) throws GameNotification {
+    private static void patrol(DungeonSpace[][] dungeon, DungeonCharacter enemy) {
         DungeonSpace nextDungeonSpace = determineNextPatrolSpace(dungeon, enemy);
         if (nextDungeonSpace == null) {
-            throw new ActionNotAllowedNotification("Unable to find next patrol space for "
+            NotificationManager.notify(
+            new ActionNotAllowedNotification("Unable to find next patrol space for "
                     + enemy.getClass().getSimpleName() + " at [" + enemy.getPosition().getPositionX() + ","
-                    + enemy.getPosition().getPositionY() + "]");
+                    + enemy.getPosition().getPositionY() + "]"));
+            return;
         }
 
         DungeonSpace currentDungeonSpace = enemy.getDungeonSpace();

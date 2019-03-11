@@ -34,7 +34,7 @@ public abstract class DungeonObject {
         return dungeonSpace.getPosition();
     }
     
-    public abstract void interact(DungeonObject dungeonObject) throws GameNotification;
+    public abstract void interact(DungeonObject dungeonObject);
     public abstract DungeonSpaceType getDungeonSpaceType();    
     
 }

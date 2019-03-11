@@ -5,12 +5,25 @@
  */
 package dungeonescape.dungeon.notifications;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Andrew
  */
-public interface NotificationManager {
+public class NotificationManager {
+    private static final List<NotificationListener> notificationListeners
+            = new ArrayList<>();
     
-    public void processNotification(GameNotification gameNotification);
+    public static void registerNotificationListener(NotificationListener notificationListener) {
+        notificationListeners.add(notificationListener);
+    }
+    
+    public static void notify(GameNotification gameNotification) {
+        notificationListeners.forEach(notificationListener -> {
+            notificationListener.processNotification(gameNotification);
+        });
+    }
     
 }
