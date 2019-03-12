@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -45,7 +46,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private static final int SOUTH_KEY_CODE = 40;
     private static final int EAST_KEY_CODE = 39;
     private static final int WEST_KEY_CODE = 37;
-    
+
     private static final String APP_IMAGE = "images/hero_vs_dungeon_master.png";
     private static final String LOSS_IMAGE = "images/game_lost.png";
 
@@ -82,6 +83,11 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
             @Override
             public void keyPressed(KeyEvent e) {
+                //do nothing
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
                 switch (e.getKeyCode()) {
                     case NORTH_KEY_CODE:
                         movePlayer(Direction.NORTH);
@@ -99,11 +105,6 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
                         //do nothing
                         break;
                 }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
             }
 
         });
@@ -157,15 +158,13 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         this.add(applicationPane);
         this.setTitle("Dungeon Escape");
         pack();
-        
+
         NotificationManager.registerNotificationListener(this);
     }
 
     private void movePlayer(Direction direction) {
         List<DungeonObjectTrack> dungeonObjectTracks = gameSession.movePlayerGui(direction, "Andrew");
-        SwingUtilities.invokeLater(() -> {
-            activeDungeonTable.updateMap(dungeonObjectTracks);
-        });
+        activeDungeonTable.updateMap(dungeonObjectTracks);
     }
 
     @Override

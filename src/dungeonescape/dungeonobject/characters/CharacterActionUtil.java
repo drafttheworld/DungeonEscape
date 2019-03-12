@@ -111,7 +111,7 @@ public class CharacterActionUtil {
     private static void hunt(DungeonSpace[][] dungeon, DungeonCharacter enemy, Player player, int numberOfMoves) {
 
         List<DungeonSpace> path = EnemyPathfinder.findShortestPathForEnemy(dungeon, enemy, player);
-        printPath(path);
+//        printPath(path);
         if (!path.isEmpty()) {
         int nextDungeonSpaceIndex = path.size() < numberOfMoves ? path.size() - 1 : numberOfMoves - 1;
         DungeonSpace nextDungeonSpace = path.get(nextDungeonSpaceIndex);
@@ -159,7 +159,7 @@ public class CharacterActionUtil {
     }
 
     private static DungeonSpace determineNextPatrolSpace(DungeonSpace[][] dungeon, DungeonCharacter enemy) {
-//        System.out.println("Determining patrol spaces for enemy at [" + enemy.getPosition().getPositionX() + "," + enemy.getPosition().getPositionY() + "].");
+
         List<DungeonSpace> availableDungeonSpaces = new ArrayList<>();
 
         int enemyPosX = enemy.getPosition().getPositionX();

@@ -50,6 +50,11 @@ public class Position {
     }
 
     @Override
+    public String toString() {
+        return "Position{" + "positionX=" + positionX + ", positionY=" + positionY + '}';
+    }
+
+    @Override
     public int hashCode() {
         int hash = 3;
         hash = 79 * hash + this.positionX;

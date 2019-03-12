@@ -7,6 +7,7 @@ package dungeonescape.dungeon.gui;
 
 import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
+import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.play.GameSession;
 import dungeonescape.space.DungeonSpaceType;
 import java.awt.Rectangle;
@@ -109,8 +110,12 @@ public class DungeonTable extends JTable {
     }
 
     protected void updateMap(List<DungeonObjectTrack> dungeonObjectTracks) {
-        dungeonObjectTracks.forEach(dungeonObjectTrack -> {
+        dungeonObjectTracks.parallelStream().forEach(dungeonObjectTrack -> {
 
+            if (dungeonObjectTrack.getDungeonObject() instanceof Player) {
+                System.out.println("Player previous position: "+dungeonObjectTrack.getPreviousPosition());
+            }
+            
             String mapSymbol;
             int row, col;
             if (dungeonObjectTrack.getPreviousPosition() != null) {

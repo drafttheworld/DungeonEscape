@@ -7,7 +7,6 @@ package dungeonescape.dungeon;
 
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.ExecutionErrorNotification;
-import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.GameOverNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
