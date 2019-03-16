@@ -5,7 +5,6 @@
  */
 package dungeonescape.dungeonobject.characters;
 
-import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
@@ -20,6 +19,7 @@ public abstract class DungeonCharacter extends DungeonObject {
     private int numberOfSpacesToMoveWhenPatrolling;
     private int numberOfSpacesToMoveWhenHunting;
     private DungeonSpace previousDungeonSpace;
+    private boolean active;
     
     public void setPlayer(Player player) {
         this.player = player;
@@ -51,6 +51,14 @@ public abstract class DungeonCharacter extends DungeonObject {
 
     public void setPreviousDungeonSpace(DungeonSpace previousDungeonSpace) {
         this.previousDungeonSpace = previousDungeonSpace;
+    }
+    
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
     
     public abstract void move(Direction direction, DungeonSpace[][] dungeon);

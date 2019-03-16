@@ -5,7 +5,6 @@
  */
 package dungeonescape.dungeonobject;
 
-import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import dungeonescape.space.Position;

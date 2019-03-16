@@ -34,9 +34,9 @@ public class EnemyPathfinder {
      * @return
      */
     public static List<DungeonSpace> findShortestPathForEnemy(DungeonSpace[][] dungeon, DungeonCharacter enemy, Player player) {
-        if (enemy instanceof Ghost) {
-            return findNextDungeonSpaceForGhost(dungeon, (Ghost) enemy, player);
-        }
+//        if (enemy instanceof Ghost) {
+//            return findNextDungeonSpaceForGhost(dungeon, (Ghost) enemy, player);
+//        }
 
         DungeonSpace[][] dungeonArea = narrowDungeonArea(dungeon, enemy.getPosition(), player.getPosition());
         return findShortestPathUsingBFS(dungeonArea, enemy);
@@ -92,7 +92,11 @@ public class EnemyPathfinder {
         PathNode startNode = null;
         for (int row = 0; row < dungeonArea.length; row++) {
             for (int col = 0; col < dungeonArea[row].length; col++) {
-                visited[row][col] = !(dungeonArea[row][col].isEmpty() || containsOnlyGhostsOrPlayers(dungeonArea[row][col]));
+                if (enemy instanceof Ghost) {
+                    visited[row][col] = false;
+                } else {
+                    visited[row][col] = !(dungeonArea[row][col].isEmpty() || containsOnlyGhostsOrPlayers(dungeonArea[row][col]));
+                }
                 if (dungeonArea[row][col].getDungeonObjects().contains(enemy)) {
                     startNode = new PathNode(row, col, dungeonArea[row][col], null);
                 }
@@ -128,11 +132,11 @@ public class EnemyPathfinder {
             // moving west
             addNextPathNode(row, col - 1, dungeonArea, visited, pathNode, pathQueue);
         }
-        
+
         printDungeonArea(dungeonArea);
         return Collections.emptyList();
     }
-    
+
     private static void printDungeonArea(DungeonSpace[][] dungeonArea) {
         int playerCol = -1;
         int playerRow = -1;
@@ -154,12 +158,12 @@ public class EnemyPathfinder {
     private static void addNextPathNode(int row, int col, DungeonSpace[][] dungeonArea,
             boolean[][] visited, PathNode previousPathNode, Queue<PathNode> pathQueue) {
         try {
-        if (col >= 0 && row >= 0 && row < dungeonArea.length && col < dungeonArea[row].length && !visited[row][col]) {
-            pathQueue.add(new PathNode(row, col, dungeonArea[row][col], previousPathNode));
-            visited[row][col] = true;
-        }
+            if (col >= 0 && row >= 0 && row < dungeonArea.length && col < dungeonArea[row].length && !visited[row][col]) {
+                pathQueue.add(new PathNode(row, col, dungeonArea[row][col], previousPathNode));
+                visited[row][col] = true;
+            }
         } catch (RuntimeException e) {
-            System.out.println("Error adding node at: ["+col+","+row+"]");
+            System.out.println("Error adding node at: [" + col + "," + row + "]");
             throw e;
         }
     }
@@ -227,7 +231,7 @@ public class EnemyPathfinder {
             this.dungeonSpace = dungeonSpace;
             this.previousPathNode = previousPathNode;
         }
-        
+
         public int getRow() {
             return row;
         }

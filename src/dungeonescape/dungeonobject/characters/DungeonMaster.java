@@ -23,12 +23,16 @@ public class DungeonMaster extends DungeonCharacter {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 3;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
-    public static int DEFAULT_DETECTION_DISTANCE = 10;
+    public static int DEFAULT_DETECTION_DISTANCE = 8;
 
     public static final String CAPTURE_NOTIFICATION 
             = "You have been caught and executed by a DUNGEON MASTER!";
 
     private int detectionDistance;
+    
+    public DungeonMaster() {
+        super.setActive(true);
+    }
 
     @Override
     public int getNumberOfSpacesToMoveWhenPatrolling() {

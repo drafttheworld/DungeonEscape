@@ -5,7 +5,6 @@
  */
 package dungeonescape.dungeonobject.characters;
 
-import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.play.Direction;
@@ -29,6 +28,7 @@ public class Ghost extends DungeonCharacter {
     
     public Ghost(FreezeTime freezeTime) {
         this.freezeTime = freezeTime;
+        super.setActive(true);
     }
     
     public FreezeTime getFreezeTime() {
@@ -74,6 +74,9 @@ public class Ghost extends DungeonCharacter {
     public void interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTime(freezeTime);
+            System.out.println("You were attacked by a ghost, added frozen time.");
+            getDungeonSpace().removeDungeonObject(this);
+            super.setActive(false);
         }
     }
 

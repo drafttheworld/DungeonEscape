@@ -48,7 +48,7 @@ public enum GameDifficulty {
                 .dungeonMasterPercentage(.005)
                 .spawnDungeonMastersTurnCount(25)
                 .guardPercentage(.01)
-                .ghostPercentage(1.0)
+                .ghostPercentage(.1)
                 .freezeMinePercentage(1)
                 .teleportMinePercentage(.5);
     }

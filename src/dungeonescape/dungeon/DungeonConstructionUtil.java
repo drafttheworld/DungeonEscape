@@ -5,9 +5,8 @@
  */
 package dungeonescape.dungeon;
 
-import dungeonescape.dungeon.notifications.GameNotification;
-import dungeonescape.dungeonobject.mine.FreezeMine;
 import dungeonescape.dungeonobject.FreezeTime;
+import dungeonescape.dungeonobject.mine.FreezeMine;
 import dungeonescape.dungeonobject.mine.Mine;
 import dungeonescape.dungeonobject.mine.TargetBoundaries;
 import dungeonescape.dungeonobject.mine.TargetBoundary;
@@ -185,7 +184,7 @@ public class DungeonConstructionUtil {
             availableSpaces.get(index).addDungeonObject(mines.get(minesPlaced++));
             usedIndices.add(index);
         }
-        System.out.println("Placed " + minesPlaced + " mines of type: " + mines.get(0).getDungeonSpaceType().name());
+        
         return mines;
     }
 
@@ -212,7 +211,7 @@ public class DungeonConstructionUtil {
 
         List<DungeonSpace> dungeonExits = new ArrayList<>();
         //check the northern boundary
-        for (int column = 0; column < dungeon.length; column++) {
+        for (int column = 0; column < dungeon[0].length; column++) {
             if (dungeon[0][column].isNotPermanentlyOccupied()) {
                 dungeonExits.add(dungeon[0][column]);
             }

@@ -26,6 +26,7 @@ import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.Position;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -172,10 +173,12 @@ public class Dungeon {
             return;
         }
 
+        cleanupExpendedItems();
         updateMoveableDungeonObjectTracksPreviousPositions();
 
         if (!player.isFrozen()) {
             try {
+                
                 players.get(0).move(direction, dungeon);
             } catch (UnsupportedOperationException e) {
                 NotificationManager.notify(new ActionNotAllowedNotification(e.getMessage()));
@@ -185,11 +188,31 @@ public class Dungeon {
             dungeonTimeElapsed++;
         } else if (player.getFrozenTimeRemaining().getFreezeTimeForTimeUnit(TimeUnit.MINUTES) > 0) {
             player.decrementFrozenTimeRemaining(1, TimeUnit.MINUTES);
+            System.out.println("Frozen time remaining: " + player.getFrozenTimeRemaining().getFreezeTimeForTimeUnit(TimeUnit.MINUTES) + " minutes.");
             moveNonPlayerCharacters();
             dungeonTimeElapsed++;
         }
 
         updateMoveableDungeonObjectTracksNewPositions();
+    }
+
+    private void cleanupExpendedItems() {
+        Iterator<DungeonCharacter> npcIterator = nonPlayerCharacters.iterator();
+        while (npcIterator.hasNext()) {
+            DungeonCharacter npc = npcIterator.next();
+            if (npc.getDungeonSpace() == null) {
+                npcIterator.remove();
+            }
+        }
+
+        Iterator<DungeonObjectTrack> dungeonObjectTrackIterator = dungeonObjectTracks.iterator();
+        while (dungeonObjectTrackIterator.hasNext()) {
+            DungeonObjectTrack dungeonObjectTrack = dungeonObjectTrackIterator.next();
+            if (dungeonObjectTrack.getDungeonObject().getDungeonSpace() == null) {
+                moveableDungeonObjects.remove(dungeonObjectTrack.getDungeonObject());
+                dungeonObjectTrackIterator.remove();
+            }
+        }
     }
 
     private void updateMoveableDungeonObjectTracksPreviousPositions() {
@@ -202,7 +225,6 @@ public class Dungeon {
     private void updateMoveableDungeonObjectTracksNewPositions() {
         dungeonObjectTracks.forEach(dungeonObjectTrack -> {
             //Set the previous position and dungeon object
-            int index = moveableDungeonObjects.indexOf(dungeonObjectTrack.getDungeonObject());
             Position prevPosition = dungeonObjectTrack.getPreviousPosition();
             DungeonSpace previousDungeonSpace = dungeon[prevPosition.getPositionY()][prevPosition.getPositionX()];
             dungeonObjectTrack.setPreviousPositionSymbol(previousDungeonSpace.getVisibleDungeonSpaceType().getValueString());
@@ -211,8 +233,17 @@ public class Dungeon {
 
     private void moveNonPlayerCharacters() {
         try {
-            for (DungeonCharacter npc : nonPlayerCharacters) {
-                npc.move(null, dungeon);
+            Iterator<DungeonCharacter> dungeonCharacterIterator = nonPlayerCharacters.iterator();
+            while (dungeonCharacterIterator.hasNext()) {
+                DungeonCharacter npc = dungeonCharacterIterator.next();
+                if (npc.isActive()) {
+                    npc.move(null, dungeon);
+                } else {
+                    System.out.println("moving "+npc.getClass().getSimpleName());
+                    dungeonCharacterIterator.remove();
+                    System.out.println("dungeon space is: "+npc.getDungeonSpace());
+                }
+
             }
         } catch (RuntimeException e) {
             NotificationManager.notify(new ExecutionErrorNotification(e.getMessage()));

@@ -5,7 +5,6 @@
  */
 package dungeonescape.dungeon;
 
-import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import dungeonescape.dungeonobject.characters.DungeonMaster;
@@ -80,7 +79,6 @@ public class DungeonCharacterUtil {
             }
         }
 
-        System.out.println("Placed " + guards.size() + " guards.");
         return guards;
     }
 
@@ -144,7 +142,6 @@ public class DungeonCharacterUtil {
             }
         }
 
-        System.out.println("Placed " + ghosts.size() + " ghosts.");
         return ghosts;
     }
 
@@ -204,7 +201,6 @@ public class DungeonCharacterUtil {
             usedSpaces.add(position);
         }
 
-        System.out.println("Placed " + dungeonMasters.size() + " dungeon masters.");
         return dungeonMasters;
     }
 

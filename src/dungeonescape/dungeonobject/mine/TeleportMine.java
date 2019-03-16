@@ -5,10 +5,8 @@
  */
 package dungeonescape.dungeonobject.mine;
 
-import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.InteractionNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
-import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.characters.Player;

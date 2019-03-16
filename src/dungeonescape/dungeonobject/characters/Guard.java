@@ -30,6 +30,7 @@ public class Guard extends DungeonCharacter implements TeleportObject {
 
     public Guard(DungeonSpace jailCellSpace) {
         this.jailCellSpace = jailCellSpace;
+        super.setActive(true);
     }
 
     @Override
@@ -77,6 +78,8 @@ public class Guard extends DungeonCharacter implements TeleportObject {
                     new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master."));
         } else if (dungeonObject instanceof Player) {
             teleport(dungeonObject);
+            getDungeonSpace().removeDungeonObject(this);
+            super.setActive(false);
             NotificationManager.notify(
                     new InteractionNotification("A guard has caught you and moved you back to your cell."));
         }

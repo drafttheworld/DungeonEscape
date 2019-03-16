@@ -33,6 +33,7 @@ public class Player extends DungeonCharacter {
     public Player(String playerName, int playerVisibility) {
         this.playerName = playerName;
         this.playerVisibility = playerVisibility;
+        super.setActive(true);
 
         frozenTimeRemainingInSeconds = 0L;
     }
@@ -98,10 +99,12 @@ public class Player extends DungeonCharacter {
 
         DungeonSpace currentDungeonSpace
                 = dungeon[getPosition().getPositionY()][getPosition().getPositionX()];
-        Position nextPosition = determineNextPosition(getPosition(), direction);
+        Position nextPosition = determineNextPosition(direction);
 
-        if (nextPosition.getPositionX() < 0 || nextPosition.getPositionY() < 0) {
+        if (nextPosition.getPositionX() < 0 || nextPosition.getPositionX() >= dungeon.length
+                || nextPosition.getPositionY() < 0 || nextPosition.getPositionY() >= dungeon.length) {
             NotificationManager.notify(new WinNotification());
+            return;
         }
         DungeonSpace nextDungeonSpace = dungeon[nextPosition.getPositionY()][nextPosition.getPositionX()];
         
@@ -113,7 +116,8 @@ public class Player extends DungeonCharacter {
         currentDungeonSpace.removeDungeonObject(this);
     }
 
-    private Position determineNextPosition(Position currentPlayerPosition, Direction direction) {
+    private Position determineNextPosition(Direction direction) {
+        Position currentPlayerPosition = getPosition();
         switch (direction) {
             case NORTH:
                 return new Position(currentPlayerPosition.getPositionX(), currentPlayerPosition.getPositionY() - 1);

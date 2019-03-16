@@ -5,8 +5,6 @@
  */
 package dungeonescape.dungeonobject;
 
-import dungeonescape.dungeonobject.mine.Mine;
-import dungeonescape.space.DungeonSpaceType;
 import dungeonescape.space.Position;
 
 /**

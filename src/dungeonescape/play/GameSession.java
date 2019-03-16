@@ -7,9 +7,6 @@ package dungeonescape.play;
 
 import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.DungeonConfiguration;
-import dungeonescape.dungeon.notifications.GameOverNotification;
-import dungeonescape.dungeon.notifications.NotificationManager;
-import dungeonescape.dungeon.notifications.PlayerNotFoundNotification;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +26,6 @@ public class GameSession {
 
     //Game status
     private Map<String, Integer> turnCounts;
-    private boolean won = false;
-    private boolean lost = false;
 
     public GameSession(DungeonConfiguration dungeonConfiguration) {
         if (!dungeonConfiguration.enemyAndMinePercentagesAreValid()) {

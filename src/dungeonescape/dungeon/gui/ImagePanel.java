@@ -5,9 +5,12 @@
  */
 package dungeonescape.dungeon.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
@@ -25,17 +28,24 @@ public class ImagePanel extends JPanel {
 
     public ImagePanel(Image img) {
         this.img = img;
+        init();
+    }
+
+    private void init() {
         Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
         super.setPreferredSize(size);
         super.setMinimumSize(size);
         super.setMaximumSize(size);
         super.setSize(size);
         super.setLayout(null);
+        super.setBackground(Color.white);
     }
 
     @Override
     public void paintComponent(Graphics g) {
-        g.drawImage(img, 0, 0, null);
+//        int x = getWidth() / 2 - img.getWidth(this) / 2;
+//        int y = getHeight() / 2 - img.getHeight(this) / 2;
+        g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
     }
 
 }
