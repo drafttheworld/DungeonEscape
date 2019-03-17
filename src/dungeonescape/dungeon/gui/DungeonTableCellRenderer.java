@@ -23,21 +23,23 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class DungeonTableCellRenderer extends DefaultTableCellRenderer {
 
-    private static final String IMAGES_DIRECTORY = "images/";
+    private static final String CONSTRUCTION_IMAGES_DIRECTORY = "images/construction/";
+    private static final String MINE_IMAGES_DIRECTORY = "images/mines/";
+    private static final String CHARACTER_IMAGES_DIRECTORY = "images/characters/";
     private static ImageIcon[] images;
 
     static {
         try {
             images = new ImageIcon[]{
-                new ImageIcon(getImage(IMAGES_DIRECTORY + "wall.png")),
-                new ImageIcon(getImage(IMAGES_DIRECTORY + "open_space.png")),
-                new ImageIcon(getImage(IMAGES_DIRECTORY + "nonvisible_space.png")),
-                new ImageIcon(getImage(IMAGES_DIRECTORY + "freeze_mine.png")),
-                new ImageIcon(getImage(IMAGES_DIRECTORY + "teleport_mine.png")),
-                new ImageIcon(getImage(IMAGES_DIRECTORY + "ghost.png")),
-                new ImageIcon(getImage(IMAGES_DIRECTORY + "guard.png")),
-                new ImageIcon(getImage(IMAGES_DIRECTORY + "player.png")),
-                new ImageIcon(getImage(IMAGES_DIRECTORY + "dungeon_master.png"))};
+                new ImageIcon(getImage(CONSTRUCTION_IMAGES_DIRECTORY + "wall.png")),
+                new ImageIcon(getImage(CONSTRUCTION_IMAGES_DIRECTORY + "open_space.png")),
+                new ImageIcon(getImage(CONSTRUCTION_IMAGES_DIRECTORY + "nonvisible_space.png")),
+                new ImageIcon(getImage(MINE_IMAGES_DIRECTORY + "freeze_mine.png")),
+                new ImageIcon(getImage(MINE_IMAGES_DIRECTORY + "teleport_mine.png")),
+                new ImageIcon(getImage(CHARACTER_IMAGES_DIRECTORY + "ghost.png")),
+                new ImageIcon(getImage(CHARACTER_IMAGES_DIRECTORY + "guard.png")),
+                new ImageIcon(getImage(CHARACTER_IMAGES_DIRECTORY + "player.png")),
+                new ImageIcon(getImage(CHARACTER_IMAGES_DIRECTORY + "dungeon_master.png"))};
         } catch (IOException ex) {
             Logger.getLogger(DungeonTableCellRenderer.class.getName()).log(Level.SEVERE, null, ex);
         }

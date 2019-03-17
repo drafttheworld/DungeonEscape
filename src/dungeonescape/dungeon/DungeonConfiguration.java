@@ -23,7 +23,6 @@ public class DungeonConfiguration {
     //Player settings
     private final List<String> playerNames;
     private int playerVisibility;
-    private int miniMapVisibility;
 
     //Dungeon settings
     private int dungeonWidth;
@@ -83,19 +82,6 @@ public class DungeonConfiguration {
 
     public DungeonConfiguration playerVisibility(int playerVisibility) {
         setPlayerVisibility(playerVisibility);
-        return this;
-    }
-
-    public int getMiniMapVisibility() {
-        return miniMapVisibility;
-    }
-
-    public void setMiniMapVisibility(int miniMapVisibility) {
-        this.miniMapVisibility = miniMapVisibility;
-    }
-
-    public DungeonConfiguration miniMapVisibility(int miniMapVisibility) {
-        setMiniMapVisibility(miniMapVisibility);
         return this;
     }
 

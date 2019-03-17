@@ -42,8 +42,7 @@ public enum GameDifficulty {
 
     private static DungeonConfiguration HARD() {
         return new DungeonConfiguration()
-                .playerVisibility(3)
-                .miniMapVisibility(25)
+                .playerVisibility(25)
                 .dungeonExitCount(5)
                 .dungeonMasterPercentage(.005)
                 .spawnDungeonMastersTurnCount(25)

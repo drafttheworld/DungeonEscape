@@ -10,6 +10,7 @@ import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.NotificationListener;
 import dungeonescape.dungeon.notifications.NotificationManager;
+import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.play.Direction;
 import dungeonescape.play.DungeonSize;
@@ -49,7 +50,8 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private static final int WEST_KEY_CODE = 37;
 
     private static final String APP_IMAGE = "images/hero_vs_dungeon_master.png";
-    private static final String LOSS_IMAGE = "images/game_lost.png";
+    private static final String LOSS_IMAGE = "images/notifications/game_lost.png";
+    private static final String WIN_IMAGE = "images/notifications/game_won.png";
 
     private static final String PLAYER_NAME = "Andrew";
 
@@ -118,36 +120,10 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         startButton.addActionListener((ActionEvent e) -> {
 
             applicationPane.remove(gamePane);
-            loadingLabel.setText("Loading map...");
-            applicationPane.add(loadingLabel, BorderLayout.CENTER);
-            loadingLabel.setVisible(true);
+            applicationPane.remove(startButton);
+            gamePane = new GameConfigurationPane(this);
+            applicationPane.add(gamePane, BorderLayout.CENTER);
             refresh();
-            SwingUtilities.invokeLater(() -> {
-                //Create the game session
-                gameSession = new DungeonEscapeApplication().startNewGame(PLAYER_NAME, GameDifficulty.HARD, DungeonSize.XLARGE);
-                activeDungeonTable = new DungeonTable(gameSession);
-                dungeonTables.add(activeDungeonTable);
-
-                //Once ready remove the loading label and add the map
-                gamePane = buildDungeonScrollPane();
-                applicationPane.remove(loadingLabel);
-                applicationPane.add(gamePane, BorderLayout.CENTER);
-
-                //Add the recenter button
-                applicationPane.add(recenterButton, BorderLayout.SOUTH);
-                recenterButton.setVisible(true);
-                recenterButton.setText("Recenter Map");
-                recenterButton.addActionListener((ActionEvent ev) -> {
-                    gamePane.requestFocus();
-                    activeDungeonTable.centerOnPlayer(PLAYER_NAME);
-                    refresh();
-                });
-
-                //Refresh the map
-                refresh();
-                activeDungeonTable.centerOnPlayer(PLAYER_NAME);
-            });
-
         });
 
         BufferedImage backgroundImage = ImageIO.read(DungeonEscapeGUI.class.getResource(APP_IMAGE));
@@ -165,6 +141,38 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         NotificationManager.registerNotificationListener(this);
     }
 
+    protected void startNewGame(GameDifficulty gameDifficulty, DungeonSize dungeonSize) {
+        applicationPane.remove(gamePane);
+        loadingLabel.setText("Loading map...");
+        applicationPane.add(loadingLabel, BorderLayout.CENTER);
+        loadingLabel.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            //Create the game session
+            gameSession = new DungeonEscapeApplication().startNewGame(PLAYER_NAME, gameDifficulty, dungeonSize);
+            activeDungeonTable = new DungeonTable(gameSession);
+            dungeonTables.add(activeDungeonTable);
+
+            //Once ready remove the loading label and add the map
+            gamePane = buildDungeonScrollPane();
+            applicationPane.remove(loadingLabel);
+            applicationPane.add(gamePane, BorderLayout.CENTER);
+
+            //Add the recenter button
+            applicationPane.add(recenterButton, BorderLayout.SOUTH);
+            recenterButton.setVisible(true);
+            recenterButton.setText("Recenter Map");
+            recenterButton.addActionListener((ActionEvent ev) -> {
+                gamePane.requestFocus();
+                activeDungeonTable.centerOnPlayer(PLAYER_NAME);
+                refresh();
+            });
+
+            //Refresh the map
+            refresh();
+            activeDungeonTable.centerOnPlayer(PLAYER_NAME);
+        });
+    }
+
     private void movePlayer(Direction direction) {
         List<DungeonObjectTrack> dungeonObjectTracks = gameSession.movePlayerGui(direction, PLAYER_NAME);
         activeDungeonTable.updateMap(dungeonObjectTracks);
@@ -175,8 +183,8 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         try {
             if (gameNotification instanceof LossNotification) {
                 displayNotificationPane(LOSS_IMAGE);
-            } else if (gameNotification instanceof LossNotification) {
-                displayNotificationPane(APP_IMAGE);
+            } else if (gameNotification instanceof WinNotification) {
+                displayNotificationPane(WIN_IMAGE);
             }
         } catch (IOException ex) {
             Logger.getLogger(DungeonEscapeGUI.class.getName()).log(Level.SEVERE, null, ex);

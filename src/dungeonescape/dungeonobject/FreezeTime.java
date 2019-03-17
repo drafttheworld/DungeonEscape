@@ -50,4 +50,9 @@ public class FreezeTime {
         throw new IllegalArgumentException("Unsupported time unit: " + timeUnit.name());
     }
 
+    @Override
+    public String toString() {
+        return "FreezeTime{" + "time=" + time + ", timeUnit=" + timeUnit + '}';
+    }
+
 }
