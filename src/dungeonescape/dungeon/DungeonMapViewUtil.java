@@ -41,17 +41,26 @@ public class DungeonMapViewUtil {
         return dungeonAsString.toString();
     }
 
-    protected static String getPlayerMiniMap(DungeonSpace[][] dungeon, Player player, int miniMapVisibility) {
-        DungeonSpaceTypeFilters dungeonSpaceTypeFilters = new DungeonSpaceTypeFilters();
-        dungeonSpaceTypeFilters.setPlayerPosition(player.getPosition());
-        dungeonSpaceTypeFilters.setPlayerVisibility(player.getPlayerVisibility());
-        dungeonSpaceTypeFilters.setMapVisibility(miniMapVisibility);
-        dungeonSpaceTypeFilters.addExclusionType(DungeonSpaceType.DUNGEON_MASTER);
-        dungeonSpaceTypeFilters.addExclusionType(DungeonSpaceType.FREEZE_MINE);
-        dungeonSpaceTypeFilters.addExclusionType(DungeonSpaceType.GHOST);
-        dungeonSpaceTypeFilters.addExclusionType(DungeonSpaceType.TELEPORT_MINE);
-
-        return getFullDungeonAsString(dungeon, null);
+    protected static String getPlayerMap(DungeonSpace[][] dungeon) {
+        StringBuilder playerMap = new StringBuilder();
+        int visibleSpaceCount = 0;
+        for (int row = 0; row < dungeon.length; row++) {
+            for (int col = 0; col < dungeon.length; col++) {
+                String visibleSymbol;
+                if (dungeon[row][col].isVisible()) {
+                    visibleSymbol = dungeon[row][col].getVisibleDungeonSpaceType().getValueString();
+                    visibleSpaceCount++;
+                } else {
+                    visibleSymbol = DungeonSpaceType.NON_VISIBLE_SPACE.getValueString();
+                }
+                playerMap.append(visibleSymbol);
+            }
+            if (row < dungeon.length - 1) {
+                playerMap.append("\n");
+            }
+        }
+        System.out.println("Visible spaces: " + visibleSpaceCount);
+        return playerMap.toString();
     }
 
 }

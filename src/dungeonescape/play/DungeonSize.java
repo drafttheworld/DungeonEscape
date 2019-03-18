@@ -11,10 +11,9 @@ package dungeonescape.play;
  */
 public enum DungeonSize {
     
-    SMALL(50),
-    MEDIUM(100),
-    LARGE(500),
-    XLARGE(1000),
+    SMALL(100),
+    MEDIUM(500),
+    LARGE(1000),
     EPIC(5000);
     
     private final int dungeonWidth;

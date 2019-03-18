@@ -29,25 +29,25 @@ public class DungeonConfiguration {
     private int dungeonExitCount;
 
     //Enemy settings
-    private double dungeonMasterPercentage;
+    private int dungeonMasterCount;
     private int dungeonMasterNumberOfMovesWhenPatrolling;
     private int dungeonMasterNumberOfMovesWhenHunting;
     private int dungeonMasterDetectionDistance;
     private int spawnDungeonMastersTurnCount;
-    private double guardPercentage;
+    private int guardCount;
     private int guardNumberOfMovesWhenPatrolling;
     private int guardNumberOfMovesWhenHunting;
     private int guardDetectionDistance;
-    private double ghostPercentage;
+    private int ghostCount;
     private int ghostNumberOfMovesWhenPatrolling;
     private int ghostNumberOfMovesWhenHunting;
     private int ghostDetectionDistance;
     private FreezeTime ghostFreezeTime;
 
     //Mine settings
-    private double freezeMinePercentage;
-    private FreezeTime maxFreezeMineTime;
-    private double teleportMinePercentage;
+    private int freezeMineCount;
+    private FreezeTime freezeMineMaxFreezeTime;
+    private int teleportMineCount;
 
     public DungeonConfiguration() {
         playerNames = new ArrayList<>();
@@ -111,16 +111,16 @@ public class DungeonConfiguration {
         return this;
     }
 
-    public double getDungeonMasterPercentage() {
-        return dungeonMasterPercentage;
+    public int getDungeonMasterCount() {
+        return dungeonMasterCount;
     }
 
-    public void setDungeonMasterPercentage(double dungeonMasterPercentage) {
-        this.dungeonMasterPercentage = dungeonMasterPercentage;
+    public void setDungeonMasterCount(int dungeonMasterCount) {
+        this.dungeonMasterCount = dungeonMasterCount;
     }
 
-    public DungeonConfiguration dungeonMasterPercentage(double dungeonMasterPercentage) {
-        setDungeonMasterPercentage(dungeonMasterPercentage);
+    public DungeonConfiguration dungeonMasterCount(int dungeonMasterCount) {
+        setDungeonMasterCount(dungeonMasterCount);
         return this;
     }
 
@@ -185,16 +185,16 @@ public class DungeonConfiguration {
         return this;
     }
 
-    public double getGuardPercentage() {
-        return guardPercentage;
+    public int getGuardCount() {
+        return guardCount;
     }
 
-    public void setGuardPercentage(double guardPercentage) {
-        this.guardPercentage = guardPercentage;
+    public void setGuardCount(int guardCount) {
+        this.guardCount = guardCount;
     }
 
-    public DungeonConfiguration guardPercentage(double guardPercentage) {
-        setGuardPercentage(guardPercentage);
+    public DungeonConfiguration guardCount(int guardCount) {
+        setGuardCount(guardCount);
         return this;
     }
 
@@ -246,16 +246,16 @@ public class DungeonConfiguration {
         return this;
     }
 
-    public double getGhostPercentage() {
-        return ghostPercentage;
+    public int getGhostCount() {
+        return ghostCount;
     }
 
-    public void setGhostPercentage(double ghostPercentage) {
-        this.ghostPercentage = ghostPercentage;
+    public void setGhostCount(int ghostCount) {
+        this.ghostCount = ghostCount;
     }
 
-    public DungeonConfiguration ghostPercentage(double ghostPercentage) {
-        setGhostPercentage(ghostPercentage);
+    public DungeonConfiguration ghostCount(int ghostCount) {
+        setGhostCount(ghostCount);
         return this;
     }
 
@@ -323,54 +323,54 @@ public class DungeonConfiguration {
         return this;
     }
 
-    public double getFreezeMinePercentage() {
-        return freezeMinePercentage;
+    public int getFreezeMineCount() {
+        return freezeMineCount;
     }
 
-    public void setFreezeMinePercentage(double freezeMinePercentage) {
-        this.freezeMinePercentage = freezeMinePercentage;
+    public void setFreezeMineCount(int freezeMineCount) {
+        this.freezeMineCount = freezeMineCount;
     }
 
-    public DungeonConfiguration freezeMinePercentage(double freezeMinePercentage) {
-        setFreezeMinePercentage(freezeMinePercentage);
+    public DungeonConfiguration freezeMineCount(int freezeMineCount) {
+        setFreezeMineCount(freezeMineCount);
         return this;
     }
 
-    public FreezeTime getMaxFreezeMineTime() {
-        if (maxFreezeMineTime == null) {
+    public FreezeTime getFreezeMineMaxFreezeTime() {
+        if (freezeMineMaxFreezeTime == null) {
             return FreezeMine.DEFAULT_MAX_FREEZE_TIME;
         }
-        return maxFreezeMineTime;
+        return freezeMineMaxFreezeTime;
     }
 
-    public void setMaxFreezeMineTime(FreezeTime maxFreezeTime) {
-        this.maxFreezeMineTime = maxFreezeTime;
+    public void setFreezeMineMaxFreezeTime(FreezeTime maxFreezeTime) {
+        this.freezeMineMaxFreezeTime = maxFreezeTime;
     }
 
     public DungeonConfiguration maxFreezeMineTime(FreezeTime maxFreezeTime) {
-        setMaxFreezeMineTime(maxFreezeTime);
+        setFreezeMineMaxFreezeTime(maxFreezeTime);
         return this;
     }
 
-    public double getTeleportMinePercentage() {
-        return teleportMinePercentage;
+    public int getTeleportMineCount() {
+        return teleportMineCount;
     }
 
-    public void setTeleportMinePercentage(double teleportMinePercentage) {
-        this.teleportMinePercentage = teleportMinePercentage;
+    public void setTeleportMineCount(int teleportMineCount) {
+        this.teleportMineCount = teleportMineCount;
     }
 
-    public DungeonConfiguration teleportMinePercentage(double teleportMinePercentage) {
-        setTeleportMinePercentage(teleportMinePercentage);
+    public DungeonConfiguration teleportMineCount(int teleportMineCount) {
+        setTeleportMineCount(teleportMineCount);
         return this;
     }
 
     public boolean enemyAndMinePercentagesAreValid() {
-        return Math.ceil(getDungeonMasterPercentage()
-                + getGuardPercentage()
-                + getGhostPercentage()
-                + getFreezeMinePercentage()
-                + getTeleportMinePercentage())
+        return Math.ceil(getDungeonMasterCount()
+                + getGuardCount()
+                + getGhostCount()
+                + getFreezeMineCount()
+                + getTeleportMineCount())
                 <= 100;
     }
 

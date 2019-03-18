@@ -5,17 +5,22 @@
  */
 package dungeonescape.dungeonobject.characters;
 
+import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import dungeonescape.space.Position;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,15 +29,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class Player extends DungeonCharacter {
 
+    private Dungeon dungeon;
     private final String playerName;
     private final int playerVisibility;
     private long frozenTimeRemainingInSeconds;
     private boolean won = false;
     private boolean lost = false;
 
-    public Player(String playerName, int playerVisibility) {
+    public Player(String playerName, int playerVisibility, Dungeon dungeon) {
         this.playerName = playerName;
         this.playerVisibility = playerVisibility;
+        this.dungeon = dungeon;
         super.setActive(true);
 
         frozenTimeRemainingInSeconds = 0L;
@@ -79,7 +86,7 @@ public class Player extends DungeonCharacter {
     }
 
     @Override
-    public void interact(DungeonObject dungeonObject) {
+    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof DungeonMaster) {
             ((DungeonMaster) dungeonObject).interact(this);
         } else if (dungeonObject instanceof Guard) {
@@ -87,6 +94,8 @@ public class Player extends DungeonCharacter {
         } else if (dungeonObject instanceof Ghost) {
             ((Ghost) dungeonObject).interact(this);
         }
+        
+        return Collections.emptyList();
     }
 
     @Override
@@ -95,25 +104,34 @@ public class Player extends DungeonCharacter {
     }
 
     @Override
-    public void move(Direction direction, DungeonSpace[][] dungeon) {
+    public List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon) {
 
-        DungeonSpace currentDungeonSpace
-                = dungeon[getPosition().getPositionY()][getPosition().getPositionX()];
+        DungeonSpace currentDungeonSpace = getDungeonSpace();
         Position nextPosition = determineNextPosition(direction);
 
         if (nextPosition.getPositionX() < 0 || nextPosition.getPositionX() >= dungeon.length
                 || nextPosition.getPositionY() < 0 || nextPosition.getPositionY() >= dungeon.length) {
             NotificationManager.notify(new WinNotification());
-            return;
+            return Collections.emptyList();
         }
         DungeonSpace nextDungeonSpace = dungeon[nextPosition.getPositionY()][nextPosition.getPositionX()];
-        
+
         if (nextDungeonSpace.containsWall()) {
             throw new UnsupportedOperationException("Cannot move into a wall.");
         }
-        
-        nextDungeonSpace.addDungeonObject(this);
+
+        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        objectTracks.addAll(nextDungeonSpace.addDungeonObject(this));
+        setPreviousDungeonSpace(currentDungeonSpace);
         currentDungeonSpace.removeDungeonObject(this);
+
+        
+        objectTracks.add(new DungeonObjectTrack(getPreviousDungeonSpace().getPosition(),
+                getPreviousDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
+        objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
+        objectTracks.addAll(revealMapForMove(direction, dungeon));
+
+        return objectTracks;
     }
 
     private Position determineNextPosition(Direction direction) {
@@ -133,6 +151,106 @@ public class Player extends DungeonCharacter {
                 NotificationManager.notify(new ActionNotAllowedNotification(errorMessage));
         }
         return null;
+    }
+
+    private List<DungeonObjectTrack> revealMapForMove(Direction direction, DungeonSpace[][] dungeon) {
+        List<DungeonObjectTrack> revealedDungeonSpaces = new ArrayList<>();
+        int exposeRow, exposeCol, fromCol, toCol, fromRow, toRow;
+        switch (direction) {
+            case NORTH:
+                //reveal northern row
+                exposeRow = getPosition().getPositionY() - playerVisibility;
+                if (exposeRow < 0) {
+                    break;
+                }
+
+                fromCol = getPosition().getPositionX() - playerVisibility;
+                toCol = getPosition().getPositionX() + playerVisibility;
+                for (int col = fromCol; col <= toCol; col++) {
+                    if (col >= 0 && col < dungeon.length) {
+                        dungeon[exposeRow][col].setVisible(true);
+                        revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(col, exposeRow),
+                                dungeon[exposeRow][col].getVisibleDungeonSpaceType().getValueString()));
+                    }
+                }
+                break;
+            case SOUTH:
+                //reveal southern row
+                exposeRow = getPosition().getPositionY() + playerVisibility;
+                if (exposeRow >= dungeon.length) {
+                    break;
+                }
+
+                fromCol = getPosition().getPositionX() - playerVisibility;
+                toCol = getPosition().getPositionX() + playerVisibility;
+                for (int col = fromCol; col <= toCol; col++) {
+                    if (col >= 0 && col < dungeon.length) {
+                        dungeon[exposeRow][col].setVisible(true);
+                        revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(col, exposeRow),
+                                dungeon[exposeRow][col].getVisibleDungeonSpaceType().getValueString()));
+                    }
+                }
+                break;
+            case EAST:
+                //reveal eastern row
+                exposeCol = getPosition().getPositionX() + playerVisibility;
+                if (exposeCol >= dungeon.length) {
+                    break;
+                }
+
+                fromRow = getPosition().getPositionY() - playerVisibility;
+                toRow = getPosition().getPositionY() + playerVisibility;
+                for (int row = fromRow; row <= toRow; row++) {
+                    if (row >= 0 && row < dungeon.length) {
+                        dungeon[row][exposeCol].setVisible(true);
+                        revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(exposeCol, row),
+                                dungeon[row][exposeCol].getVisibleDungeonSpaceType().getValueString()));
+                    }
+                }
+                break;
+            case WEST:
+                //reveal western row
+                exposeCol = getPosition().getPositionX() - playerVisibility;
+                if (exposeCol < 0) {
+                    break;
+                }
+
+                fromRow = getPosition().getPositionY() - playerVisibility;
+                toRow = getPosition().getPositionY() + playerVisibility;
+                for (int row = fromRow; row <= toRow; row++) {
+                    if (row >= 0 && row < dungeon.length) {
+                        dungeon[row][exposeCol].setVisible(true);
+                        revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(exposeCol, row),
+                                dungeon[row][exposeCol].getVisibleDungeonSpaceType().getValueString()));
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+
+        return revealedDungeonSpaces;
+    }
+
+    public List<DungeonObjectTrack> revealCurrentMapArea() {
+        int northStart = getPosition().getPositionY() - playerVisibility;
+        int westStart = getPosition().getPositionX() - playerVisibility;
+        int southEnd = getPosition().getPositionY() + playerVisibility;
+        int eastEnd = getPosition().getPositionX() + playerVisibility;
+        
+        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        for (int row = northStart; row <= southEnd; row++) {
+            for (int col = westStart; col <= eastEnd; col++) {
+                DungeonSpace dungeonSpace = dungeon.getDungeon()[row][col];
+                if (!dungeonSpace.isVisible()) {
+                dungeonSpace.setVisible(true);
+                objectTracks.add(new DungeonObjectTrack(dungeonSpace.getPosition(), 
+                        dungeonSpace.getVisibleDungeonSpaceType().getValueString()));
+                }
+            }
+        }
+        
+        return objectTracks;
     }
 
     @Override

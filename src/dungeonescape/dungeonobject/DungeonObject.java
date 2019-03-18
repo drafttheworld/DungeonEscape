@@ -8,6 +8,7 @@ package dungeonescape.dungeonobject;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import dungeonescape.space.Position;
+import java.util.List;
 
 /**
  *
@@ -33,7 +34,7 @@ public abstract class DungeonObject {
         return dungeonSpace.getPosition();
     }
     
-    public abstract void interact(DungeonObject dungeonObject);
+    public abstract List<DungeonObjectTrack> interact(DungeonObject dungeonObject);
     public abstract DungeonSpaceType getDungeonSpaceType();    
     
 }

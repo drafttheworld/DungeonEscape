@@ -40,10 +40,9 @@ public class DungeonTable extends JTable {
     }
 
     private void initTable() {
-        String player = gameSession.getDungeonConfiguration().getPlayerNames().get(0);
         int dungeonSize = gameSession.getDungeonConfiguration().getDungeonWidth();
 
-        String[][] rows = populateMapRows(gameSession.getPlayerMap(player), dungeonSize);
+        String[][] rows = populateMapRows(gameSession.getPlayerMap(), dungeonSize);
         for (int row = 0; row < dungeonSize; row++) {
             for (int col = 0; col < dungeonSize; col++) {
                 if (DungeonSpaceType.PLAYER.getValueString().equals(rows[row][col])) {
@@ -108,19 +107,11 @@ public class DungeonTable extends JTable {
     }
 
     protected void updateMap(List<DungeonObjectTrack> dungeonObjectTracks) {
-        dungeonObjectTracks.parallelStream().forEach(dungeonObjectTrack -> {            
-            String mapSymbol;
-            int row, col;
-            if (dungeonObjectTrack.getPreviousPosition() != null) {
-                mapSymbol = dungeonObjectTrack.getPreviousPositionSymbol();
-                row = dungeonObjectTrack.getPreviousPosition().getPositionY();
-                col = dungeonObjectTrack.getPreviousPosition().getPositionX();
-                this.setValueAt(mapSymbol, row, col);
-            }
+        dungeonObjectTracks.parallelStream().forEach(dungeonObjectTrack -> {
 
-            mapSymbol = dungeonObjectTrack.getCurrentPositionSymbol();
-            row = dungeonObjectTrack.getCurrentPosition().getPositionY();
-            col = dungeonObjectTrack.getCurrentPosition().getPositionX();
+            String mapSymbol = dungeonObjectTrack.getDungeonSpaceSymbol();
+            int row = dungeonObjectTrack.getPosition().getPositionY();
+            int col = dungeonObjectTrack.getPosition().getPositionX();
             this.setValueAt(mapSymbol, row, col);
 
             if (DungeonSpaceType.PLAYER.getValueString().equals(mapSymbol)) {

@@ -6,10 +6,14 @@
 package dungeonescape.dungeonobject.characters;
 
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -71,13 +75,15 @@ public class Ghost extends DungeonCharacter {
     }
 
     @Override
-    public void interact(DungeonObject dungeonObject) {
+    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTime(freezeTime);
             System.out.println("You were attacked by a ghost, added frozen time.");
             getDungeonSpace().removeDungeonObject(this);
             super.setActive(false);
         }
+        
+        return Collections.emptyList();
     }
 
     @Override
@@ -86,9 +92,22 @@ public class Ghost extends DungeonCharacter {
     }
 
     @Override
-    public void move(Direction direction, DungeonSpace[][] dungeon) {
+    public List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon) {
+        
+        DungeonSpace previousDungeonSpace = getDungeonSpace();
+        
         CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), 
                 getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
+        
+        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        if (previousDungeonSpace.isVisible()) {
+            objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(), 
+                    previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
+        }
+        if (getDungeonSpace().isVisible()) {
+            objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
+        }
+        return objectTracks;
     }
 
     @Override

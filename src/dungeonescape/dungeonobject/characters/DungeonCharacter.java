@@ -6,8 +6,10 @@
 package dungeonescape.dungeonobject.characters;
 
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
+import java.util.List;
 
 /**
  *
@@ -61,7 +63,7 @@ public abstract class DungeonCharacter extends DungeonObject {
         this.active = active;
     }
     
-    public abstract void move(Direction direction, DungeonSpace[][] dungeon);
+    public abstract List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon);
     public abstract boolean canOccupySpace(DungeonSpace dungeonSpace);
     
 }

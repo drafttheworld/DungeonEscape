@@ -13,57 +13,19 @@ import dungeonescape.space.Position;
  */
 public class DungeonObjectTrack {
     
-    private Position previousPosition;
-    private String previousPositionSymbol;
-    private String currentPositionSymbol;
-    private DungeonObject dungeonObject;
+    private final Position position;
+    private final String dungeonSpaceSymbol;
     
-    public DungeonObjectTrack(DungeonObject dungeonObject, String currentPositionSymbol) {
-        this.dungeonObject = dungeonObject;
-        this.currentPositionSymbol = currentPositionSymbol;
+    public DungeonObjectTrack(Position position, String dungeonSpaceSymbol) {
+        this.position = position;
+        this.dungeonSpaceSymbol = dungeonSpaceSymbol;
     }
 
-    public Position getPreviousPosition() {
-        return previousPosition;
-    }
-    
-    public void setPreviousPosition(Position previousPosition) {
-        this.previousPosition = previousPosition;
+    public Position getPosition() {
+        return position;
     }
 
-    public void setPreviousPositionSymbol(String previousPositionSymbol) {
-        this.previousPositionSymbol = previousPositionSymbol;
-    }
-    
-    public String getPreviousPositionSymbol() {
-        return previousPositionSymbol;
-    }
-    
-    public String getCurrentPositionSymbol() {
-        return currentPositionSymbol;
-    }
-
-    public void setCurrentPositionSymbol(String currentPositionSymbol) {
-        this.currentPositionSymbol = currentPositionSymbol;
-    }
-
-    public Position getCurrentPosition() {
-        return dungeonObject.getPosition();
-    }
-
-    public DungeonObject getDungeonObject() {
-        return dungeonObject;
-    }
-
-    public void setDungeonObject(DungeonObject dungeonObject) {
-        this.dungeonObject = dungeonObject;
-    }
-    
-    public boolean isMoved() {
-        if (previousPosition == null) {
-            return true;
-        }
-        return !previousPosition.equals(dungeonObject.getPosition());
-    }
-    
+    public String getDungeonSpaceSymbol() {
+        return dungeonSpaceSymbol;
+    }    
 }

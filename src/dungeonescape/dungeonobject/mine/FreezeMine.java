@@ -7,8 +7,11 @@ package dungeonescape.dungeonobject.mine;
 
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.space.DungeonSpaceType;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,11 +43,12 @@ public class FreezeMine extends Mine {
     }
 
     @Override
-    public void interact(DungeonObject dungeonObject) {
+    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTime(freezeTime);
             setActive(false);
         }
+        return Collections.emptyList();
     }
 
     @Override

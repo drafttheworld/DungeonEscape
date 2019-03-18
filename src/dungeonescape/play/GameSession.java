@@ -8,11 +8,12 @@ package dungeonescape.play;
 import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
+import dungeonescape.dungeonobject.FreezeTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -28,10 +29,6 @@ public class GameSession {
     private Map<String, Integer> turnCounts;
 
     public GameSession(DungeonConfiguration dungeonConfiguration) {
-        if (!dungeonConfiguration.enemyAndMinePercentagesAreValid()) {
-            throw new IllegalArgumentException("Enemy and mine percentages must "
-                    + "total between 0 and 100");
-        }
         this.dungeonConfiguration = dungeonConfiguration;
 
         dungeon = new Dungeon(dungeonConfiguration);
@@ -52,20 +49,15 @@ public class GameSession {
 
     public List<DungeonObjectTrack> movePlayerGui(Direction direction, String playerName) {
         movePlayer(direction, playerName);
-        return dungeon.getDungeonObjectTracks()
-                .stream()
-                .filter(track -> track.isMoved())
-                .collect(Collectors.toList());
+        return dungeon.getDungeonObjectTracks();
     }
 
     public String movePlayerHeadless(Direction direction, String playerName) {
         movePlayer(direction, playerName);
-        return dungeon.generatePlayerMiniMap(playerName);
+        return dungeon.generatePlayerMap();
     }
 
     private void movePlayer(Direction direction, String playerName) {
-        
-
         dungeon.movePlayer(direction, playerName);
 
         Integer turnCount = turnCounts.get(playerName) + 1;
@@ -76,8 +68,19 @@ public class GameSession {
         }
     }
 
-    public String getPlayerMap(String playerName) {
-        String miniMap = dungeon.generatePlayerMiniMap(playerName);
+    public String getPlayerStats(String playerName) {
+        StringBuilder playerStats = new StringBuilder("Stats for ").append(playerName).append(":\n")
+                .append("Dungeon time: ").append(dungeon.getDungeonTimeElapsed()).append("\n")
+                .append("Frozen time remaining: ");
+        FreezeTime freezeTime = dungeon.getPlayer(playerName).getFrozenTimeRemaining();
+        playerStats.append(freezeTime.getFreezeTimeForTimeUnit(TimeUnit.MINUTES))
+                .append(" ").append(TimeUnit.MINUTES)
+                .append("\n");
+        return playerStats.toString();
+    }
+
+    public String getPlayerMap() {
+        String miniMap = dungeon.generatePlayerMap();
 //        System.out.println(miniMap);
         return miniMap;
     }

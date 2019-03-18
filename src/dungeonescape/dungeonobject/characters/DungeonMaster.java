@@ -10,10 +10,15 @@ import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.space.Position;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -25,11 +30,11 @@ public class DungeonMaster extends DungeonCharacter {
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
     public static int DEFAULT_DETECTION_DISTANCE = 8;
 
-    public static final String CAPTURE_NOTIFICATION 
+    public static final String CAPTURE_NOTIFICATION
             = "You have been caught and executed by a DUNGEON MASTER!";
 
     private int detectionDistance;
-    
+
     public DungeonMaster() {
         super.setActive(true);
     }
@@ -78,7 +83,7 @@ public class DungeonMaster extends DungeonCharacter {
      * @throws GameNotification
      */
     @Override
-    public void interact(DungeonObject dungeonObject) {
+    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Construction) {
             NotificationManager.notify(
                     new ActionNotAllowedNotification("A dungeon master cannot move "
@@ -91,6 +96,8 @@ public class DungeonMaster extends DungeonCharacter {
             NotificationManager.notify(
                     new LossNotification(CAPTURE_NOTIFICATION));
         }
+        
+        return Collections.emptyList();
     }
 
     /**
@@ -101,12 +108,26 @@ public class DungeonMaster extends DungeonCharacter {
      *
      * @param direction
      * @param dungeon
+     * @return
      * @throws GameNotification
      */
     @Override
-    public void move(Direction direction, DungeonSpace[][] dungeon) {
-        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), 
+    public List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon) {
+
+        DungeonSpace previousDungeonSpace = getDungeonSpace();
+        
+        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
                 getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
+
+        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        if (getPreviousDungeonSpace().isVisible()) {
+            objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(),
+                    previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
+        }
+        if (getDungeonSpace().isVisible()) {
+            objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
+        }
+        return objectTracks;
     }
 
     @Override

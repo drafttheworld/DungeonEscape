@@ -113,12 +113,12 @@ public class CharacterActionUtil {
         List<DungeonSpace> path = EnemyPathfinder.findShortestPathForEnemy(dungeon, enemy, player);
 //        printPath(path);
         if (!path.isEmpty()) {
-        int nextDungeonSpaceIndex = path.size() < numberOfMoves ? path.size() - 1 : numberOfMoves - 1;
-        DungeonSpace nextDungeonSpace = path.get(nextDungeonSpaceIndex);
-        DungeonSpace currentDungeonSpace = enemy.getDungeonSpace();
-        enemy.getDungeonSpace().removeDungeonObject(enemy);
-        enemy.setPreviousDungeonSpace(currentDungeonSpace);
-        nextDungeonSpace.addDungeonObject(enemy);
+            int nextDungeonSpaceIndex = path.size() < numberOfMoves ? path.size() - 1 : numberOfMoves - 1;
+            DungeonSpace nextDungeonSpace = path.get(nextDungeonSpaceIndex);
+            DungeonSpace currentDungeonSpace = enemy.getDungeonSpace();
+            nextDungeonSpace.addDungeonObject(enemy);
+            enemy.setPreviousDungeonSpace(currentDungeonSpace);
+            currentDungeonSpace.removeDungeonObject(enemy);
         } else {
             System.out.println("Unable to find path to player.");
             patrol(dungeon, enemy);
@@ -146,16 +146,17 @@ public class CharacterActionUtil {
         DungeonSpace nextDungeonSpace = determineNextPatrolSpace(dungeon, enemy);
         if (nextDungeonSpace == null) {
             NotificationManager.notify(
-            new ActionNotAllowedNotification("Unable to find next patrol space for "
-                    + enemy.getClass().getSimpleName() + " at [" + enemy.getPosition().getPositionX() + ","
-                    + enemy.getPosition().getPositionY() + "]"));
+                    new ActionNotAllowedNotification("Unable to find next patrol space for "
+                            + enemy.getClass().getSimpleName() + " at [" + enemy.getPosition().getPositionX() + ","
+                            + enemy.getPosition().getPositionY() + "]"));
             return;
         }
 
         DungeonSpace currentDungeonSpace = enemy.getDungeonSpace();
-        enemy.getDungeonSpace().removeDungeonObject(enemy);
-        enemy.setPreviousDungeonSpace(currentDungeonSpace);
+        
         nextDungeonSpace.addDungeonObject(enemy);
+        enemy.setPreviousDungeonSpace(currentDungeonSpace);
+        currentDungeonSpace.removeDungeonObject(enemy);
     }
 
     private static DungeonSpace determineNextPatrolSpace(DungeonSpace[][] dungeon, DungeonCharacter enemy) {

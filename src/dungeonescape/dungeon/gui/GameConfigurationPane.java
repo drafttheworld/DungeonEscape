@@ -6,13 +6,12 @@
 package dungeonescape.dungeon.gui;
 
 import dungeonescape.dungeon.DungeonConfiguration;
-import dungeonescape.play.DungeonSize;
 import dungeonescape.play.GameDifficulty;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import javax.swing.Box;
+import java.text.NumberFormat;
+import java.util.Locale;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -25,10 +24,8 @@ import javax.swing.JScrollPane;
  * @author Andrew
  */
 public class GameConfigurationPane extends JPanel {
-    
-    private static final String DUNGEON_SIZE_PREFIX = "Dungeon width: ";
-    
-    DungeonEscapeGUI application;
+
+    DungeonEscapeGUI applicationGUI;
 
     JComboBox gameDifficultyComboBox;
     JComboBox dungeonSizeComboBox;
@@ -36,8 +33,8 @@ public class GameConfigurationPane extends JPanel {
     JScrollPane dungeonSettingsScrollPane;
     JLabel dungeonSizeValue;
 
-    public GameConfigurationPane(DungeonEscapeGUI application) {
-        this.application = application;
+    public GameConfigurationPane(DungeonEscapeGUI applicationGUI) {
+        this.applicationGUI = applicationGUI;
         init();
     }
 
@@ -65,32 +62,15 @@ public class GameConfigurationPane extends JPanel {
 
         gameDifficultyPanel.add(dungeonSettingsScrollPane, BorderLayout.CENTER);
 
-        JPanel dungeonSizePanel = new JPanel();
-        dungeonSizePanel.setLayout(new BorderLayout());
-        JPanel northPanel = new JPanel();
-        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.PAGE_AXIS));
-        dungeonSizeComboBox = new JComboBox(DungeonSize.values());
-        dungeonSizeComboBox.addItemListener((ItemEvent e) -> {
-            dungeonSizeValue.setText(DUNGEON_SIZE_PREFIX + ((DungeonSize) e.getItem()).getDungeonWidth());
-        });
-        northPanel.add(dungeonSizeComboBox);
-
-        dungeonSizeValue = new JLabel(DUNGEON_SIZE_PREFIX + ((DungeonSize) dungeonSizeComboBox.getSelectedItem()).getDungeonWidth());
-        northPanel.add(dungeonSizeValue);
-        dungeonSizePanel.add(northPanel, BorderLayout.NORTH);
-
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.LINE_AXIS));
         centerPanel.add(gameDifficultyPanel);
-        centerPanel.add(Box.createHorizontalStrut(5));
-        centerPanel.add(dungeonSizePanel);
 
         JButton startGameButton = new JButton("Start Game");
         startGameButton.addActionListener((ActionEvent e) -> {
-            application.startNewGame((GameDifficulty) gameDifficultyComboBox.getSelectedItem(), 
-                    (DungeonSize) dungeonSizeComboBox.getSelectedItem());
+            applicationGUI.startNewGame((GameDifficulty) gameDifficultyComboBox.getSelectedItem());
         });
-        
+
         add(centerPanel, BorderLayout.CENTER);
         add(startGameButton, BorderLayout.SOUTH);
     }
@@ -98,53 +78,57 @@ public class GameConfigurationPane extends JPanel {
     private JPanel generateGameDifficultySettingsPanel(GameDifficulty gameDifficulty) {
         DungeonConfiguration dungeonConfiguration = gameDifficulty.getDungeonConfiguration();
         JLabel dungeon = new JLabel("Dungeon:");
+        int dungeonWidth = dungeonConfiguration.getDungeonWidth();
+        String dungeonSpaces = NumberFormat.getNumberInstance(Locale.US).format(dungeonWidth * dungeonWidth);
+        JLabel dungeonSize = new JLabel("Dungeon Size: " + dungeonWidth + " X " + dungeonWidth + " (" + dungeonSpaces + " spaces)");
         JLabel playerVisibility = new JLabel("Player visibility: " + dungeonConfiguration.getPlayerVisibility());
         JLabel dungeonExitCount = new JLabel("Dungeon exits: " + dungeonConfiguration.getDungeonExitCount());
         JLabel enemies = new JLabel("Enemies:");
-        JLabel dungeonMasterPercentage = new JLabel("Dungeon master percentage: " + dungeonConfiguration.getDungeonMasterPercentage());
+        JLabel dungeonMasterCount = new JLabel("Dungeon master count: " + dungeonConfiguration.getDungeonMasterCount());
         JLabel dungeonMasterNumberOfMovesWhenPatrolling = new JLabel("Dungeon master patrol moves: " + dungeonConfiguration.getDungeonMasterNumberOfMovesWhenPatrolling());
         JLabel dungeonMasterNumberOfMovesWhenHunting = new JLabel("Dungeon master hunting moves: " + dungeonConfiguration.getDungeonMasterNumberOfMovesWhenHunting());
         JLabel dungeonMasterDetectionDistance = new JLabel("Dungeon master detection range: " + dungeonConfiguration.getDungeonMasterDetectionDistance());
         JLabel spawnDungeonMastersTurnCount = new JLabel("Dungeon master spawn at turn: " + dungeonConfiguration.getSpawnDungeonMastersTurnCount());
-        JLabel guardPercentage = new JLabel("Guard percentage: " + dungeonConfiguration.getGuardPercentage());
+        JLabel guardCount = new JLabel("Guard count: " + dungeonConfiguration.getGuardCount());
         JLabel guardNumberOfMovesWhenPatrolling = new JLabel("Guard patrol moves: " + dungeonConfiguration.getGuardNumberOfMovesWhenPatrolling());
         JLabel guardNumberOfMovesWhenHunting = new JLabel("Guard hunting moves: " + dungeonConfiguration.getGuardNumberOfMovesWhenHunting());
         JLabel guardDetectionDistance = new JLabel("Guard detection range: " + dungeonConfiguration.getGuardDetectionDistance());
-        JLabel ghostPercentage = new JLabel("Ghost percentage: " + dungeonConfiguration.getGhostPercentage());
+        JLabel ghostCount = new JLabel("Ghost count: " + dungeonConfiguration.getGhostCount());
         JLabel ghostNumberOfMovesWhenPatrolling = new JLabel("Ghost patrol moves: " + dungeonConfiguration.getGhostNumberOfMovesWhenPatrolling());
         JLabel ghostNumberOfMovesWhenHunting = new JLabel("Ghost hunting moves: " + dungeonConfiguration.getGhostNumberOfMovesWhenHunting());
         JLabel ghostDetectionDistance = new JLabel("Ghost detection range: " + dungeonConfiguration.getGhostDetectionDistance());
         JLabel ghostFreezeTime = new JLabel("Ghost " + dungeonConfiguration.getGhostFreezeTime().toString());
         JLabel mines = new JLabel("Mines:");
-        JLabel freezeMinePercentage = new JLabel("Freeze mine percentage: " + dungeonConfiguration.getFreezeMinePercentage());
-        JLabel maxFreezeMineTime = new JLabel("Freeze mine max " + dungeonConfiguration.getMaxFreezeMineTime());
-        JLabel teleportMinePercentage = new JLabel("Teleport mine percentage: " + dungeonConfiguration.getTeleportMinePercentage());
+        JLabel freezeMineCount = new JLabel("Freeze mine count: " + dungeonConfiguration.getFreezeMineCount());
+        JLabel freezeMineMaxFreezeTime = new JLabel("Freeze mine max " + dungeonConfiguration.getFreezeMineMaxFreezeTime());
+        JLabel teleportMineCount = new JLabel("Teleport mine count: " + dungeonConfiguration.getTeleportMineCount());
 
         JPanel configurationPanel = new JPanel();
         configurationPanel.setLayout(new BoxLayout(configurationPanel, BoxLayout.PAGE_AXIS));
 
         configurationPanel.add(dungeon);
+        configurationPanel.add(dungeonSize);
         configurationPanel.add(playerVisibility);
         configurationPanel.add(dungeonExitCount);
         configurationPanel.add(enemies);
-        configurationPanel.add(dungeonMasterPercentage);
+        configurationPanel.add(dungeonMasterCount);
         configurationPanel.add(dungeonMasterNumberOfMovesWhenPatrolling);
         configurationPanel.add(dungeonMasterNumberOfMovesWhenHunting);
         configurationPanel.add(dungeonMasterDetectionDistance);
         configurationPanel.add(spawnDungeonMastersTurnCount);
-        configurationPanel.add(guardPercentage);
+        configurationPanel.add(guardCount);
         configurationPanel.add(guardNumberOfMovesWhenPatrolling);
         configurationPanel.add(guardNumberOfMovesWhenHunting);
         configurationPanel.add(guardDetectionDistance);
-        configurationPanel.add(ghostPercentage);
+        configurationPanel.add(ghostCount);
         configurationPanel.add(ghostNumberOfMovesWhenPatrolling);
         configurationPanel.add(ghostNumberOfMovesWhenHunting);
         configurationPanel.add(ghostDetectionDistance);
         configurationPanel.add(ghostFreezeTime);
         configurationPanel.add(mines);
-        configurationPanel.add(freezeMinePercentage);
-        configurationPanel.add(maxFreezeMineTime);
-        configurationPanel.add(teleportMinePercentage);
+        configurationPanel.add(freezeMineCount);
+        configurationPanel.add(freezeMineMaxFreezeTime);
+        configurationPanel.add(teleportMineCount);
 
         return configurationPanel;
     }

@@ -9,11 +9,15 @@ import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.InteractionNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -69,7 +73,8 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     }
 
     @Override
-    public void interact(DungeonObject dungeonObject) {
+    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
+        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         if (dungeonObject instanceof Construction) {
             NotificationManager.notify(
                     new ActionNotAllowedNotification("Guards cannot move through obstacles."));
@@ -77,12 +82,14 @@ public class Guard extends DungeonCharacter implements TeleportObject {
             NotificationManager.notify(
                     new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master."));
         } else if (dungeonObject instanceof Player) {
-            teleport(dungeonObject);
+            objectTracks.addAll(teleport(dungeonObject));
             getDungeonSpace().removeDungeonObject(this);
             super.setActive(false);
             NotificationManager.notify(
                     new InteractionNotification("A guard has caught you and moved you back to your cell."));
         }
+        
+        return Collections.emptyList();
     }
 
     @Override
@@ -91,9 +98,22 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     }
 
     @Override
-    public void move(Direction direction, DungeonSpace[][] dungeon) {
-        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), 
+    public List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon) {
+        
+        DungeonSpace previousDungeonSpace = getDungeonSpace();
+        
+        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
                 getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
+
+        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        if (previousDungeonSpace.isVisible()) {
+            objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(),
+                    previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
+        }
+        if (getDungeonSpace().isVisible()) {
+            objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
+        }
+        return objectTracks;
     }
 
     @Override
@@ -107,13 +127,24 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     }
 
     @Override
-    public void teleport(DungeonObject dungeonObject) {
+    public List<DungeonObjectTrack> teleport(DungeonObject dungeonObject) {
         Player player = (Player) dungeonObject;
         
+        DungeonObjectTrack oldPlayerLocation = new DungeonObjectTrack(player.getPosition(), 
+                player.getDungeonSpace().getVisibleDungeonSpaceType().getValueString());
+
         //move the player and then remove the player from the previous location
         DungeonSpace currentSpace = player.getDungeonSpace();
         jailCellSpace.addDungeonObject(player);
         currentSpace.removeDungeonObject(player);
+        
+        DungeonObjectTrack newPlayerLocation = new DungeonObjectTrack(player.getPosition(), 
+                player.getDungeonSpace().getVisibleDungeonSpaceType().getValueString());
+        
+        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        objectTracks.add(oldPlayerLocation);
+        objectTracks.add(newPlayerLocation);
+        return objectTracks;
     }
 
 }

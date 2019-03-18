@@ -133,7 +133,7 @@ public class EnemyPathfinder {
             addNextPathNode(row, col - 1, dungeonArea, visited, pathNode, pathQueue);
         }
 
-        printDungeonArea(dungeonArea);
+//        printDungeonArea(dungeonArea);
         return Collections.emptyList();
     }
 

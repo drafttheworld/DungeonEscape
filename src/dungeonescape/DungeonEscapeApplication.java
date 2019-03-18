@@ -9,7 +9,6 @@ import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeon.gui.DungeonEscapeGUI;
 import dungeonescape.dungeon.notifications.ExecutionErrorNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
-import dungeonescape.play.DungeonSize;
 import dungeonescape.play.GameDifficulty;
 import dungeonescape.play.GameSession;
 import java.io.IOException;
@@ -30,20 +29,22 @@ public class DungeonEscapeApplication {
         return gameSession;
     }
 
-    //TODO: Create specific configurations
-    public GameSession startNewGame(String playerName, GameDifficulty gameDifficulty,
-            DungeonSize dungeonSize) {
+    public GameSession startNewGame(String playerName, GameDifficulty gameDifficulty) {
         GameSession gameSession = null;
         try {
             DungeonConfiguration dungeonConfiguration = gameDifficulty.getDungeonConfiguration()
-                    .playerName(playerName)
-                    .dungeonWidth(dungeonSize.getDungeonWidth());
+                    .playerName(playerName);
             gameSession = new GameSession(dungeonConfiguration);
             gameSessions.put(gameSession.getSessionId(), gameSession);
         } catch (RuntimeException e) {
+            System.out.println(e);
             NotificationManager.notify(new ExecutionErrorNotification(e.getMessage()));
         }
         return gameSession;
+    }
+    
+    public void startGameGUI() throws IOException {
+        new DungeonEscapeGUI(this).setVisible(true);
     }
 
     public GameSession getGameSession(String gameSessionId) {
@@ -59,7 +60,7 @@ public class DungeonEscapeApplication {
     }
 
     public static void main(String[] args) throws IOException {
-        new DungeonEscapeGUI().setVisible(true);
+        new DungeonEscapeApplication().startGameGUI();
     }
 
 }

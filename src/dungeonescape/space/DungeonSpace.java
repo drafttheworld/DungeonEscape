@@ -6,6 +6,7 @@
 package dungeonescape.space;
 
 import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.dungeonobject.construction.Construction;
@@ -27,6 +28,7 @@ public class DungeonSpace {
 
     public DungeonSpace(Position position) {
         this.position = position;
+        visible = false;
         dungeonObjects = new ArrayList<>();
     }
 
@@ -54,7 +56,8 @@ public class DungeonSpace {
         return Collections.unmodifiableList(dungeonObjects);
     }
 
-    public void addDungeonObject(DungeonObject dungeonObject) {
+    public List<DungeonObjectTrack> addDungeonObject(DungeonObject dungeonObject) {
+        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         if (dungeonObject != null) {
             boolean isTeleported = false;
             Iterator<DungeonObject> existingDungeonObjects = dungeonObjects.iterator();
@@ -66,7 +69,7 @@ public class DungeonSpace {
                         && dungeonObject instanceof TeleportObject)) {
                     isTeleported = true;
                 }
-                existingDungeonObject.interact(dungeonObject);
+                objectTracks.addAll(existingDungeonObject.interact(dungeonObject));
 
                 if (dungeonObject instanceof Player && existingDungeonObject instanceof Mine) {
                     existingDungeonObjects.remove();
@@ -75,12 +78,25 @@ public class DungeonSpace {
 
             if (!isTeleported) {
                 dungeonObject.setDungeonSpace(this);
-                dungeonObjects.add(dungeonObject);
-            }
+                if (!this.isEmpty()) {
+                    DungeonObject tailObject = this.getDungeonObjects()
+                            .get(this.getDungeonObjects().size() - 1);
+                    if (tailObject instanceof Player) {
+                        dungeonObjects.add(this.getDungeonObjects().size() - 2, dungeonObject);
+                    } else {
+                        dungeonObjects.add(dungeonObject);
+                    }
+                } else {
+                    dungeonObjects.add(dungeonObject);
+                }
+            
         }
     }
 
-    public void removeDungeonObject(DungeonObject dungeonObject) {
+    return objectTracks ;
+}
+
+public void removeDungeonObject(DungeonObject dungeonObject) {
         dungeonObjects.remove(dungeonObject);
     }
 
@@ -94,7 +110,9 @@ public class DungeonSpace {
     }
 
     public DungeonSpaceType getVisibleDungeonSpaceType() {
-        if (dungeonObjects.isEmpty()) {
+        if (!visible) {
+            return DungeonSpaceType.NON_VISIBLE_SPACE;
+        } else if (dungeonObjects.isEmpty()) {
             return DungeonSpaceType.OPEN_SPACE;
         }
 
@@ -107,12 +125,7 @@ public class DungeonSpace {
     }
 
     public char getVisibleSpaceSymbol() {
-        char visibleSpaceSymbol = DungeonSpaceType.OPEN_SPACE.getValue();
-        if (!dungeonObjects.isEmpty()) {
-            visibleSpaceSymbol = dungeonObjects.get(dungeonObjects.size() - 1).getDungeonSpaceType().getValue();
-        }
-
-        return visibleSpaceSymbol;
+        return getVisibleDungeonSpaceType().getValue();
     }
 
     public boolean containsWall() {

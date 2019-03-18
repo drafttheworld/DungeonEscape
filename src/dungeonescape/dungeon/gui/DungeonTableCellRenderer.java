@@ -31,7 +31,7 @@ public class DungeonTableCellRenderer extends DefaultTableCellRenderer {
     static {
         try {
             images = new ImageIcon[]{
-                new ImageIcon(getImage(CONSTRUCTION_IMAGES_DIRECTORY + "wall.png")),
+                new ImageIcon(getImage(CONSTRUCTION_IMAGES_DIRECTORY + "stone_wall.png")),
                 new ImageIcon(getImage(CONSTRUCTION_IMAGES_DIRECTORY + "open_space.png")),
                 new ImageIcon(getImage(CONSTRUCTION_IMAGES_DIRECTORY + "nonvisible_space.png")),
                 new ImageIcon(getImage(MINE_IMAGES_DIRECTORY + "freeze_mine.png")),
@@ -46,8 +46,7 @@ public class DungeonTableCellRenderer extends DefaultTableCellRenderer {
     }
 
     @Override
-    public void setValue(Object value
-    ) {
+    public void setValue(Object value) {
 
         if (value == null) {
             System.out.println("setValue value is null.");
