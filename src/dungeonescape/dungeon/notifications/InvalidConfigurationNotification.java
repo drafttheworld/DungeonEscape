@@ -11,8 +11,15 @@ package dungeonescape.dungeon.notifications;
  */
 public class InvalidConfigurationNotification extends GameNotification {
     
+    private static final String NOTIFICATION = "Invalid configuration: ";
+    
     public InvalidConfigurationNotification(String message) {
         super(message);
+    }
+    
+    @Override
+    public String getNotificationMessage() {
+        return NOTIFICATION + super.getNotificationMessage();
     }
     
 }

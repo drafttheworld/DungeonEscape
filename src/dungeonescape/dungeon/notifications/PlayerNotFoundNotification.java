@@ -11,8 +11,15 @@ package dungeonescape.dungeon.notifications;
  */
 public class PlayerNotFoundNotification extends GameNotification {
     
+    private static final String NOTIFICATION = "Player not found: ";
+    
     public PlayerNotFoundNotification(String message) {
         super(message);
+    }
+    
+    @Override
+    public String getNotificationMessage() {
+        return NOTIFICATION + super.getNotificationMessage();
     }
     
 }

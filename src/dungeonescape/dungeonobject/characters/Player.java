@@ -87,15 +87,16 @@ public class Player extends DungeonCharacter {
 
     @Override
     public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
+        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         if (dungeonObject instanceof DungeonMaster) {
-            ((DungeonMaster) dungeonObject).interact(this);
+            objectTracks.addAll(((DungeonMaster) dungeonObject).interact(this));
         } else if (dungeonObject instanceof Guard) {
-            ((Guard) dungeonObject).interact(this);
+            objectTracks.addAll(((Guard) dungeonObject).interact(this));
         } else if (dungeonObject instanceof Ghost) {
-            ((Ghost) dungeonObject).interact(this);
+            objectTracks.addAll(((Ghost) dungeonObject).interact(this));
         }
         
-        return Collections.emptyList();
+        return objectTracks;
     }
 
     @Override
@@ -117,7 +118,7 @@ public class Player extends DungeonCharacter {
         DungeonSpace nextDungeonSpace = dungeon[nextPosition.getPositionY()][nextPosition.getPositionX()];
 
         if (nextDungeonSpace.containsWall()) {
-            throw new UnsupportedOperationException("Cannot move into a wall.");
+            return Collections.emptyList();
         }
 
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
@@ -234,9 +235,24 @@ public class Player extends DungeonCharacter {
 
     public List<DungeonObjectTrack> revealCurrentMapArea() {
         int northStart = getPosition().getPositionY() - playerVisibility;
+        if (northStart < 0) {
+            northStart = 0;
+        }
+        
         int westStart = getPosition().getPositionX() - playerVisibility;
+        if (westStart < 0) {
+            westStart = 0;
+        }
+        
         int southEnd = getPosition().getPositionY() + playerVisibility;
+        if (southEnd >= dungeon.getDungeon().length) {
+            southEnd = dungeon.getDungeon().length - 1;
+        }
+        
         int eastEnd = getPosition().getPositionX() + playerVisibility;
+        if (eastEnd >= dungeon.getDungeon().length) {
+            eastEnd = dungeon.getDungeon().length - 1;
+        }
         
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         for (int row = northStart; row <= southEnd; row++) {

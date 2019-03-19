@@ -173,9 +173,13 @@ public class Dungeon {
 
         if (!player.isFrozen()) {
             try {
-
-                dungeonObjectTracks.addAll(players.get(0).move(direction, dungeon));
+                List<DungeonObjectTrack> playerTracks = players.get(0).move(direction, dungeon);
+                if (playerTracks.isEmpty()) {
+                    return;
+                }
+                dungeonObjectTracks.addAll(playerTracks);
             } catch (UnsupportedOperationException e) {
+                e.printStackTrace();
                 NotificationManager.notify(new ActionNotAllowedNotification(e.getMessage()));
                 return;
             }
@@ -223,17 +227,19 @@ public class Dungeon {
             Iterator<DungeonCharacter> dungeonCharacterIterator = nonPlayerCharacters.iterator();
             while (dungeonCharacterIterator.hasNext()) {
                 DungeonCharacter npc = dungeonCharacterIterator.next();
-                if (npc.isActive()) {
+//                if (npc.isActive()) {
                     dungeonObjectTracks.addAll(npc.move(null, dungeon));
-                } else {
-                    Position npcPosition = npc.getPosition();
-                    dungeonObjectTracks.add(new DungeonObjectTrack(npcPosition, 
-                            dungeon[npcPosition.getPositionY()][npcPosition.getPositionX()].getVisibleDungeonSpaceType().getValueString()));
-                    dungeonCharacterIterator.remove();
-                }
+//                } else {
+//                    Position npcPosition = npc.getPosition();
+//                    npc.getDungeonSpace().removeDungeonObject(npc);
+//                    dungeonCharacterIterator.remove();
+//                    dungeonObjectTracks.add(new DungeonObjectTrack(npcPosition, 
+//                            dungeon[npcPosition.getPositionY()][npcPosition.getPositionX()].getVisibleDungeonSpaceType().getValueString()));
+//                }
 
             }
         } catch (RuntimeException e) {
+            e.printStackTrace();
             NotificationManager.notify(new ExecutionErrorNotification(e.getMessage()));
         }
     }

@@ -27,5 +27,10 @@ public class DungeonObjectTrack {
 
     public String getDungeonSpaceSymbol() {
         return dungeonSpaceSymbol;
-    }    
+    }  
+
+    @Override
+    public String toString() {
+        return "DungeonObjectTrack{" + "position=" + position + ", dungeonSpaceSymbol=" + dungeonSpaceSymbol + '}';
+    }
 }

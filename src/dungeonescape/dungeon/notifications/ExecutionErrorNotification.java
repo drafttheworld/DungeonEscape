@@ -11,8 +11,15 @@ package dungeonescape.dungeon.notifications;
  */
 public class ExecutionErrorNotification extends GameNotification {
     
+    private static final String NOTIFICATION = "Execution error: ";
+    
     public ExecutionErrorNotification(String notificationMessage) {
         super(notificationMessage);
+    }
+    
+    @Override
+    public String getNotificationMessage() {
+        return NOTIFICATION + super.getNotificationMessage();
     }
     
 }

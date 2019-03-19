@@ -34,13 +34,8 @@ public class EnemyPathfinder {
      * @return
      */
     public static List<DungeonSpace> findShortestPathForEnemy(DungeonSpace[][] dungeon, DungeonCharacter enemy, Player player) {
-//        if (enemy instanceof Ghost) {
-//            return findNextDungeonSpaceForGhost(dungeon, (Ghost) enemy, player);
-//        }
-
         DungeonSpace[][] dungeonArea = narrowDungeonArea(dungeon, enemy.getPosition(), player.getPosition());
         return findShortestPathUsingBFS(dungeonArea, enemy);
-
     }
 
     private static DungeonSpace[][] narrowDungeonArea(DungeonSpace[][] dungeon, Position enemyPosition, Position playerPosition) {
@@ -83,7 +78,6 @@ public class EnemyPathfinder {
             }
             dungeonAreaRow++;
         }
-
         return dungeonArea;
     }
 
@@ -133,7 +127,6 @@ public class EnemyPathfinder {
             addNextPathNode(row, col - 1, dungeonArea, visited, pathNode, pathQueue);
         }
 
-//        printDungeonArea(dungeonArea);
         return Collections.emptyList();
     }
 
@@ -176,46 +169,6 @@ public class EnemyPathfinder {
     private static boolean containsOnlyGhostsOrPlayers(DungeonSpace dungeonSpace) {
         return dungeonSpace.getDungeonObjects().stream()
                 .allMatch(dungeonObject -> dungeonObject instanceof Ghost || dungeonObject instanceof Player);
-    }
-
-    private static List<DungeonSpace> findNextDungeonSpaceForGhost(DungeonSpace[][] dungeon, Ghost enemy, Player player) {
-        int deltaX = enemy.getPosition().getPositionX() - player.getPosition().getPositionX();
-        int deltaY = enemy.getPosition().getPositionY() - player.getPosition().getPositionY();
-
-        //randomly move either east-west or north-south
-        boolean moveX = Math.random() < .5;
-
-        List<DungeonSpace> nextDungeonSpace = new ArrayList<>();
-        int currentPositionX = enemy.getPosition().getPositionX();
-        int currentPositionY = enemy.getPosition().getPositionY();
-        int nextX;
-        int nextY;
-        if (moveX) {
-            //if deltaX is positive, move west, otherwise move east
-            if (deltaX > 0) {
-                nextX = currentPositionX - 1;
-            } else {
-                nextX = currentPositionX + 1;
-            }
-            nextY = currentPositionY;
-        } else {
-            //if deltaY is positive, move north, otherwise move south
-            nextX = currentPositionX;
-            if (deltaY > 0) {
-                nextY = currentPositionY - 1;
-            } else {
-                nextY = currentPositionY - 1;
-            }
-        }
-
-        if (nextX < 0 || nextY < 0) {
-            throw new NoSuchElementException("Unable to find the next position for ghost at ["
-                    + enemy.getPosition().getPositionX() + "," + enemy.getPosition().getPositionY() + "].");
-        }
-
-        nextDungeonSpace.add(dungeon[nextX][nextY]);
-
-        return nextDungeonSpace;
     }
 
     private static class PathNode {

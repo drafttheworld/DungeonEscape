@@ -12,6 +12,7 @@ import dungeonescape.dungeonobject.characters.Ghost;
 import dungeonescape.dungeonobject.characters.Guard;
 import dungeonescape.space.DungeonSpace;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +37,10 @@ public class DungeonCharacterUtil {
      * @throws dungeonescape.dungeon.notifications.GameNotification
      */
     protected static List<Guard> placeGuards(DungeonSpace[][] dungeon, int numberOfGuardsToPlace) {
+        
+        if (numberOfGuardsToPlace < 1) {
+            return Collections.emptyList();
+        }
 
         List<Guard> guards = new ArrayList<>();
         List<DungeonSpace> dungeonExits = DungeonConstructionUtil.determineDungeonExits(dungeon);
@@ -97,6 +102,10 @@ public class DungeonCharacterUtil {
      */
     protected static List<Ghost> placeGhosts(DungeonSpace[][] dungeon,
             int numberOfGhostsToPlace, FreezeTime ghostFreezeTime, int offsetFromBorder) {
+        
+        if (numberOfGhostsToPlace < 1) {
+            return Collections.emptyList();
+        }
 
         //place ghosts
         int numberOfGhostsPerBorder = numberOfGhostsToPlace / 4;
@@ -177,6 +186,10 @@ public class DungeonCharacterUtil {
     }
 
     protected static List<DungeonMaster> placeDungeonMasters(DungeonSpace[][] dungeon, int numberOfDungeonMasters) {
+        if (numberOfDungeonMasters < 1) {
+            return Collections.emptyList();
+        }
+        
         int center = dungeon.length / 2;
 
         List<DungeonMaster> dungeonMasters = new ArrayList<>();

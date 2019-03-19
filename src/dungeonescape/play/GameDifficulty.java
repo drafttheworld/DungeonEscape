@@ -49,18 +49,18 @@ public enum GameDifficulty {
                 .dungeonMasterDetectionDistance(5)
                 .dungeonMasterNumberOfMovesWhenPatrolling(2)
                 .dungeonMasterNumberOfMovesWhenHunting(2)
-                .guardCount(1)
+                .guardCount(5)
                 .guardDetectionDistance(5)
                 .guardNumberOfMovesWhenPatrolling(2)
                 .guardNumberOfMovesWhenHunting(2)
-                .ghostCount(4)
+                .ghostCount(8)
                 .ghostFreezeTime(new FreezeTime(20, TimeUnit.MINUTES))
                 .ghostDetectionDistance(10)
                 .ghostNumberOfMovesWhenPatrolling(5)
                 .ghostNumberOfMovesWhenHunting(5)
-                .freezeMineCount(5)
+                .freezeMineCount(25)
                 .maxFreezeMineTime(new FreezeTime(3, TimeUnit.MINUTES))
-                .teleportMineCount(2);
+                .teleportMineCount(10);
     }
 
     /**

@@ -83,13 +83,12 @@ public class Guard extends DungeonCharacter implements TeleportObject {
                     new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master."));
         } else if (dungeonObject instanceof Player) {
             objectTracks.addAll(teleport(dungeonObject));
-            getDungeonSpace().removeDungeonObject(this);
             super.setActive(false);
             NotificationManager.notify(
                     new InteractionNotification("A guard has caught you and moved you back to your cell."));
         }
         
-        return Collections.emptyList();
+        return objectTracks;
     }
 
     @Override
@@ -102,10 +101,11 @@ public class Guard extends DungeonCharacter implements TeleportObject {
         
         DungeonSpace previousDungeonSpace = getDungeonSpace();
         
-        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
-                getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
-
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        objectTracks.addAll(CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
+                getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance()));
+
+        
         if (previousDungeonSpace.isVisible()) {
             objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(),
                     previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
@@ -129,15 +129,14 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     @Override
     public List<DungeonObjectTrack> teleport(DungeonObject dungeonObject) {
         Player player = (Player) dungeonObject;
-        
-        DungeonObjectTrack oldPlayerLocation = new DungeonObjectTrack(player.getPosition(), 
-                player.getDungeonSpace().getVisibleDungeonSpaceType().getValueString());
 
         //move the player and then remove the player from the previous location
         DungeonSpace currentSpace = player.getDungeonSpace();
         jailCellSpace.addDungeonObject(player);
         currentSpace.removeDungeonObject(player);
         
+        DungeonObjectTrack oldPlayerLocation = new DungeonObjectTrack(currentSpace.getPosition(), 
+                currentSpace.getVisibleDungeonSpaceType().getValueString());
         DungeonObjectTrack newPlayerLocation = new DungeonObjectTrack(player.getPosition(), 
                 player.getDungeonSpace().getVisibleDungeonSpaceType().getValueString());
         

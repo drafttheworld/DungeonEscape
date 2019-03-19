@@ -43,13 +43,11 @@ public class DungeonMapViewUtil {
 
     protected static String getPlayerMap(DungeonSpace[][] dungeon) {
         StringBuilder playerMap = new StringBuilder();
-        int visibleSpaceCount = 0;
         for (int row = 0; row < dungeon.length; row++) {
             for (int col = 0; col < dungeon.length; col++) {
                 String visibleSymbol;
                 if (dungeon[row][col].isVisible()) {
                     visibleSymbol = dungeon[row][col].getVisibleDungeonSpaceType().getValueString();
-                    visibleSpaceCount++;
                 } else {
                     visibleSymbol = DungeonSpaceType.NON_VISIBLE_SPACE.getValueString();
                 }
@@ -59,7 +57,6 @@ public class DungeonMapViewUtil {
                 playerMap.append("\n");
             }
         }
-        System.out.println("Visible spaces: " + visibleSpaceCount);
         return playerMap.toString();
     }
 

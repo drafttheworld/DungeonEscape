@@ -11,8 +11,15 @@ package dungeonescape.dungeon.notifications;
  */
 public class ActionNotAllowedNotification extends GameNotification {
     
+    private static final String NOTIFICATION = "Action not allowed: ";
+    
     public ActionNotAllowedNotification(String message) {
         super(message);
+    }
+    
+    @Override
+    public String getNotificationMessage() {
+        return NOTIFICATION + super.getNotificationMessage();
     }
     
 }

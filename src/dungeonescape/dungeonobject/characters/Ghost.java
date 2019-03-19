@@ -78,8 +78,6 @@ public class Ghost extends DungeonCharacter {
     public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTime(freezeTime);
-            System.out.println("You were attacked by a ghost, added frozen time.");
-            getDungeonSpace().removeDungeonObject(this);
             super.setActive(false);
         }
         

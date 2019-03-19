@@ -8,6 +8,8 @@ package dungeonescape.space;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.TeleportObject;
+import dungeonescape.dungeonobject.characters.DungeonCharacter;
+import dungeonescape.dungeonobject.characters.Guard;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.dungeonobject.mine.Mine;
@@ -58,45 +60,43 @@ public class DungeonSpace {
 
     public List<DungeonObjectTrack> addDungeonObject(DungeonObject dungeonObject) {
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
-        if (dungeonObject != null) {
-            boolean isTeleported = false;
-            Iterator<DungeonObject> existingDungeonObjects = dungeonObjects.iterator();
-            while (existingDungeonObjects.hasNext()) {
-                DungeonObject existingDungeonObject = existingDungeonObjects.next();
-                if ((existingDungeonObject instanceof TeleportObject
-                        && dungeonObject instanceof Player)
-                        || (existingDungeonObject instanceof Player
-                        && dungeonObject instanceof TeleportObject)) {
-                    isTeleported = true;
-                }
-                objectTracks.addAll(existingDungeonObject.interact(dungeonObject));
 
-                if (dungeonObject instanceof Player && existingDungeonObject instanceof Mine) {
-                    existingDungeonObjects.remove();
-                }
+        boolean isTeleported = false;
+        List<DungeonObject> existingDungeonObjects = new ArrayList<>(dungeonObjects);
+        for (DungeonObject existingDungeonObject : existingDungeonObjects) {
+            if ((existingDungeonObject instanceof TeleportObject
+                    && dungeonObject instanceof Player)
+                    || (existingDungeonObject instanceof Player
+                    && dungeonObject instanceof TeleportObject)) {
+                isTeleported = true;
             }
+            objectTracks.addAll(existingDungeonObject.interact(dungeonObject));
 
-            if (!isTeleported) {
-                dungeonObject.setDungeonSpace(this);
-                if (!this.isEmpty()) {
-                    DungeonObject tailObject = this.getDungeonObjects()
-                            .get(this.getDungeonObjects().size() - 1);
-                    if (tailObject instanceof Player) {
-                        dungeonObjects.add(this.getDungeonObjects().size() - 2, dungeonObject);
-                    } else {
-                        dungeonObjects.add(dungeonObject);
-                    }
+            if (dungeonObject instanceof Player && existingDungeonObject instanceof Mine) {
+                dungeonObjects.remove(existingDungeonObject);
+            }
+        }
+
+        if (!isTeleported) {
+            dungeonObject.setDungeonSpace(this);
+            if (!this.isEmpty()) {
+                DungeonObject tailObject = this.getDungeonObjects()
+                        .get(this.getDungeonObjects().size() - 1);
+                if (tailObject instanceof Player) {
+                    dungeonObjects.add(this.getDungeonObjects().size() - 1, dungeonObject);
                 } else {
                     dungeonObjects.add(dungeonObject);
                 }
-            
+            } else {
+                dungeonObjects.add(dungeonObject);
+            }
+
         }
+
+        return objectTracks;
     }
 
-    return objectTracks ;
-}
-
-public void removeDungeonObject(DungeonObject dungeonObject) {
+    public void removeDungeonObject(DungeonObject dungeonObject) {
         dungeonObjects.remove(dungeonObject);
     }
 
@@ -116,7 +116,21 @@ public void removeDungeonObject(DungeonObject dungeonObject) {
             return DungeonSpaceType.OPEN_SPACE;
         }
 
-        return dungeonObjects.get(dungeonObjects.size() - 1).getDungeonSpaceType();
+        DungeonSpaceType visibleDungeonSpaceType = DungeonSpaceType.OPEN_SPACE;
+        for (int index = dungeonObjects.size() - 1; index >= 0; index--) {
+            DungeonObject dungeonObject = dungeonObjects.get(index);
+            if (dungeonObject instanceof DungeonCharacter
+                    && !((DungeonCharacter) dungeonObject).isActive()) {
+                continue;
+            } else if (dungeonObject instanceof Mine
+                    && !((Mine) dungeonObject).isActive()) {
+                continue;
+            }
+
+            visibleDungeonSpaceType = dungeonObject.getDungeonSpaceType();
+            break;
+        }
+        return visibleDungeonSpaceType;
     }
 
     public boolean containsDungeonSpaceType(DungeonSpaceType dungeonSpaceType) {

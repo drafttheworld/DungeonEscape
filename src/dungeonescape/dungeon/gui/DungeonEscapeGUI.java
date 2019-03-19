@@ -55,6 +55,8 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private static final String WIN_IMAGE = "images/notifications/game_won.png";
 
     private static final String PLAYER_NAME = "Hero";
+    
+    private boolean gameOver = true;
 
     private JPanel applicationPanel;
     private JLabel loadingLabel;
@@ -98,6 +100,11 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
             @Override
             public void keyReleased(KeyEvent e) {
+                
+                if (gameOver) {
+                    return;
+                }
+                
                 switch (e.getKeyCode()) {
                     case NORTH_KEY_CODE:
                         movePlayer(Direction.NORTH);
@@ -121,6 +128,30 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
                 }
             }
 
+        });
+        
+        this.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                applicationPanel.revalidate();
+                applicationPanel.repaint();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                //do nothing
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                //do nothing
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                //do nothing
+            }
+            
         });
 
         startButton.setText("Start New Game");
@@ -181,6 +212,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             //Refresh the map
             refresh();
             activeDungeonTable.centerOnPlayer(PLAYER_NAME);
+            gameOver = false;
         });
     }
 
@@ -194,10 +226,10 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         try {
             if (gameNotification instanceof LossNotification) {
                 displayNotificationPane(LOSS_IMAGE);
-                playerNotificationsTextArea.setText("");
+                gameOver = true;
             } else if (gameNotification instanceof WinNotification) {
                 displayNotificationPane(WIN_IMAGE);
-                playerNotificationsTextArea.setText("");
+                gameOver = true;
             } else {
                 playerNotificationsTextArea.setText(gameNotification.getNotificationMessage());
             }
@@ -246,6 +278,30 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         infoPanel.add(playerNotifications);
 
         infoPanel.setPreferredSize(new Dimension(300, 400));
+        
+        infoPanel.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                infoPanel.revalidate();
+                infoPanel.repaint();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                //do nothing
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                //do nothing
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                //do nothing
+            }
+            
+        });
         return infoPanel;
     }
 
@@ -286,6 +342,8 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private void updateStats() {
         String playerStats = gameSession.getPlayerStats(PLAYER_NAME);
         playerInformationTextArea.setText(playerStats);
+        playerInformationTextArea.revalidate();
+        playerInformationTextArea.repaint();
     }
 
 }

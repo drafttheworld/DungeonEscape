@@ -37,7 +37,7 @@ public class DungeonEscapeApplication {
             gameSession = new GameSession(dungeonConfiguration);
             gameSessions.put(gameSession.getSessionId(), gameSession);
         } catch (RuntimeException e) {
-            System.out.println(e);
+            e.printStackTrace();
             NotificationManager.notify(new ExecutionErrorNotification(e.getMessage()));
         }
         return gameSession;
