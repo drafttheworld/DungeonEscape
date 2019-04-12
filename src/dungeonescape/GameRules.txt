@@ -1,0 +1,4 @@
+Dungeon Escape
+1. Game Types
+    1. Escape: Make it out of the dungeon in the shortest amount of time.
+    2. Treasure Hunter: Collect the most treasure, making it out of the dungeon before time expires. 

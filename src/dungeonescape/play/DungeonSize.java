@@ -14,7 +14,7 @@ public enum DungeonSize {
     SMALL(100),
     MEDIUM(500),
     LARGE(1000),
-    EPIC(5000);
+    EPIC(2000);
     
     private final int dungeonWidth;
     
