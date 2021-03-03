@@ -193,7 +193,7 @@ public class Dungeon {
 
         cleanupDungeonTracks();
     }
-    
+
     private void cleanupDungeonTracks() {
 //        System.out.println("Dungeon object tracks before cleanup: "+dungeonObjectTracks.size());
         Map<Position, DungeonObjectTrack> dotMap = new HashMap<>();
@@ -218,7 +218,7 @@ public class Dungeon {
                 npcIterator.remove();
             }
         }
-        
+
         dungeonObjectTracks.clear();
     }
 
@@ -227,16 +227,7 @@ public class Dungeon {
             Iterator<DungeonCharacter> dungeonCharacterIterator = nonPlayerCharacters.iterator();
             while (dungeonCharacterIterator.hasNext()) {
                 DungeonCharacter npc = dungeonCharacterIterator.next();
-//                if (npc.isActive()) {
-                    dungeonObjectTracks.addAll(npc.move(null, dungeon));
-//                } else {
-//                    Position npcPosition = npc.getPosition();
-//                    npc.getDungeonSpace().removeDungeonObject(npc);
-//                    dungeonCharacterIterator.remove();
-//                    dungeonObjectTracks.add(new DungeonObjectTrack(npcPosition, 
-//                            dungeon[npcPosition.getPositionY()][npcPosition.getPositionX()].getVisibleDungeonSpaceType().getValueString()));
-//                }
-
+                dungeonObjectTracks.addAll(npc.move(null, dungeon));
             }
         } catch (RuntimeException e) {
             e.printStackTrace();

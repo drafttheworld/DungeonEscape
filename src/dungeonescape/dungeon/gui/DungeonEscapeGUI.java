@@ -55,7 +55,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private static final String WIN_IMAGE = "images/notifications/game_won.png";
 
     private static final String PLAYER_NAME = "Hero";
-    
+
     private boolean gameOver = true;
 
     private JPanel applicationPanel;
@@ -100,11 +100,11 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                
+
                 if (gameOver) {
                     return;
                 }
-                
+
                 switch (e.getKeyCode()) {
                     case NORTH_KEY_CODE:
                         movePlayer(Direction.NORTH);
@@ -129,7 +129,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             }
 
         });
-        
+
         this.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -151,7 +151,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             public void componentHidden(ComponentEvent e) {
                 //do nothing
             }
-            
+
         });
 
         startButton.setText("Start New Game");
@@ -196,8 +196,12 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             applicationPanel.remove(loadingLabel);
             applicationPanel.add(startButton, BorderLayout.NORTH);
             applicationPanel.add(gamePane, BorderLayout.CENTER);
-            informationPanel = buildInformationPane();
-            applicationPanel.add(informationPanel, BorderLayout.EAST);
+            if (informationPanel == null) {
+                informationPanel = buildInformationPane();
+                applicationPanel.add(informationPanel, BorderLayout.EAST);
+            } else {
+                updateStats();
+            }
 
             //Add the recenter button
             applicationPanel.add(recenterButton, BorderLayout.SOUTH);
@@ -278,7 +282,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         infoPanel.add(playerNotifications);
 
         infoPanel.setPreferredSize(new Dimension(300, 400));
-        
+
         infoPanel.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -300,7 +304,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             public void componentHidden(ComponentEvent e) {
                 //do nothing
             }
-            
+
         });
         return infoPanel;
     }
@@ -338,7 +342,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         });
         return dungeonScrollPane;
     }
-    
+
     private void updateStats() {
         String playerStats = gameSession.getPlayerStats(PLAYER_NAME);
         playerInformationTextArea.setText(playerStats);

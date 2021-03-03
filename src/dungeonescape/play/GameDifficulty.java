@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
  */
 public enum GameDifficulty {
 
-    EASY(),
-    NORMAL(),
-    HARD(),
-    INSANE();
+    EASY,
+    NORMAL,
+    HARD,
+    INSANE;
 
     public DungeonConfiguration getDungeonConfiguration() {
         switch(this) {
@@ -46,18 +46,18 @@ public enum GameDifficulty {
                 .dungeonExitCount(10)
                 .dungeonMasterCount(1)
                 .spawnDungeonMastersTurnCount(25)
-                .dungeonMasterDetectionDistance(5)
+                .dungeonMasterDetectionDistance(3)
                 .dungeonMasterNumberOfMovesWhenPatrolling(2)
                 .dungeonMasterNumberOfMovesWhenHunting(2)
                 .guardCount(5)
-                .guardDetectionDistance(5)
+                .guardDetectionDistance(3)
                 .guardNumberOfMovesWhenPatrolling(2)
                 .guardNumberOfMovesWhenHunting(2)
                 .ghostCount(8)
                 .ghostFreezeTime(new FreezeTime(20, TimeUnit.MINUTES))
-                .ghostDetectionDistance(10)
+                .ghostDetectionDistance(5)
                 .ghostNumberOfMovesWhenPatrolling(5)
-                .ghostNumberOfMovesWhenHunting(5)
+                .ghostNumberOfMovesWhenHunting(3)
                 .freezeMineCount(25)
                 .maxFreezeMineTime(new FreezeTime(3, TimeUnit.MINUTES))
                 .teleportMineCount(10);
@@ -75,18 +75,18 @@ public enum GameDifficulty {
                 .dungeonExitCount(5)
                 .dungeonMasterCount(3)
                 .spawnDungeonMastersTurnCount(25)
-                .dungeonMasterDetectionDistance(6)
+                .dungeonMasterDetectionDistance(4)
                 .dungeonMasterNumberOfMovesWhenPatrolling(3)
                 .dungeonMasterNumberOfMovesWhenHunting(3)
                 .guardCount(200)
-                .guardDetectionDistance(5)
+                .guardDetectionDistance(4)
                 .guardNumberOfMovesWhenPatrolling(2)
-                .guardNumberOfMovesWhenHunting(3)
+                .guardNumberOfMovesWhenHunting(2)
                 .ghostCount(500)
                 .ghostFreezeTime(new FreezeTime(30, TimeUnit.MINUTES))
-                .ghostDetectionDistance(10)
+                .ghostDetectionDistance(5)
                 .ghostNumberOfMovesWhenPatrolling(5)
-                .ghostNumberOfMovesWhenHunting(5)
+                .ghostNumberOfMovesWhenHunting(3)
                 .freezeMineCount(2000)
                 .maxFreezeMineTime(new FreezeTime(5, TimeUnit.MINUTES))
                 .teleportMineCount(1000);
@@ -104,18 +104,18 @@ public enum GameDifficulty {
                 .dungeonExitCount(3)
                 .dungeonMasterCount(10)
                 .spawnDungeonMastersTurnCount(25)
-                .dungeonMasterDetectionDistance(8)
+                .dungeonMasterDetectionDistance(5)
                 .dungeonMasterNumberOfMovesWhenPatrolling(3)
-                .dungeonMasterNumberOfMovesWhenHunting(4)
+                .dungeonMasterNumberOfMovesWhenHunting(3)
                 .guardCount(150)
-                .guardDetectionDistance(8)
+                .guardDetectionDistance(5)
                 .guardNumberOfMovesWhenPatrolling(3)
                 .guardNumberOfMovesWhenHunting(3)
                 .ghostCount(300)
                 .ghostFreezeTime(new FreezeTime(40, TimeUnit.MINUTES))
-                .ghostDetectionDistance(10)
+                .ghostDetectionDistance(5)
                 .ghostNumberOfMovesWhenPatrolling(5)
-                .ghostNumberOfMovesWhenHunting(8)
+                .ghostNumberOfMovesWhenHunting(3)
                 .freezeMineCount(5000)
                 .maxFreezeMineTime(new FreezeTime(10, TimeUnit.MINUTES))
                 .teleportMineCount(1000);
@@ -133,18 +133,18 @@ public enum GameDifficulty {
                 .dungeonExitCount(2)
                 .dungeonMasterCount(500)
                 .spawnDungeonMastersTurnCount(20)
-                .dungeonMasterDetectionDistance(10)
-                .dungeonMasterNumberOfMovesWhenPatrolling(4)
-                .dungeonMasterNumberOfMovesWhenHunting(5)
+                .dungeonMasterDetectionDistance(5)
+                .dungeonMasterNumberOfMovesWhenPatrolling(3)
+                .dungeonMasterNumberOfMovesWhenHunting(3)
                 .guardCount(10000)
-                .guardDetectionDistance(8)
+                .guardDetectionDistance(5)
                 .guardNumberOfMovesWhenPatrolling(3)
-                .guardNumberOfMovesWhenHunting(4)
+                .guardNumberOfMovesWhenHunting(3)
                 .ghostCount(40000)
                 .ghostFreezeTime(new FreezeTime(60, TimeUnit.MINUTES))
-                .ghostDetectionDistance(50)
+                .ghostDetectionDistance(8)
                 .ghostNumberOfMovesWhenPatrolling(8)
-                .ghostNumberOfMovesWhenHunting(10)
+                .ghostNumberOfMovesWhenHunting(5)
                 .freezeMineCount(500000)
                 .maxFreezeMineTime(new FreezeTime(15, TimeUnit.MINUTES))
                 .teleportMineCount(200000);
