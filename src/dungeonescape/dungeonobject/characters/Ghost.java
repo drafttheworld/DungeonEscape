@@ -14,37 +14,36 @@ import dungeonescape.space.DungeonSpaceType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
  * @author Andrew
  */
 public class Ghost extends DungeonCharacter {
-    
-    public static final FreezeTime DEFAULT_FREEZE_TIME = new FreezeTime(30, TimeUnit.MINUTES);
+
+    public static final FreezeTime DEFAULT_FREEZE_TIME = new FreezeTime(30);
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 2;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 3;
     public static int DEFAULT_DETECTION_DISTANCE = 10;
-    
+
     private final FreezeTime freezeTime;
     private int detectionDistance;
-    
+
     public Ghost(FreezeTime freezeTime) {
         this.freezeTime = freezeTime;
         super.setActive(true);
     }
-    
+
     public FreezeTime getFreezeTime() {
         return freezeTime;
     }
 
     @Override
     public int getNumberOfSpacesToMoveWhenPatrolling() {
-        return super.getNumberOfSpacesToMoveWhenPatrolling() == 0 ? 
-                DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
+        return super.getNumberOfSpacesToMoveWhenPatrolling() == 0
+            ? DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
     }
-    
+
     public Ghost numberOfSpacesToMoveWhenPatrolling(int numberOfMovesWhenPatrolling) {
         setNumberOfSpacesToMoveWhenPatrolling(numberOfMovesWhenPatrolling);
         return this;
@@ -52,10 +51,10 @@ public class Ghost extends DungeonCharacter {
 
     @Override
     public int getNumberOfSpacesToMoveWhenHunting() {
-        return super.getNumberOfSpacesToMoveWhenHunting() == 0 ? 
-                DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
+        return super.getNumberOfSpacesToMoveWhenHunting() == 0
+            ? DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
     }
-    
+
     public Ghost numberOfSpacesToMoveWhenHunting(int numberOfMovesWhenHunting) {
         setNumberOfSpacesToMoveWhenHunting(numberOfMovesWhenHunting);
         return this;
@@ -68,7 +67,7 @@ public class Ghost extends DungeonCharacter {
     public void setDetectionDistance(int detectionDistance) {
         this.detectionDistance = detectionDistance;
     }
-    
+
     public Ghost detectionDistance(int detectionDistance) {
         setDetectionDistance(detectionDistance);
         return this;
@@ -77,10 +76,10 @@ public class Ghost extends DungeonCharacter {
     @Override
     public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
-            ((Player) dungeonObject).addFrozenTime(freezeTime);
+            ((Player) dungeonObject).addFrozenTurns(freezeTime);
             super.setActive(false);
         }
-        
+
         return Collections.emptyList();
     }
 
@@ -91,16 +90,16 @@ public class Ghost extends DungeonCharacter {
 
     @Override
     public List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon) {
-        
+
         DungeonSpace previousDungeonSpace = getDungeonSpace();
-        
-        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(), 
-                getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
-        
+
+        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
+            getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
+
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         if (previousDungeonSpace.isVisible()) {
-            objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(), 
-                    previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
+            objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(),
+                previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
         }
         if (getDungeonSpace().isVisible()) {
             objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
@@ -112,5 +111,5 @@ public class Ghost extends DungeonCharacter {
     public boolean canOccupySpace(DungeonSpace dungeonSpace) {
         return true;
     }
-    
+
 }

@@ -29,10 +29,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class Player extends DungeonCharacter {
 
-    private Dungeon dungeon;
+    private final Dungeon dungeon;
     private final String playerName;
     private final int playerVisibility;
-    private long frozenTimeRemainingInSeconds;
+    private long frozenTurnsRemaining;
     private boolean won = false;
     private boolean lost = false;
 
@@ -42,7 +42,7 @@ public class Player extends DungeonCharacter {
         this.dungeon = dungeon;
         super.setActive(true);
 
-        frozenTimeRemainingInSeconds = 0L;
+        frozenTurnsRemaining = 0L;
     }
 
     public String getPlayerName() {
@@ -54,19 +54,19 @@ public class Player extends DungeonCharacter {
     }
 
     public boolean isFrozen() {
-        return frozenTimeRemainingInSeconds > 0;
+        return frozenTurnsRemaining > 0;
     }
 
-    public FreezeTime getFrozenTimeRemaining() {
-        return new FreezeTime(frozenTimeRemainingInSeconds, TimeUnit.SECONDS);
+    public FreezeTime getFrozenTurnsRemaining() {
+        return new FreezeTime(frozenTurnsRemaining);
     }
 
-    public void addFrozenTime(FreezeTime frozenTime) {
-        frozenTimeRemainingInSeconds += frozenTime.getFreezeTimeForTimeUnit(TimeUnit.SECONDS);
+    public void addFrozenTurns(FreezeTime forzenTurns) {
+        frozenTurnsRemaining += forzenTurns.getTurns();
     }
 
-    public void decrementFrozenTimeRemaining(long time, TimeUnit timeUnit) {
-        frozenTimeRemainingInSeconds -= timeUnit.toSeconds(time);
+    public void decrementFrozenTurnsRemaining(long turns) {
+        frozenTurnsRemaining -= turns;
     }
 
     public boolean hasWon() {
@@ -95,7 +95,7 @@ public class Player extends DungeonCharacter {
         } else if (dungeonObject instanceof Ghost) {
             objectTracks.addAll(((Ghost) dungeonObject).interact(this));
         }
-        
+
         return objectTracks;
     }
 
@@ -111,7 +111,7 @@ public class Player extends DungeonCharacter {
         Position nextPosition = determineNextPosition(direction);
 
         if (nextPosition.getPositionX() < 0 || nextPosition.getPositionX() >= dungeon.length
-                || nextPosition.getPositionY() < 0 || nextPosition.getPositionY() >= dungeon.length) {
+            || nextPosition.getPositionY() < 0 || nextPosition.getPositionY() >= dungeon.length) {
             NotificationManager.notify(new WinNotification());
             return Collections.emptyList();
         }
@@ -126,9 +126,8 @@ public class Player extends DungeonCharacter {
         setPreviousDungeonSpace(currentDungeonSpace);
         currentDungeonSpace.removeDungeonObject(this);
 
-        
         objectTracks.add(new DungeonObjectTrack(getPreviousDungeonSpace().getPosition(),
-                getPreviousDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
+            getPreviousDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
         objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
         objectTracks.addAll(revealMapForMove(direction, dungeon));
 
@@ -148,7 +147,7 @@ public class Player extends DungeonCharacter {
                 return new Position(currentPlayerPosition.getPositionX() - 1, currentPlayerPosition.getPositionY());
             default:
                 String errorMessage = direction.getValue() + " is not a valid direction. Allowed directions are: "
-                        + Arrays.toString(Direction.values());
+                    + Arrays.toString(Direction.values());
                 NotificationManager.notify(new ActionNotAllowedNotification(errorMessage));
         }
         return null;
@@ -171,7 +170,7 @@ public class Player extends DungeonCharacter {
                     if (col >= 0 && col < dungeon.length) {
                         dungeon[exposeRow][col].setVisible(true);
                         revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(col, exposeRow),
-                                dungeon[exposeRow][col].getVisibleDungeonSpaceType().getValueString()));
+                            dungeon[exposeRow][col].getVisibleDungeonSpaceType().getValueString()));
                     }
                 }
                 break;
@@ -188,7 +187,7 @@ public class Player extends DungeonCharacter {
                     if (col >= 0 && col < dungeon.length) {
                         dungeon[exposeRow][col].setVisible(true);
                         revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(col, exposeRow),
-                                dungeon[exposeRow][col].getVisibleDungeonSpaceType().getValueString()));
+                            dungeon[exposeRow][col].getVisibleDungeonSpaceType().getValueString()));
                     }
                 }
                 break;
@@ -205,7 +204,7 @@ public class Player extends DungeonCharacter {
                     if (row >= 0 && row < dungeon.length) {
                         dungeon[row][exposeCol].setVisible(true);
                         revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(exposeCol, row),
-                                dungeon[row][exposeCol].getVisibleDungeonSpaceType().getValueString()));
+                            dungeon[row][exposeCol].getVisibleDungeonSpaceType().getValueString()));
                     }
                 }
                 break;
@@ -222,7 +221,7 @@ public class Player extends DungeonCharacter {
                     if (row >= 0 && row < dungeon.length) {
                         dungeon[row][exposeCol].setVisible(true);
                         revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(exposeCol, row),
-                                dungeon[row][exposeCol].getVisibleDungeonSpaceType().getValueString()));
+                            dungeon[row][exposeCol].getVisibleDungeonSpaceType().getValueString()));
                     }
                 }
                 break;
@@ -238,45 +237,45 @@ public class Player extends DungeonCharacter {
         if (northStart < 0) {
             northStart = 0;
         }
-        
+
         int westStart = getPosition().getPositionX() - playerVisibility;
         if (westStart < 0) {
             westStart = 0;
         }
-        
+
         int southEnd = getPosition().getPositionY() + playerVisibility;
         if (southEnd >= dungeon.getDungeon().length) {
             southEnd = dungeon.getDungeon().length - 1;
         }
-        
+
         int eastEnd = getPosition().getPositionX() + playerVisibility;
         if (eastEnd >= dungeon.getDungeon().length) {
             eastEnd = dungeon.getDungeon().length - 1;
         }
-        
+
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         for (int row = northStart; row <= southEnd; row++) {
             for (int col = westStart; col <= eastEnd; col++) {
                 DungeonSpace dungeonSpace = dungeon.getDungeon()[row][col];
                 if (!dungeonSpace.isVisible()) {
-                dungeonSpace.setVisible(true);
-                objectTracks.add(new DungeonObjectTrack(dungeonSpace.getPosition(), 
+                    dungeonSpace.setVisible(true);
+                    objectTracks.add(new DungeonObjectTrack(dungeonSpace.getPosition(),
                         dungeonSpace.getVisibleDungeonSpaceType().getValueString()));
                 }
             }
         }
-        
+
         return objectTracks;
     }
 
     @Override
     public boolean canOccupySpace(DungeonSpace dungeonSpace) {
         return dungeonSpace.getDungeonObjects().stream()
-                .noneMatch(dungeonObject -> {
-                    return dungeonObject instanceof Construction
-                            || (dungeonObject instanceof DungeonCharacter
-                            && !(dungeonObject instanceof Ghost));
-                });
+            .noneMatch(dungeonObject -> {
+                return dungeonObject instanceof Construction
+                    || (dungeonObject instanceof DungeonCharacter
+                    && !(dungeonObject instanceof Ghost));
+            });
     }
 
 }

@@ -14,6 +14,9 @@ import dungeonescape.play.GameSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -33,7 +36,7 @@ public class DungeonEscapeApplication {
         GameSession gameSession = null;
         try {
             DungeonConfiguration dungeonConfiguration = gameDifficulty.getDungeonConfiguration()
-                    .playerName(playerName);
+                .playerName(playerName);
             gameSession = new GameSession(dungeonConfiguration);
             gameSessions.put(gameSession.getSessionId(), gameSession);
         } catch (RuntimeException e) {
@@ -42,7 +45,7 @@ public class DungeonEscapeApplication {
         }
         return gameSession;
     }
-    
+
     public void startGameGUI() throws IOException {
         new DungeonEscapeGUI(this).setVisible(true);
     }
@@ -59,7 +62,22 @@ public class DungeonEscapeApplication {
         gameSessions.clear();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+
+//        UIManager.put("nimbusBase", new Color(
+//        ...));
+//UIManager.put("nimbusBlueGrey", new Color(
+//        ...));
+//UIManager.put("control", new Color(
+//        ...));
+        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+            System.out.println("info name: " + info.getName());
+            if ("Metal".equals(info.getName())) {
+                UIManager.setLookAndFeel(info.getClassName());
+                break;
+            }
+        }
+
         new DungeonEscapeApplication().startGameGUI();
     }
 

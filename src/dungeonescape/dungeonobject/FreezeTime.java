@@ -5,54 +5,25 @@
  */
 package dungeonescape.dungeonobject;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  *
  * @author Andrew
  */
 public class FreezeTime {
 
-    private final long time;
-    private final TimeUnit timeUnit;
+    private final long turns;
 
-    public FreezeTime(long time, TimeUnit timeUnit) {
-        this.time = time;
-        this.timeUnit = timeUnit;
+    public FreezeTime(long turns) {
+        this.turns = turns;
     }
 
-    public long getTime() {
-        return time;
-    }
-
-    public TimeUnit getTimeUnit() {
-        return timeUnit;
-    }
-
-    public long getFreezeTimeForTimeUnit(TimeUnit timeUnit) {
-        switch (timeUnit) {
-            case DAYS:
-                return this.timeUnit.toDays(time);
-            case HOURS:
-                return this.timeUnit.toHours(time);
-            case MICROSECONDS:
-                return this.timeUnit.toMicros(time);
-            case MILLISECONDS:
-                return this.timeUnit.toMillis(time);
-            case MINUTES:
-                return this.timeUnit.toMinutes(time);
-            case NANOSECONDS:
-                return this.timeUnit.toNanos(time);
-            case SECONDS:
-                return this.timeUnit.toSeconds(time);
-        }
-
-        throw new IllegalArgumentException("Unsupported time unit: " + timeUnit.name());
+    public long getTurns() {
+        return turns;
     }
 
     @Override
     public String toString() {
-        return "FreezeTime{" + "time=" + time + ", timeUnit=" + timeUnit + '}';
+        return "FreezeTime{" + "turns=" + turns + '}';
     }
 
 }

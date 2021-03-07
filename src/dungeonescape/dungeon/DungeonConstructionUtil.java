@@ -53,9 +53,9 @@ public class DungeonConstructionUtil {
             int[] position = {startX, startY};
 
             while (position[0] > 0
-                    && position[0] < width - 1
-                    && position[1] < height - 1
-                    && position[1] > 0) {
+                && position[0] < width - 1
+                && position[1] < height - 1
+                && position[1] > 0) {
 
                 //1 = up
                 //2 = right
@@ -83,9 +83,9 @@ public class DungeonConstructionUtil {
                     dungeon[position[0]][position[1]].clearDungeonObjects();
 
                     if (position[0] == 0
-                            || position[0] == width - 1
-                            || position[1] == height - 1
-                            || position[1] == 0) {
+                        || position[0] == width - 1
+                        || position[1] == height - 1
+                        || position[1] == 0) {
                         break;
                     }
                 }
@@ -96,20 +96,20 @@ public class DungeonConstructionUtil {
         return dungeon;
     }
 
-    protected static List<Mine> placeFreezeMines(DungeonSpace[][] dungeon, int numberOfFreezeMines, 
-            FreezeTime maxFreezeTime, TargetBoundaries targetBoundaries) {
+    protected static List<Mine> placeFreezeMines(DungeonSpace[][] dungeon, int numberOfFreezeMines,
+        FreezeTime maxFreezeTime, TargetBoundaries targetBoundaries) {
 
         List<Mine> freezeMines = new ArrayList<>();
         for (int i = 0; i < numberOfFreezeMines; i++) {
-            int freezeTime = ThreadLocalRandom.current().nextInt(1, (int) maxFreezeTime.getTime() + 1);
-            freezeMines.add(new FreezeMine(new FreezeTime(freezeTime, maxFreezeTime.getTimeUnit())));
+            int randomFrozenTurns = ThreadLocalRandom.current().nextInt(1, (int) maxFreezeTime.getTurns() + 1);
+            freezeMines.add(new FreezeMine(new FreezeTime(randomFrozenTurns)));
         }
 
         return deployMines(dungeon, freezeMines, targetBoundaries);
     }
 
-    protected static List<Mine> placeTeleportMines(DungeonSpace[][] dungeon, 
-            int numberOfTeleportMines, TargetBoundaries targetBoundaries) {
+    protected static List<Mine> placeTeleportMines(DungeonSpace[][] dungeon,
+        int numberOfTeleportMines, TargetBoundaries targetBoundaries) {
 
         List<Mine> teleportMines = new ArrayList<>();
         List<DungeonSpace> openSpaces = DungeonConstructionUtil.getOpenSpaces(dungeon);
@@ -130,9 +130,9 @@ public class DungeonConstructionUtil {
         return deployMines(dungeon, teleportMines, targetBoundaries);
     }
 
-    protected static List<Mine> deployMines(DungeonSpace[][] dungeon, List<Mine> mines, 
-            TargetBoundaries targetBoundaries) {
-        
+    protected static List<Mine> deployMines(DungeonSpace[][] dungeon, List<Mine> mines,
+        TargetBoundaries targetBoundaries) {
+
         Map<Double, List<DungeonSpace>> targetAreas = new HashMap<>();
 
         List<TargetBoundary> targeBoundaryAreas = targetBoundaries.getTargetBoundaries();
@@ -142,14 +142,14 @@ public class DungeonConstructionUtil {
             for (int row = 0; row < dungeon.length; row++) {
                 for (int col = 0; col < dungeon.length; col++) {
                     if (inTargetBoundary(row, col, targetBoundary.getMinDistanceFromCenter(), targetBoundary.getMaxDistanceFromCenter(), dungeon.length)
-                            && dungeon[row][col].isNotPermanentlyOccupied()) {
+                        && dungeon[row][col].isNotPermanentlyOccupied()) {
                         emptyDungeonSpacesInTargetArea.add(dungeon[row][col]);
                     }
                 }
             }
             if (emptyDungeonSpacesInTargetArea.isEmpty()) {
                 System.out.println("There are no available spaces available for target area, "
-                        + "min: " + targetBoundary.getMinDistanceFromCenter() + " max: " + targetBoundary.getMaxDistanceFromCenter());
+                    + "min: " + targetBoundary.getMinDistanceFromCenter() + " max: " + targetBoundary.getMaxDistanceFromCenter());
             } else {
                 targetAreas.put(targetBoundary.getTargetPercentage(), emptyDungeonSpacesInTargetArea);
             }
@@ -184,7 +184,7 @@ public class DungeonConstructionUtil {
             availableSpaces.get(index).addDungeonObject(mines.get(minesPlaced++));
             usedIndices.add(index);
         }
-        
+
         return mines;
     }
 
@@ -200,9 +200,9 @@ public class DungeonConstructionUtil {
         int maxWestBoundary = center - maxTargetBoundary;
 
         boolean rowInRange = (row <= minNorthBoundary && row >= maxNorthBoundary)
-                || (row >= minSouthBoundary && row <= maxSouthBoundary);
+            || (row >= minSouthBoundary && row <= maxSouthBoundary);
         boolean colInRange = (col >= minEastBoundary && col <= maxEastBoundary)
-                || (col <= minWestBoundary && col >= maxWestBoundary);
+            || (col <= minWestBoundary && col >= maxWestBoundary);
 
         return rowInRange || colInRange;
     }

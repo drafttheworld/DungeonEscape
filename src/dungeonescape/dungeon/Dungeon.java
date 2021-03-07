@@ -106,13 +106,13 @@ public class Dungeon {
 
         //lay the freeze mines
         List<Mine> freezeMines = DungeonConstructionUtil.placeFreezeMines(dungeon, dungeonConfiguration.getFreezeMineCount(),
-                dungeonConfiguration.getFreezeMineMaxFreezeTime(), targetBoundaries);
+            dungeonConfiguration.getFreezeMineMaxFreezeTime(), targetBoundaries);
         moveableDungeonObjects.addAll(freezeMines);
         System.out.println("Layed " + freezeMines.size() + " freeze mines.");
 
         //lay the teleport mines
         List<Mine> teleportMines = DungeonConstructionUtil.placeTeleportMines(dungeon,
-                dungeonConfiguration.getTeleportMineCount(), targetBoundaries);
+            dungeonConfiguration.getTeleportMineCount(), targetBoundaries);
         moveableDungeonObjects.addAll(teleportMines);
         System.out.println("Layed " + teleportMines.size() + " teleport mines.");
 
@@ -130,7 +130,7 @@ public class Dungeon {
         //place the ghosts, offset 1/4 of the total dungeon width from the border
         int borderOffset = dungeon.length / 4;
         List<Ghost> ghosts = DungeonCharacterUtil.placeGhosts(dungeon,
-                dungeonConfiguration.getGhostCount(), dungeonConfiguration.getGhostFreezeTime(), borderOffset);
+            dungeonConfiguration.getGhostCount(), dungeonConfiguration.getGhostFreezeTime(), borderOffset);
         ghosts.forEach(ghost -> {
             ghost.setDetectionDistance(dungeonConfiguration.getGhostDetectionDistance());
             ghost.setNumberOfSpacesToMoveWhenHunting(dungeonConfiguration.getGhostNumberOfMovesWhenHunting());
@@ -142,7 +142,7 @@ public class Dungeon {
 
         moveableDungeonObjects.forEach(dungeonObject -> {
             dungeonObjectTracks.add(new DungeonObjectTrack(dungeonObject.getPosition(),
-                    dungeonObject.getDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
+                dungeonObject.getDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
         });
 
         return dungeon;
@@ -151,7 +151,7 @@ public class Dungeon {
     public void movePlayer(Direction direction, String playerName) {
         if (!dungeonConfiguration.getPlayerNames().contains(playerName)) {
             NotificationManager.notify(new PlayerNotFoundNotification("Player " + playerName
-                    + " does not exist. Valid players: " + dungeonConfiguration.getPlayerNames().toString()));
+                + " does not exist. Valid players: " + dungeonConfiguration.getPlayerNames().toString()));
 
         }
 
@@ -165,7 +165,7 @@ public class Dungeon {
         if (player.hasWon() || player.hasLost()) {
             String gameResult = player.hasWon() ? "You Won!" : "You lost.";
             NotificationManager.notify(
-                    new GameOverNotification("Cannot move player after game has ended (" + gameResult + ")."));
+                new GameOverNotification("Cannot move player after game has ended (" + gameResult + ")."));
             return;
         }
 
@@ -185,8 +185,8 @@ public class Dungeon {
             }
             moveNonPlayerCharacters();
             dungeonTimeElapsed++;
-        } else if (player.getFrozenTimeRemaining().getFreezeTimeForTimeUnit(TimeUnit.MINUTES) > 0) {
-            player.decrementFrozenTimeRemaining(1, TimeUnit.MINUTES);
+        } else if (player.getFrozenTurnsRemaining().getTurns() > 0) {
+            player.decrementFrozenTurnsRemaining(1);
             moveNonPlayerCharacters();
             dungeonTimeElapsed++;
         }
@@ -200,7 +200,7 @@ public class Dungeon {
         for (DungeonObjectTrack dot : dungeonObjectTracks) {
             Position dotPosition = dot.getPosition();
             String dungeonSpaceCharacter = dungeon[dotPosition.getPositionY()][dotPosition.getPositionX()]
-                    .getVisibleDungeonSpaceType().getValueString();
+                .getVisibleDungeonSpaceType().getValueString();
             dotMap.putIfAbsent(dotPosition, new DungeonObjectTrack(dotPosition, dungeonSpaceCharacter));
         }
         dungeonObjectTracks.clear();
@@ -237,12 +237,12 @@ public class Dungeon {
 
     public void spawnDungeonMasters() {
         List<DungeonMaster> dungeonMasters
-                = DungeonCharacterUtil.placeDungeonMasters(dungeon, dungeonConfiguration.getDungeonMasterCount());
+            = DungeonCharacterUtil.placeDungeonMasters(dungeon, dungeonConfiguration.getDungeonMasterCount());
         nonPlayerCharacters.addAll(dungeonMasters);
         moveableDungeonObjects.addAll(dungeonMasters);
         dungeonMasters.forEach(dungeonMaster -> {
             dungeonObjectTracks.add(new DungeonObjectTrack(dungeonMaster.getPosition(),
-                    dungeonMaster.getDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
+                dungeonMaster.getDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
         });
     }
 
@@ -261,9 +261,9 @@ public class Dungeon {
 
     public Player getPlayer(String playerName) {
         return players.stream()
-                .filter(playerN -> playerName.equals(playerN.getPlayerName()))
-                .findFirst()
-                .orElse(null);
+            .filter(playerN -> playerName.equals(playerN.getPlayerName()))
+            .findFirst()
+            .orElse(null);
     }
 
     public int getDungeonTimeElapsed() {

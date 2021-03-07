@@ -70,12 +70,12 @@ public class GameSession {
 
     public String getPlayerStats(String playerName) {
         StringBuilder playerStats = new StringBuilder("Stats for ").append(playerName).append(":\n")
-                .append("Dungeon time: ").append(dungeon.getDungeonTimeElapsed()).append("\n")
-                .append("Frozen time remaining: ");
-        FreezeTime freezeTime = dungeon.getPlayer(playerName).getFrozenTimeRemaining();
-        playerStats.append(freezeTime.getFreezeTimeForTimeUnit(TimeUnit.MINUTES))
-                .append(" ").append(TimeUnit.MINUTES)
-                .append("\n");
+            .append("Dungeon time: ").append(dungeon.getDungeonTimeElapsed()).append("\n")
+            .append("Frozen time remaining: ");
+        FreezeTime freezeTime = dungeon.getPlayer(playerName).getFrozenTurnsRemaining();
+        playerStats.append(freezeTime.getTurns())
+            .append(" ").append("Turns")
+            .append("\n");
         return playerStats.toString();
     }
 
