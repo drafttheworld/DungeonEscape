@@ -11,13 +11,13 @@ package dungeonescape.dungeonobject;
  */
 public class FreezeTime {
 
-    private final long turns;
+    private final int turns;
 
-    public FreezeTime(long turns) {
+    public FreezeTime(int turns) {
         this.turns = turns;
     }
 
-    public long getTurns() {
+    public int getTurns() {
         return turns;
     }
 

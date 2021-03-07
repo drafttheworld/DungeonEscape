@@ -95,12 +95,6 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                //do nothing
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
                 if (gameOver) {
                     return;
                 }
@@ -126,6 +120,11 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
                         //do nothing
                         break;
                 }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
             }
 
         });
@@ -161,6 +160,9 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             applicationPanel.remove(startButton);
             gamePane = new GameConfigurationPane(this);
             applicationPanel.add(gamePane, BorderLayout.CENTER);
+            if (playerInformationTextArea != null) {
+                playerInformationTextArea.setText("Player Stats:");
+            }
             refresh();
         });
 

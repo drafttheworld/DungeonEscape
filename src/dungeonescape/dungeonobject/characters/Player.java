@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -32,17 +31,18 @@ public class Player extends DungeonCharacter {
     private final Dungeon dungeon;
     private final String playerName;
     private final int playerVisibility;
-    private long frozenTurnsRemaining;
-    private boolean won = false;
-    private boolean lost = false;
+    private int frozenTurnsRemaining;
+    private boolean won;
+    private boolean lost;
 
     public Player(String playerName, int playerVisibility, Dungeon dungeon) {
         this.playerName = playerName;
         this.playerVisibility = playerVisibility;
         this.dungeon = dungeon;
         super.setActive(true);
-
-        frozenTurnsRemaining = 0L;
+        frozenTurnsRemaining = 0;
+        won = false;
+        lost = false;
     }
 
     public String getPlayerName() {

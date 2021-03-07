@@ -16,7 +16,6 @@ import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,7 +39,7 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     @Override
     public int getNumberOfSpacesToMoveWhenPatrolling() {
         return super.getNumberOfSpacesToMoveWhenPatrolling() == 0
-                ? DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
+            ? DEFAULT_MOVES_WHEN_PATROLLING : super.getNumberOfSpacesToMoveWhenPatrolling();
     }
 
     public Guard numberOfMovesWhenPatrolling(int numberOfMovesWhenPatrolling) {
@@ -51,7 +50,7 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     @Override
     public int getNumberOfSpacesToMoveWhenHunting() {
         return super.getNumberOfSpacesToMoveWhenHunting() == 0
-                ? DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
+            ? DEFAULT_MOVES_WHEN_HUNTING : super.getNumberOfSpacesToMoveWhenHunting();
     }
 
     public Guard numberOfMovesWhenHunting(int numberOfMovesWhenHunting) {
@@ -74,20 +73,23 @@ public class Guard extends DungeonCharacter implements TeleportObject {
 
     @Override
     public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
+
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
-        if (dungeonObject instanceof Construction) {
+        if (!isActive()) {
+            return objectTracks;
+        } else if (dungeonObject instanceof Construction) {
             NotificationManager.notify(
-                    new ActionNotAllowedNotification("Guards cannot move through obstacles."));
+                new ActionNotAllowedNotification("Guards cannot move through obstacles."));
         } else if (dungeonObject instanceof DungeonMaster) {
             NotificationManager.notify(
-                    new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master."));
+                new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master."));
         } else if (dungeonObject instanceof Player) {
             objectTracks.addAll(teleport(dungeonObject));
             super.setActive(false);
             NotificationManager.notify(
-                    new InteractionNotification("A guard has caught you and moved you back to your cell."));
+                new InteractionNotification("A guard has caught you and moved you back to your cell."));
         }
-        
+
         return objectTracks;
     }
 
@@ -98,17 +100,16 @@ public class Guard extends DungeonCharacter implements TeleportObject {
 
     @Override
     public List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon) {
-        
+
         DungeonSpace previousDungeonSpace = getDungeonSpace();
-        
+
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         objectTracks.addAll(CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
-                getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance()));
+            getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance()));
 
-        
         if (previousDungeonSpace.isVisible()) {
             objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(),
-                    previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
+                previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
         }
         if (getDungeonSpace().isVisible()) {
             objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
@@ -119,11 +120,11 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     @Override
     public boolean canOccupySpace(DungeonSpace dungeonSpace) {
         return dungeonSpace.getDungeonObjects().stream()
-                .noneMatch(dungeonObject -> {
-                    return dungeonObject instanceof Construction
-                            || (dungeonObject instanceof DungeonCharacter
-                            && !(dungeonObject instanceof Ghost));
-                });
+            .noneMatch(dungeonObject -> {
+                return dungeonObject instanceof Construction
+                    || (dungeonObject instanceof DungeonCharacter
+                    && !(dungeonObject instanceof Ghost));
+            });
     }
 
     @Override
@@ -134,12 +135,12 @@ public class Guard extends DungeonCharacter implements TeleportObject {
         DungeonSpace currentSpace = player.getDungeonSpace();
         jailCellSpace.addDungeonObject(player);
         currentSpace.removeDungeonObject(player);
-        
-        DungeonObjectTrack oldPlayerLocation = new DungeonObjectTrack(currentSpace.getPosition(), 
-                currentSpace.getVisibleDungeonSpaceType().getValueString());
-        DungeonObjectTrack newPlayerLocation = new DungeonObjectTrack(player.getPosition(), 
-                player.getDungeonSpace().getVisibleDungeonSpaceType().getValueString());
-        
+
+        DungeonObjectTrack oldPlayerLocation = new DungeonObjectTrack(currentSpace.getPosition(),
+            currentSpace.getVisibleDungeonSpaceType().getValueString());
+        DungeonObjectTrack newPlayerLocation = new DungeonObjectTrack(player.getPosition(),
+            player.getDungeonSpace().getVisibleDungeonSpaceType().getValueString());
+
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         objectTracks.add(oldPlayerLocation);
         objectTracks.add(newPlayerLocation);

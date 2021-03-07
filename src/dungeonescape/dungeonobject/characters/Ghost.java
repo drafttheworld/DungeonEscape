@@ -75,7 +75,8 @@ public class Ghost extends DungeonCharacter {
 
     @Override
     public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
-        if (dungeonObject instanceof Player) {
+
+        if (isActive() && dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTurns(freezeTime);
             super.setActive(false);
         }
