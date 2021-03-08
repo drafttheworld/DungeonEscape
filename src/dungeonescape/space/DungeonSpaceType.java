@@ -13,16 +13,18 @@ import java.util.Arrays;
  */
 public enum DungeonSpaceType {
 
-    WALL('#'),
-    NON_VISIBLE_SPACE('X'),
-    OPEN_SPACE(' '),
+    COIN('$'),
+    DUNGEON_MASTER('M'),
     FREEZE_MINE('*'),
-    TELEPORT_MINE('@'),
-    TELEPORT_LOCATION(' '),
-    PLAYER('P'),
     GHOST('~'),
     GUARD('G'),
-    DUNGEON_MASTER('M');
+    MYSTERY_BOX('?'),
+    NON_VISIBLE_SPACE('X'),
+    OPEN_SPACE(' '),
+    PLAYER('P'),
+    TELEPORT_LOCATION(' '),
+    TELEPORT_MINE('@'),
+    WALL('#');
 
     private final char value;
 

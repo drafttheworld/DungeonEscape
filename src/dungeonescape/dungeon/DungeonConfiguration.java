@@ -21,7 +21,7 @@ import java.util.List;
 public class DungeonConfiguration {
 
     //Player settings
-    private final List<String> playerNames;
+    private String playerName;
     private int playerVisibility;
 
     //Dungeon settings
@@ -49,26 +49,19 @@ public class DungeonConfiguration {
     private FreezeTime freezeMineMaxFreezeTime;
     private int teleportMineCount;
 
-    public DungeonConfiguration() {
-        playerNames = new ArrayList<>();
+    public String getPlayerName() {
+        return playerName;
     }
 
-    public List<String> getPlayerNames() {
-        return Collections.unmodifiableList(playerNames);
-    }
-
-    public void addPlayerName(String playerName) {
+    public void setPlayerName(String playerName) {
         if (playerName == null || "".equals(playerName)) {
             throw new IllegalArgumentException("Player name cannot be blank.");
-        } else if (playerNames.contains(playerName)) {
-            throw new IllegalArgumentException("Player " + playerName + " already exists. "
-                    + "Please provide a unique name.");
         }
-        playerNames.add(playerName);
+        this.playerName = playerName;
     }
 
     public DungeonConfiguration playerName(String playerName) {
-        addPlayerName(playerName);
+        setPlayerName(playerName);
         return this;
     }
 

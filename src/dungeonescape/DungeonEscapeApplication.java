@@ -14,9 +14,6 @@ import dungeonescape.play.GameSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -62,21 +59,7 @@ public class DungeonEscapeApplication {
         gameSessions.clear();
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
-
-//        UIManager.put("nimbusBase", new Color(
-//        ...));
-//UIManager.put("nimbusBlueGrey", new Color(
-//        ...));
-//UIManager.put("control", new Color(
-//        ...));
-        for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-            System.out.println("info name: " + info.getName());
-            if ("Metal".equals(info.getName())) {
-                UIManager.setLookAndFeel(info.getClassName());
-                break;
-            }
-        }
+    public static void main(String[] args) throws IOException {
 
         new DungeonEscapeApplication().startGameGUI();
     }

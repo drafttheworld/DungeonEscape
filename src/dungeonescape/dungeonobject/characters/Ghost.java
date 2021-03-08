@@ -5,6 +5,8 @@
  */
 package dungeonescape.dungeonobject.characters;
 
+import dungeonescape.dungeon.notifications.InteractionNotification;
+import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.FreezeTime;
@@ -19,17 +21,19 @@ import java.util.List;
  *
  * @author Andrew
  */
-public class Ghost extends DungeonCharacter {
+public class Ghost extends NonPersonDungeonCharacter {
 
     public static final FreezeTime DEFAULT_FREEZE_TIME = new FreezeTime(30);
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 2;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 3;
     public static int DEFAULT_DETECTION_DISTANCE = 10;
 
+    private final DungeonSpace[][] dungeon;
     private final FreezeTime freezeTime;
     private int detectionDistance;
 
-    public Ghost(FreezeTime freezeTime) {
+    public Ghost(DungeonSpace[][] dungeon, FreezeTime freezeTime) {
+        this.dungeon = dungeon;
         this.freezeTime = freezeTime;
         super.setActive(true);
     }
@@ -75,9 +79,13 @@ public class Ghost extends DungeonCharacter {
 
     @Override
     public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
+
         if (dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTurns(freezeTime);
             super.setActive(false);
+            NotificationManager.notify(
+                new InteractionNotification("A ghost has attacked you and frozen you in fear for "
+                    + freezeTime.getTurns() + " turns."));
         }
 
         return Collections.emptyList();
@@ -89,12 +97,29 @@ public class Ghost extends DungeonCharacter {
     }
 
     @Override
-    public List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon) {
+    public boolean canOccupySpace(DungeonSpace dungeonSpace) {
+        return true;
+    }
+
+    @Override
+    public List<DungeonObjectTrack> move(Direction direction) {
+        throw new UnsupportedOperationException("This method is not supported for a NonPersonDungeonCharacter.");
+    }
+
+    /**
+     * Use the player's position to determine whether they are in range rather than searching the surrounding tiles.
+     *
+     * @param dungeon
+     * @param player
+     * @return
+     */
+    @Override
+    public List<DungeonObjectTrack> move(DungeonSpace[][] dungeon, Player player) {
 
         DungeonSpace previousDungeonSpace = getDungeonSpace();
 
         CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
-            getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
+            getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance(), player);
 
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         if (previousDungeonSpace.isVisible()) {
@@ -106,10 +131,4 @@ public class Ghost extends DungeonCharacter {
         }
         return objectTracks;
     }
-
-    @Override
-    public boolean canOccupySpace(DungeonSpace dungeonSpace) {
-        return true;
-    }
-
 }
