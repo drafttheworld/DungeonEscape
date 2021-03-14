@@ -9,11 +9,11 @@ import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.FreezeTime;
+import dungeonescape.dungeonobject.characters.Player;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -26,17 +26,13 @@ public class GameSession {
     private final Dungeon dungeon;
 
     //Game status
-    private Map<String, Integer> turnCounts;
+    private int turnCount;
 
     public GameSession(DungeonConfiguration dungeonConfiguration) {
         this.dungeonConfiguration = dungeonConfiguration;
 
         dungeon = new Dungeon(dungeonConfiguration);
-        turnCounts = new HashMap<>();
-        dungeonConfiguration.getPlayerNames().forEach((pName) -> {
-            turnCounts.put(pName, 0);
-        });
-
+        turnCount = 0;
     }
 
     public DungeonConfiguration getDungeonConfiguration() {
@@ -47,41 +43,40 @@ public class GameSession {
         return sessionId;
     }
 
-    public List<DungeonObjectTrack> movePlayerGui(Direction direction, String playerName) {
-        movePlayer(direction, playerName);
+    public List<DungeonObjectTrack> movePlayerGui(Direction direction) {
+        movePlayer(direction);
         return dungeon.getDungeonObjectTracks();
     }
 
-    public String movePlayerHeadless(Direction direction, String playerName) {
-        movePlayer(direction, playerName);
+    public String movePlayerHeadless(Direction direction) {
+        movePlayer(direction);
         return dungeon.generatePlayerMap();
     }
 
-    private void movePlayer(Direction direction, String playerName) {
-        dungeon.movePlayer(direction, playerName);
+    private void movePlayer(Direction direction) {
+        dungeon.movePlayer(direction);
 
-        Integer turnCount = turnCounts.get(playerName) + 1;
-        turnCounts.put(playerName, turnCount);
+        turnCount++;
 
         if (turnCount == dungeonConfiguration.getSpawnDungeonMastersTurnCount()) {
             dungeon.spawnDungeonMasters();
         }
     }
 
-    public String getPlayerStats(String playerName) {
+    public String getPlayerStats() {
+
+        String playerName = dungeonConfiguration.getPlayerName();
+        int dungeonTimeElapsed = dungeon.getDungeonTimeElapsed();
         StringBuilder playerStats = new StringBuilder("Stats for ").append(playerName).append(":\n")
-            .append("Dungeon time elapsed: ").append(dungeon.getDungeonTimeElapsed()).append(" turns").append("\n");
+            .append("Dungeon time elapsed: ").append(dungeonTimeElapsed).append(" turns").append("\n");
 
-        FreezeTime freezeTime = dungeon.getPlayer(playerName).getFrozenTurnsRemaining();
+        FreezeTime freezeTime = dungeon.getPlayer().getFrozenTurnsRemaining();
         playerStats.append("Frozen time remaining: ").append(freezeTime.getTurns()).append(" turns").append("\n");
-
         return playerStats.toString();
     }
 
     public String getPlayerMap() {
-        String miniMap = dungeon.generatePlayerMap();
-//        System.out.println(miniMap);
-        return miniMap;
+        return dungeon.generatePlayerMap();
     }
 
 }

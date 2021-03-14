@@ -54,7 +54,7 @@ public class DungeonCharacterUtil {
             }
 
             DungeonSpace dungeonExitSpace = dungeonExits.get(dungeonExitNumber);
-            Guard guard = new Guard(jailCellSpace);
+            Guard guard = new Guard(dungeon, jailCellSpace);
             dungeonExitSpace.addDungeonObject(guard);
             guards.add(guard);
 
@@ -76,7 +76,7 @@ public class DungeonCharacterUtil {
                 while (usedSpaces.contains(emptyDungeonSpaceNumber)) {
                     emptyDungeonSpaceNumber = ThreadLocalRandom.current().nextInt(0, emptyDungeonSpaces.size());
                 }
-                Guard guard = new Guard(jailCellSpace);
+                Guard guard = new Guard(dungeon, jailCellSpace);
                 DungeonSpace dungeonSpace = emptyDungeonSpaces.get(emptyDungeonSpaceNumber);
                 dungeonSpace.addDungeonObject(guard);
                 guards.add(guard);
@@ -173,7 +173,7 @@ public class DungeonCharacterUtil {
                 }
                 dungeonBorderSpace = dungeon[col][row];
             }
-            Ghost ghost = new Ghost(ghostFreezeTime);
+            Ghost ghost = new Ghost(dungeon, ghostFreezeTime);
             dungeonBorderSpace.addDungeonObject(ghost);
             ghosts.add(ghost);
         }
@@ -195,7 +195,7 @@ public class DungeonCharacterUtil {
         List<DungeonMaster> dungeonMasters = new ArrayList<>();
 
         //First dungeon master will spawn at the center of the map
-        DungeonMaster dungeonMaster = new DungeonMaster();
+        DungeonMaster dungeonMaster = new DungeonMaster(dungeon);
         dungeon[center][center].addDungeonObject(dungeonMaster);
         dungeonMasters.add(dungeonMaster);
 
@@ -208,7 +208,7 @@ public class DungeonCharacterUtil {
             while (usedSpaces.contains(position)) {
                 position = ThreadLocalRandom.current().nextInt(0, availableDungeonSpaces.size());
             }
-            dungeonMaster = new DungeonMaster();
+            dungeonMaster = new DungeonMaster(dungeon);
             availableDungeonSpaces.get(position).addDungeonObject(dungeonMaster);
             dungeonMasters.add(dungeonMaster);
             usedSpaces.add(position);

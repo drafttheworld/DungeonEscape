@@ -22,16 +22,18 @@ import java.util.List;
  *
  * @author Andrew
  */
-public class Guard extends DungeonCharacter implements TeleportObject {
+public class Guard extends NonPersonDungeonCharacter implements TeleportObject {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 5;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
     public static int DEFAULT_DETECTION_DISTANCE = 5;
 
+    private final DungeonSpace[][] dungeon;
     private final DungeonSpace jailCellSpace;
     private int detectionDistance;
 
-    public Guard(DungeonSpace jailCellSpace) {
+    public Guard(DungeonSpace[][] dungeon, DungeonSpace jailCellSpace) {
+        this.dungeon = dungeon;
         this.jailCellSpace = jailCellSpace;
         super.setActive(true);
     }
@@ -87,7 +89,7 @@ public class Guard extends DungeonCharacter implements TeleportObject {
             objectTracks.addAll(teleport(dungeonObject));
             super.setActive(false);
             NotificationManager.notify(
-                new InteractionNotification("A guard has caught you and moved you back to your cell."));
+                new InteractionNotification("A guard has caught you and moved you back to the center of the map."));
         }
 
         return objectTracks;
@@ -99,13 +101,38 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     }
 
     @Override
-    public List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon) {
+    public boolean canOccupySpace(DungeonSpace dungeonSpace) {
+        return dungeonSpace.getDungeonObjects().stream()
+            .noneMatch(dungeonObject -> {
+                return dungeonObject instanceof Construction
+                    || (dungeonObject instanceof DungeonCharacter
+                    && !(dungeonObject instanceof Ghost));
+            });
+    }
+
+    @Override
+    public List<DungeonObjectTrack> move(Direction direction) {
+        throw new UnsupportedOperationException("This method is not supported for a NonPersonDungeonCharacter.");
+    }
+
+    /**
+     * Use the player's position to determine whether they are in range rather than searching the surrounding tiles.
+     *
+     * @param dungeon
+     * @param player
+     * @return
+     */
+    @Override
+    public List<DungeonObjectTrack> move(DungeonSpace[][] dungeon, Player player) {
 
         DungeonSpace previousDungeonSpace = getDungeonSpace();
 
+        List<DungeonObjectTrack> movementTracks
+            = CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
+                getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance(), player);
+
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
-        objectTracks.addAll(CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
-            getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance()));
+        objectTracks.addAll(movementTracks);
 
         if (previousDungeonSpace.isVisible()) {
             objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(),
@@ -115,16 +142,6 @@ public class Guard extends DungeonCharacter implements TeleportObject {
             objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
         }
         return objectTracks;
-    }
-
-    @Override
-    public boolean canOccupySpace(DungeonSpace dungeonSpace) {
-        return dungeonSpace.getDungeonObjects().stream()
-            .noneMatch(dungeonObject -> {
-                return dungeonObject instanceof Construction
-                    || (dungeonObject instanceof DungeonCharacter
-                    && !(dungeonObject instanceof Ghost));
-            });
     }
 
     @Override
@@ -146,5 +163,4 @@ public class Guard extends DungeonCharacter implements TeleportObject {
         objectTracks.add(newPlayerLocation);
         return objectTracks;
     }
-
 }

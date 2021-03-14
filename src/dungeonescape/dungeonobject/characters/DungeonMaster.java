@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author Andrew
  */
-public class DungeonMaster extends DungeonCharacter {
+public class DungeonMaster extends NonPersonDungeonCharacter {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 3;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
@@ -32,9 +32,12 @@ public class DungeonMaster extends DungeonCharacter {
     public static final String CAPTURE_NOTIFICATION
         = "You have been caught and executed by a DUNGEON MASTER!";
 
+    private final DungeonSpace[][] dungeon;
+
     private int detectionDistance;
 
-    public DungeonMaster() {
+    public DungeonMaster(DungeonSpace[][] dungeon) {
+        this.dungeon = dungeon;
         super.setActive(true);
     }
 
@@ -108,27 +111,12 @@ public class DungeonMaster extends DungeonCharacter {
      * the player.
      *
      * @param direction
-     * @param dungeon
      * @return
      * @throws GameNotification
      */
     @Override
-    public List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon) {
-
-        DungeonSpace previousDungeonSpace = getDungeonSpace();
-
-        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
-            getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance());
-
-        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
-        if (getPreviousDungeonSpace().isVisible()) {
-            objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(),
-                previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
-        }
-        if (getDungeonSpace().isVisible()) {
-            objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
-        }
-        return objectTracks;
+    public List<DungeonObjectTrack> move(Direction direction) {
+        throw new UnsupportedOperationException("This method is not supported for a NonPersonDungeonCharacter.");
     }
 
     @Override
@@ -146,4 +134,29 @@ public class DungeonMaster extends DungeonCharacter {
             });
     }
 
+    /**
+     * Use the player's position to determine whether they are in range rather than searching the surrounding tiles.
+     *
+     * @param dungeon
+     * @param player
+     * @return
+     */
+    @Override
+    public List<DungeonObjectTrack> move(DungeonSpace[][] dungeon, Player player) {
+
+        DungeonSpace previousDungeonSpace = getDungeonSpace();
+
+        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
+            getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance(), player);
+
+        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        if (getPreviousDungeonSpace().isVisible()) {
+            objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(),
+                previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
+        }
+        if (getDungeonSpace().isVisible()) {
+            objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
+        }
+        return objectTracks;
+    }
 }

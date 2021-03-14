@@ -54,12 +54,12 @@ public enum GameDifficulty {
             .guardNumberOfMovesWhenPatrolling(2)
             .guardNumberOfMovesWhenHunting(2)
             .ghostCount(8)
-            .ghostFreezeTime(new FreezeTime(20))
+            .ghostFreezeTime(new FreezeTime(10))
             .ghostDetectionDistance(5)
             .ghostNumberOfMovesWhenPatrolling(5)
             .ghostNumberOfMovesWhenHunting(3)
             .freezeMineCount(25)
-            .maxFreezeMineTime(new FreezeTime(3))
+            .maxFreezeMineTime(new FreezeTime(5))
             .teleportMineCount(10);
     }
 
@@ -83,12 +83,12 @@ public enum GameDifficulty {
             .guardNumberOfMovesWhenPatrolling(2)
             .guardNumberOfMovesWhenHunting(2)
             .ghostCount(500)
-            .ghostFreezeTime(new FreezeTime(30))
+            .ghostFreezeTime(new FreezeTime(15))
             .ghostDetectionDistance(5)
             .ghostNumberOfMovesWhenPatrolling(5)
             .ghostNumberOfMovesWhenHunting(3)
             .freezeMineCount(2000)
-            .maxFreezeMineTime(new FreezeTime(5))
+            .maxFreezeMineTime(new FreezeTime(10))
             .teleportMineCount(1000);
     }
 
@@ -112,12 +112,12 @@ public enum GameDifficulty {
             .guardNumberOfMovesWhenPatrolling(3)
             .guardNumberOfMovesWhenHunting(3)
             .ghostCount(300)
-            .ghostFreezeTime(new FreezeTime(40))
+            .ghostFreezeTime(new FreezeTime(20))
             .ghostDetectionDistance(5)
             .ghostNumberOfMovesWhenPatrolling(5)
             .ghostNumberOfMovesWhenHunting(3)
             .freezeMineCount(5000)
-            .maxFreezeMineTime(new FreezeTime(10))
+            .maxFreezeMineTime(new FreezeTime(15))
             .teleportMineCount(1000);
     }
 
@@ -141,12 +141,12 @@ public enum GameDifficulty {
             .guardNumberOfMovesWhenPatrolling(3)
             .guardNumberOfMovesWhenHunting(3)
             .ghostCount(40000)
-            .ghostFreezeTime(new FreezeTime(60))
+            .ghostFreezeTime(new FreezeTime(25))
             .ghostDetectionDistance(8)
             .ghostNumberOfMovesWhenPatrolling(8)
             .ghostNumberOfMovesWhenHunting(5)
             .freezeMineCount(500000)
-            .maxFreezeMineTime(new FreezeTime(15))
+            .maxFreezeMineTime(new FreezeTime(20))
             .teleportMineCount(200000);
     }
 

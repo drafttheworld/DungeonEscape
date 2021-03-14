@@ -6,6 +6,7 @@
 package dungeonescape.dungeon.gui;
 
 import dungeonescape.DungeonEscapeApplication;
+import dungeonescape.dungeon.gui.images.Images;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.NotificationListener;
@@ -18,6 +19,7 @@ import dungeonescape.play.GameSession;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.TextArea;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -29,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -50,9 +51,8 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private static final int EAST_KEY_CODE = 39;
     private static final int WEST_KEY_CODE = 37;
 
-    private static final String APP_IMAGE = "images/hero_vs_dungeon_master.png";
-    private static final String LOSS_IMAGE = "images/notifications/game_lost.png";
-    private static final String WIN_IMAGE = "images/notifications/game_won.png";
+    private static final int STARTING_HEIGHT = 600;
+    private static final int STARTING_WIDTH = 900;
 
     private static final String PLAYER_NAME = "Hero";
 
@@ -95,6 +95,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
             @Override
             public void keyPressed(KeyEvent e) {
+
                 if (gameOver) {
                     return;
                 }
@@ -124,7 +125,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
             @Override
             public void keyReleased(KeyEvent e) {
-
+                // do nothing
             }
 
         });
@@ -160,26 +161,39 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             applicationPanel.remove(startButton);
             gamePane = new GameConfigurationPane(this);
             applicationPanel.add(gamePane, BorderLayout.CENTER);
+
             if (playerInformationTextArea != null) {
-                playerInformationTextArea.setText("Player Stats:");
+                playerInformationTextArea.setText("Player stats:");
             }
+
+            if (playerNotificationsTextArea != null) {
+                playerNotificationsTextArea.setText("Player notifications:");
+            }
+
             refresh();
         });
 
-        BufferedImage backgroundImage = ImageIO.read(DungeonEscapeGUI.class.getResource(APP_IMAGE));
-        gamePane = new ImagePanel(backgroundImage);
+        gamePane = new ImagePanel(Images.START_SCREEN_BACKGROUND.getBufferedImage());
 
         applicationPanel.setLayout(new BorderLayout());
-        applicationPanel.setPreferredSize(new Dimension(900, 600));
+        applicationPanel.setPreferredSize(new Dimension(STARTING_WIDTH, STARTING_HEIGHT));
         applicationPanel.add(startButton, BorderLayout.NORTH);
         applicationPanel.add(gamePane, BorderLayout.CENTER);
 
         this.setLayout(new BorderLayout());
         this.add(applicationPanel);
         this.setTitle("Dungeon Escape");
+        centerApplication();
         pack();
 
         NotificationManager.registerNotificationListener(this);
+    }
+
+    private void centerApplication() {
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - STARTING_WIDTH) / 2);
+        int y = (int) ((dimension.getHeight() - STARTING_HEIGHT) / 2);
+        this.setLocation(x, y);
     }
 
     protected void startNewGame(GameDifficulty gameDifficulty) {
@@ -211,19 +225,19 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             recenterButton.setText("Recenter Map");
             recenterButton.addActionListener((ActionEvent ev) -> {
                 gamePane.requestFocus();
-                activeDungeonTable.centerOnPlayer(PLAYER_NAME);
+                activeDungeonTable.centerOnPlayer();
                 refresh();
             });
 
             //Refresh the map
             refresh();
-            activeDungeonTable.centerOnPlayer(PLAYER_NAME);
+            activeDungeonTable.centerOnPlayer();
             gameOver = false;
         });
     }
 
     private void movePlayer(Direction direction) {
-        List<DungeonObjectTrack> dungeonObjectTracks = gameSession.movePlayerGui(direction, PLAYER_NAME);
+        List<DungeonObjectTrack> dungeonObjectTracks = gameSession.movePlayerGui(direction);
         activeDungeonTable.updateMap(dungeonObjectTracks);
     }
 
@@ -231,10 +245,10 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     public void processNotification(GameNotification gameNotification) {
         try {
             if (gameNotification instanceof LossNotification) {
-                displayNotificationPane(LOSS_IMAGE);
+                displayNotificationPane(Images.GAME_LOST.getBufferedImage());
                 gameOver = true;
             } else if (gameNotification instanceof WinNotification) {
-                displayNotificationPane(WIN_IMAGE);
+                displayNotificationPane(Images.GAME_WON.getBufferedImage());
                 gameOver = true;
             } else {
                 playerNotificationsTextArea.setText(gameNotification.getNotificationMessage());
@@ -244,8 +258,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         }
     }
 
-    private void displayNotificationPane(String notificationImage) throws IOException {
-        BufferedImage backgroundImage = ImageIO.read(DungeonEscapeGUI.class.getResource(notificationImage));
+    private void displayNotificationPane(BufferedImage backgroundImage) throws IOException {
         applicationPanel.remove(gamePane);
         gamePane = new ImagePanel(backgroundImage);
         applicationPanel.remove(recenterButton);
@@ -323,7 +336,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
             @Override
             public void componentResized(ComponentEvent e) {
-                activeDungeonTable.centerOnPlayer(PLAYER_NAME);
+                activeDungeonTable.centerOnPlayer();
             }
 
             @Override
@@ -346,7 +359,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     }
 
     private void updateStats() {
-        String playerStats = gameSession.getPlayerStats(PLAYER_NAME);
+        String playerStats = gameSession.getPlayerStats();
         playerInformationTextArea.setText(playerStats);
         playerInformationTextArea.revalidate();
         playerInformationTextArea.repaint();

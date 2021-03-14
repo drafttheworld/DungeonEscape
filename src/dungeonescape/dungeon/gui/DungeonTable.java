@@ -114,16 +114,17 @@ public class DungeonTable extends JTable {
             int col = dungeonObjectTrack.getPosition().getPositionX();
             this.setValueAt(mapSymbol, row, col);
 
+            int dungeonMasterCount = 0;
             if (DungeonSpaceType.PLAYER.getValueString().equals(mapSymbol)) {
                 mapCenterX = col;
                 mapCenterY = row;
             }
         });
 
-        centerOnPlayer("Andrew");
+        centerOnPlayer();
     }
 
-    public void centerOnPlayer(String player) {
+    public void centerOnPlayer() {
         Rectangle currentlyVisible = this.getVisibleRect();
         Rectangle nextVisible = new Rectangle(currentlyVisible);
         int totalRowHeight = mapCenterY * CELL_SIZE;
@@ -132,52 +133,7 @@ public class DungeonTable extends JTable {
         nextVisible.x = (int) (totalColWidth - (currentlyVisible.getWidth() / 2));
         this.scrollRectToVisible(nextVisible);
     }
-
-//    public void centerOnPlayer(String player) {
-//        Rectangle currentlyVisible = this.getVisibleRect();
-//        Rectangle nextVisible = new Rectangle(currentlyVisible);
-//        int totalRowHeight = mapCenterY * CELL_SIZE;
-//        int totalColWidth = mapCenterX * CELL_SIZE;
-//        nextVisible.y = (int) (totalRowHeight - (currentlyVisible.getHeight() / 2));
-//        nextVisible.x = (int) (totalColWidth - (currentlyVisible.getWidth() / 2));
-//        int deltaY = nextVisible.y - currentlyVisible.y;
-//        int deltaX = nextVisible.x - currentlyVisible.x;
-//        
-//        final DungeonTable dungeonTable = this;
-//
-//        Timer scrollTimer = new Timer(msBetweenIterations, new ActionListener() {
-//            int currentIteration = 0;
-//            final long animationTime = 150; // milliseconds
-//            final long nsBetweenIterations = msBetweenIterations * 1000000; // nanoseconds
-//            final long startTime = System.nanoTime() - nsBetweenIterations; // Make the animation move on the first iteration
-//            final long targetCompletionTime = startTime + animationTime * 1000000;
-//            final long targetElapsedTime = targetCompletionTime - startTime;
-//            
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                long timeSinceStart = System.nanoTime() - startTime;
-//                double percentComplete = Math.min(1.0, (double) timeSinceStart / targetElapsedTime);
-//
-//                double factor = getFactor(percentComplete);
-//                nextVisible.y = (int) Math.round(dungeonTable.getVisibleRect().y + deltaY * factor);
-//                nextVisible.x = (int) Math.round(dungeonTable.getVisibleRect().x + deltaX * factor);
-//                dungeonTable.scrollRectToVisible(nextVisible);
-//                if (timeSinceStart >= targetElapsedTime) {
-//                    ((Timer) e.getSource()).stop();
-//                }
-//            }
-//        });
-//        scrollTimer.setInitialDelay(0);
-//        scrollTimer.start();
-//        
-//        
-//        this.scrollRectToVisible(nextVisible);
-//    }
-//
-//    private double getFactor(double percentComplete) {
-//        return percentComplete;
-//    }
+    
     public int getMapCenterX() {
         return mapCenterX;
     }

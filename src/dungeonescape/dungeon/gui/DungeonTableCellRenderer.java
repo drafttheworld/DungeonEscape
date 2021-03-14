@@ -5,16 +5,8 @@
  */
 package dungeonescape.dungeon.gui;
 
+import dungeonescape.dungeon.gui.images.Images;
 import dungeonescape.space.DungeonSpaceType;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -22,29 +14,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  * @author Andrew
  */
 public class DungeonTableCellRenderer extends DefaultTableCellRenderer {
-
-    private static final String CONSTRUCTION_IMAGES_DIRECTORY = "images/construction/";
-    private static final String MINE_IMAGES_DIRECTORY = "images/mines/";
-    private static final String CHARACTER_IMAGES_DIRECTORY = "images/characters/";
-    private static ImageIcon[] images;
-
-    static {
-        try {
-            images = new ImageIcon[]{
-                new ImageIcon(getImage(CONSTRUCTION_IMAGES_DIRECTORY + "stone_wall.png")),
-                new ImageIcon(getImage(CONSTRUCTION_IMAGES_DIRECTORY + "open_space.png")),
-                new ImageIcon(getImage(CONSTRUCTION_IMAGES_DIRECTORY + "nonvisible_space.png")),
-                new ImageIcon(getImage(MINE_IMAGES_DIRECTORY + "freeze_mine.png")),
-                new ImageIcon(getImage(MINE_IMAGES_DIRECTORY + "teleport_mine.png")),
-                new ImageIcon(getImage(CHARACTER_IMAGES_DIRECTORY + "ghost.png")),
-                new ImageIcon(getImage(CHARACTER_IMAGES_DIRECTORY + "guard.png")),
-                new ImageIcon(getImage(CHARACTER_IMAGES_DIRECTORY + "player.png")),
-                new ImageIcon(getImage(CHARACTER_IMAGES_DIRECTORY + "dungeon_master.png"))};
-        } catch (IOException ex) {
-            Logger.getLogger(DungeonTableCellRenderer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
+    
     @Override
     public void setValue(Object value) {
 
@@ -61,54 +31,43 @@ public class DungeonTableCellRenderer extends DefaultTableCellRenderer {
         }
 
         switch (dungeonSpaceType) {
-            case WALL:
-                setIcon(images[0]);
-                break;
-            case OPEN_SPACE:
-                setIcon(images[1]);
-                break;
-            case NON_VISIBLE_SPACE:
-                setIcon(images[2]);
-                break;
-            case FREEZE_MINE:
-                setIcon(images[3]);
-                break;
-            case TELEPORT_MINE:
-                setIcon(images[4]);
-                break;
-            case GHOST:
-                setIcon(images[5]);
-                break;
-            case GUARD:
-                setIcon(images[6]);
-                break;
-            case PLAYER:
-                setIcon(images[7]);
+            case COIN:
+                setIcon(Images.COIN.getImageIcon());
                 break;
             case DUNGEON_MASTER:
-                setIcon(images[8]);
+                setIcon(Images.DUNGEON_MASTER.getImageIcon());
                 break;
+            case FREEZE_MINE:
+                setIcon(Images.FREEZE_MINE.getImageIcon());
+                break;
+            case GHOST:
+                setIcon(Images.GHOST.getImageIcon());
+                break;
+            case GUARD:
+                setIcon(Images.GUARD.getImageIcon());
+                break;
+            case MYSTERY_BOX:
+                setIcon(Images.MYSTERY_BOX.getImageIcon());
+                break;
+            case NON_VISIBLE_SPACE:
+                setIcon(Images.NON_VISIBLE_SPACE.getImageIcon());
+                break;
+            case OPEN_SPACE:
+                setIcon(Images.OPEN_SPACE.getImageIcon());
+                break;
+            case PLAYER:
+                setIcon(Images.PLAYER.getImageIcon());
+                break;
+            case TELEPORT_MINE:
+                setIcon(Images.TELEPORT_MINE.getImageIcon());
+                break;
+            case WALL:
+                setIcon(Images.STONE_WALL.getImageIcon());
+                break;
+
             default:
-                setText("?");
-                System.out.println("Unrecognized dungeon space type: " + dungeonSpaceType.getValue());
+                throw new IllegalArgumentException("Unrecognized dungeon space type: "
+                    + dungeonSpaceType.getValue());
         }
-
     }
-
-    private static Image getImage(String path) throws IOException {
-        return getScaledImage(ImageIO.read(DungeonTableCellRenderer.class.getResource(path)),
-                DungeonTable.CELL_SIZE, DungeonTable.CELL_SIZE);
-    }
-
-    private static Image getScaledImage(Image srcImg, int w, int h) {
-        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = resizedImg.createGraphics();
-
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2.drawImage(srcImg, 0, 0, w, h, null);
-        g2.dispose();
-
-        return resizedImg;
-    }
-
 }

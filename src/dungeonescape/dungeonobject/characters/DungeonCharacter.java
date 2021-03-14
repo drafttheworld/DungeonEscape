@@ -63,7 +63,7 @@ public abstract class DungeonCharacter extends DungeonObject {
         this.active = active;
     }
     
-    public abstract List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon);
+    public abstract List<DungeonObjectTrack> move(Direction direction);
     public abstract boolean canOccupySpace(DungeonSpace dungeonSpace);
     
 }

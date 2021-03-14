@@ -70,6 +70,7 @@ public class DungeonSpace {
                     && dungeonObject instanceof TeleportObject)) {
                 isTeleported = true;
             }
+
             objectTracks.addAll(existingDungeonObject.interact(dungeonObject));
 
             if (dungeonObject instanceof Player && existingDungeonObject instanceof Mine) {

@@ -28,16 +28,16 @@ import java.util.List;
  */
 public class Player extends DungeonCharacter {
 
-    private final Dungeon dungeon;
+    private final DungeonSpace[][] dungeon;
     private final String playerName;
-    private final int playerVisibility;
+    private final int playerLineOfSightDistance;
     private int frozenTurnsRemaining;
     private boolean won;
     private boolean lost;
 
-    public Player(String playerName, int playerVisibility, Dungeon dungeon) {
+    public Player(String playerName, int playerLineOfSightDistance, DungeonSpace[][] dungeon) {
         this.playerName = playerName;
-        this.playerVisibility = playerVisibility;
+        this.playerLineOfSightDistance = playerLineOfSightDistance;
         this.dungeon = dungeon;
         super.setActive(true);
         frozenTurnsRemaining = 0;
@@ -49,8 +49,8 @@ public class Player extends DungeonCharacter {
         return playerName;
     }
 
-    public int getPlayerVisibility() {
-        return playerVisibility;
+    public int getPlayerLineOfSightDistance() {
+        return playerLineOfSightDistance;
     }
 
     public boolean isFrozen() {
@@ -87,8 +87,11 @@ public class Player extends DungeonCharacter {
 
     @Override
     public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
+
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
-        if (dungeonObject instanceof DungeonMaster) {
+        if (!isActive()) {
+            return objectTracks;
+        } else if (dungeonObject instanceof DungeonMaster) {
             objectTracks.addAll(((DungeonMaster) dungeonObject).interact(this));
         } else if (dungeonObject instanceof Guard) {
             objectTracks.addAll(((Guard) dungeonObject).interact(this));
@@ -105,7 +108,7 @@ public class Player extends DungeonCharacter {
     }
 
     @Override
-    public List<DungeonObjectTrack> move(Direction direction, DungeonSpace[][] dungeon) {
+    public List<DungeonObjectTrack> move(Direction direction) {
 
         DungeonSpace currentDungeonSpace = getDungeonSpace();
         Position nextPosition = determineNextPosition(direction);
@@ -129,7 +132,7 @@ public class Player extends DungeonCharacter {
         objectTracks.add(new DungeonObjectTrack(getPreviousDungeonSpace().getPosition(),
             getPreviousDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
         objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
-        objectTracks.addAll(revealMapForMove(direction, dungeon));
+        objectTracks.addAll(revealMapForMove(direction));
 
         return objectTracks;
     }
@@ -146,26 +149,26 @@ public class Player extends DungeonCharacter {
             case WEST:
                 return new Position(currentPlayerPosition.getPositionX() - 1, currentPlayerPosition.getPositionY());
             default:
-                String errorMessage = direction.getValue() + " is not a valid direction. Allowed directions are: "
-                    + Arrays.toString(Direction.values());
+                String errorMessage = direction + " is not a valid direction. Allowed directions are: "
+                    + Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
                 NotificationManager.notify(new ActionNotAllowedNotification(errorMessage));
         }
         return null;
     }
 
-    private List<DungeonObjectTrack> revealMapForMove(Direction direction, DungeonSpace[][] dungeon) {
+    private List<DungeonObjectTrack> revealMapForMove(Direction direction) {
         List<DungeonObjectTrack> revealedDungeonSpaces = new ArrayList<>();
         int exposeRow, exposeCol, fromCol, toCol, fromRow, toRow;
         switch (direction) {
             case NORTH:
                 //reveal northern row
-                exposeRow = getPosition().getPositionY() - playerVisibility;
+                exposeRow = getPosition().getPositionY() - playerLineOfSightDistance;
                 if (exposeRow < 0) {
                     break;
                 }
 
-                fromCol = getPosition().getPositionX() - playerVisibility;
-                toCol = getPosition().getPositionX() + playerVisibility;
+                fromCol = getPosition().getPositionX() - playerLineOfSightDistance;
+                toCol = getPosition().getPositionX() + playerLineOfSightDistance;
                 for (int col = fromCol; col <= toCol; col++) {
                     if (col >= 0 && col < dungeon.length) {
                         dungeon[exposeRow][col].setVisible(true);
@@ -176,13 +179,13 @@ public class Player extends DungeonCharacter {
                 break;
             case SOUTH:
                 //reveal southern row
-                exposeRow = getPosition().getPositionY() + playerVisibility;
+                exposeRow = getPosition().getPositionY() + playerLineOfSightDistance;
                 if (exposeRow >= dungeon.length) {
                     break;
                 }
 
-                fromCol = getPosition().getPositionX() - playerVisibility;
-                toCol = getPosition().getPositionX() + playerVisibility;
+                fromCol = getPosition().getPositionX() - playerLineOfSightDistance;
+                toCol = getPosition().getPositionX() + playerLineOfSightDistance;
                 for (int col = fromCol; col <= toCol; col++) {
                     if (col >= 0 && col < dungeon.length) {
                         dungeon[exposeRow][col].setVisible(true);
@@ -193,13 +196,13 @@ public class Player extends DungeonCharacter {
                 break;
             case EAST:
                 //reveal eastern row
-                exposeCol = getPosition().getPositionX() + playerVisibility;
+                exposeCol = getPosition().getPositionX() + playerLineOfSightDistance;
                 if (exposeCol >= dungeon.length) {
                     break;
                 }
 
-                fromRow = getPosition().getPositionY() - playerVisibility;
-                toRow = getPosition().getPositionY() + playerVisibility;
+                fromRow = getPosition().getPositionY() - playerLineOfSightDistance;
+                toRow = getPosition().getPositionY() + playerLineOfSightDistance;
                 for (int row = fromRow; row <= toRow; row++) {
                     if (row >= 0 && row < dungeon.length) {
                         dungeon[row][exposeCol].setVisible(true);
@@ -210,13 +213,13 @@ public class Player extends DungeonCharacter {
                 break;
             case WEST:
                 //reveal western row
-                exposeCol = getPosition().getPositionX() - playerVisibility;
+                exposeCol = getPosition().getPositionX() - playerLineOfSightDistance;
                 if (exposeCol < 0) {
                     break;
                 }
 
-                fromRow = getPosition().getPositionY() - playerVisibility;
-                toRow = getPosition().getPositionY() + playerVisibility;
+                fromRow = getPosition().getPositionY() - playerLineOfSightDistance;
+                toRow = getPosition().getPositionY() + playerLineOfSightDistance;
                 for (int row = fromRow; row <= toRow; row++) {
                     if (row >= 0 && row < dungeon.length) {
                         dungeon[row][exposeCol].setVisible(true);
@@ -233,30 +236,30 @@ public class Player extends DungeonCharacter {
     }
 
     public List<DungeonObjectTrack> revealCurrentMapArea() {
-        int northStart = getPosition().getPositionY() - playerVisibility;
+        int northStart = getPosition().getPositionY() - playerLineOfSightDistance;
         if (northStart < 0) {
             northStart = 0;
         }
 
-        int westStart = getPosition().getPositionX() - playerVisibility;
+        int westStart = getPosition().getPositionX() - playerLineOfSightDistance;
         if (westStart < 0) {
             westStart = 0;
         }
 
-        int southEnd = getPosition().getPositionY() + playerVisibility;
-        if (southEnd >= dungeon.getDungeon().length) {
-            southEnd = dungeon.getDungeon().length - 1;
+        int southEnd = getPosition().getPositionY() + playerLineOfSightDistance;
+        if (southEnd >= dungeon.length) {
+            southEnd = dungeon.length - 1;
         }
 
-        int eastEnd = getPosition().getPositionX() + playerVisibility;
-        if (eastEnd >= dungeon.getDungeon().length) {
-            eastEnd = dungeon.getDungeon().length - 1;
+        int eastEnd = getPosition().getPositionX() + playerLineOfSightDistance;
+        if (eastEnd >= dungeon.length) {
+            eastEnd = dungeon.length - 1;
         }
 
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         for (int row = northStart; row <= southEnd; row++) {
             for (int col = westStart; col <= eastEnd; col++) {
-                DungeonSpace dungeonSpace = dungeon.getDungeon()[row][col];
+                DungeonSpace dungeonSpace = dungeon[row][col];
                 if (!dungeonSpace.isVisible()) {
                     dungeonSpace.setVisible(true);
                     objectTracks.add(new DungeonObjectTrack(dungeonSpace.getPosition(),
