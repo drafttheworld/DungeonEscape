@@ -42,12 +42,12 @@ public class FreezeMine extends Mine {
     }
 
     @Override
-    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
+    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTurns(freezeTime);
             setActive(false);
         }
-        return Collections.emptyList();
+        return null;
     }
 
     @Override

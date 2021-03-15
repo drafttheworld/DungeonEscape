@@ -10,10 +10,11 @@ package dungeonescape.play;
  * @author Andrew
  */
 public enum Direction {
-    
+
     ANY,
     NORTH,
     SOUTH,
     EAST,
-    WEST;    
+    WEST,
+    UNKNOWN;
 }

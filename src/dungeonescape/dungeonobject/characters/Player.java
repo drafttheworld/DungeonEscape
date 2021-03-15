@@ -5,7 +5,6 @@
  */
 package dungeonescape.dungeonobject.characters;
 
-import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeon.notifications.WinNotification;
@@ -16,10 +15,7 @@ import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
-import dungeonescape.space.Position;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,6 +23,8 @@ import java.util.List;
  * @author Andrew
  */
 public class Player extends DungeonCharacter {
+
+    private final Direction defaultFacingDirection = Direction.WEST;
 
     private final DungeonSpace[][] dungeon;
     private final String playerName;
@@ -86,20 +84,20 @@ public class Player extends DungeonCharacter {
     }
 
     @Override
-    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
+    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
 
         List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         if (!isActive()) {
-            return objectTracks;
+            return null;
         } else if (dungeonObject instanceof DungeonMaster) {
-            objectTracks.addAll(((DungeonMaster) dungeonObject).interact(this));
+            return ((DungeonMaster) dungeonObject).interact(this);
         } else if (dungeonObject instanceof Guard) {
-            objectTracks.addAll(((Guard) dungeonObject).interact(this));
+            return ((Guard) dungeonObject).interact(this);
         } else if (dungeonObject instanceof Ghost) {
-            objectTracks.addAll(((Ghost) dungeonObject).interact(this));
+            return ((Ghost) dungeonObject).interact(this);
         }
 
-        return objectTracks;
+        return null;
     }
 
     @Override
@@ -108,55 +106,11 @@ public class Player extends DungeonCharacter {
     }
 
     @Override
-    public List<DungeonObjectTrack> move(Direction direction) {
-
-        DungeonSpace currentDungeonSpace = getDungeonSpace();
-        Position nextPosition = determineNextPosition(direction);
-
-        if (nextPosition.getPositionX() < 0 || nextPosition.getPositionX() >= dungeon.length
-            || nextPosition.getPositionY() < 0 || nextPosition.getPositionY() >= dungeon.length) {
-            NotificationManager.notify(new WinNotification());
-            return Collections.emptyList();
-        }
-        DungeonSpace nextDungeonSpace = dungeon[nextPosition.getPositionY()][nextPosition.getPositionX()];
-
-        if (nextDungeonSpace.containsWall()) {
-            return Collections.emptyList();
-        }
-
-        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
-        objectTracks.addAll(nextDungeonSpace.addDungeonObject(this));
-        setPreviousDungeonSpace(currentDungeonSpace);
-        currentDungeonSpace.removeDungeonObject(this);
-
-        objectTracks.add(new DungeonObjectTrack(getPreviousDungeonSpace().getPosition(),
-            getPreviousDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
-        objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
-        objectTracks.addAll(revealMapForMove(direction));
-
-        return objectTracks;
+    public DungeonObjectTrack move(Direction direction) {
+        return CharacterActionUtil.movePlayer(dungeon, this, direction);
     }
 
-    private Position determineNextPosition(Direction direction) {
-        Position currentPlayerPosition = getPosition();
-        switch (direction) {
-            case NORTH:
-                return new Position(currentPlayerPosition.getPositionX(), currentPlayerPosition.getPositionY() - 1);
-            case SOUTH:
-                return new Position(currentPlayerPosition.getPositionX(), currentPlayerPosition.getPositionY() + 1);
-            case EAST:
-                return new Position(currentPlayerPosition.getPositionX() + 1, currentPlayerPosition.getPositionY());
-            case WEST:
-                return new Position(currentPlayerPosition.getPositionX() - 1, currentPlayerPosition.getPositionY());
-            default:
-                String errorMessage = direction + " is not a valid direction. Allowed directions are: "
-                    + Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
-                NotificationManager.notify(new ActionNotAllowedNotification(errorMessage));
-        }
-        return null;
-    }
-
-    private List<DungeonObjectTrack> revealMapForMove(Direction direction) {
+    public List<DungeonObjectTrack> revealMapForMove(Direction direction) {
         List<DungeonObjectTrack> revealedDungeonSpaces = new ArrayList<>();
         int exposeRow, exposeCol, fromCol, toCol, fromRow, toRow;
         switch (direction) {
@@ -171,9 +125,11 @@ public class Player extends DungeonCharacter {
                 toCol = getPosition().getPositionX() + playerLineOfSightDistance;
                 for (int col = fromCol; col <= toCol; col++) {
                     if (col >= 0 && col < dungeon.length) {
-                        dungeon[exposeRow][col].setVisible(true);
-                        revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(col, exposeRow),
-                            dungeon[exposeRow][col].getVisibleDungeonSpaceType().getValueString()));
+                        DungeonSpace dungeonSpace = dungeon[exposeRow][col];
+                        if (dungeonSpace.isVisible()) {
+                            continue;
+                        }
+                        revealDungeonSpace(dungeonSpace, revealedDungeonSpaces);
                     }
                 }
                 break;
@@ -187,11 +143,11 @@ public class Player extends DungeonCharacter {
                 fromCol = getPosition().getPositionX() - playerLineOfSightDistance;
                 toCol = getPosition().getPositionX() + playerLineOfSightDistance;
                 for (int col = fromCol; col <= toCol; col++) {
-                    if (col >= 0 && col < dungeon.length) {
-                        dungeon[exposeRow][col].setVisible(true);
-                        revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(col, exposeRow),
-                            dungeon[exposeRow][col].getVisibleDungeonSpaceType().getValueString()));
+                    DungeonSpace dungeonSpace = dungeon[exposeRow][col];
+                    if (dungeonSpace.isVisible()) {
+                        continue;
                     }
+                    revealDungeonSpace(dungeonSpace, revealedDungeonSpaces);
                 }
                 break;
             case EAST:
@@ -205,9 +161,11 @@ public class Player extends DungeonCharacter {
                 toRow = getPosition().getPositionY() + playerLineOfSightDistance;
                 for (int row = fromRow; row <= toRow; row++) {
                     if (row >= 0 && row < dungeon.length) {
-                        dungeon[row][exposeCol].setVisible(true);
-                        revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(exposeCol, row),
-                            dungeon[row][exposeCol].getVisibleDungeonSpaceType().getValueString()));
+                        DungeonSpace dungeonSpace = dungeon[row][exposeCol];
+                        if (dungeonSpace.isVisible()) {
+                            continue;
+                        }
+                        revealDungeonSpace(dungeonSpace, revealedDungeonSpaces);
                     }
                 }
                 break;
@@ -222,9 +180,11 @@ public class Player extends DungeonCharacter {
                 toRow = getPosition().getPositionY() + playerLineOfSightDistance;
                 for (int row = fromRow; row <= toRow; row++) {
                     if (row >= 0 && row < dungeon.length) {
-                        dungeon[row][exposeCol].setVisible(true);
-                        revealedDungeonSpaces.add(new DungeonObjectTrack(new Position(exposeCol, row),
-                            dungeon[row][exposeCol].getVisibleDungeonSpaceType().getValueString()));
+                        DungeonSpace dungeonSpace = dungeon[row][exposeCol];
+                        if (dungeonSpace.isVisible()) {
+                            continue;
+                        }
+                        revealDungeonSpace(dungeonSpace, revealedDungeonSpaces);
                     }
                 }
                 break;
@@ -233,6 +193,15 @@ public class Player extends DungeonCharacter {
         }
 
         return revealedDungeonSpaces;
+    }
+
+    private void revealDungeonSpace(DungeonSpace dungeonSpace, List<DungeonObjectTrack> revealedDungeonSpaces) {
+
+        dungeonSpace.setVisible(true);
+        DungeonObjectTrack dungeonObjectTrack = new DungeonObjectTrack()
+            .currentPosition(dungeonSpace.getPosition())
+            .currentDungeonSpaceSymbol(dungeonSpace.getVisibleDungeonSpaceType().getValueString());
+        revealedDungeonSpaces.add(dungeonObjectTrack);
     }
 
     public List<DungeonObjectTrack> revealCurrentMapArea() {
@@ -260,11 +229,10 @@ public class Player extends DungeonCharacter {
         for (int row = northStart; row <= southEnd; row++) {
             for (int col = westStart; col <= eastEnd; col++) {
                 DungeonSpace dungeonSpace = dungeon[row][col];
-                if (!dungeonSpace.isVisible()) {
-                    dungeonSpace.setVisible(true);
-                    objectTracks.add(new DungeonObjectTrack(dungeonSpace.getPosition(),
-                        dungeonSpace.getVisibleDungeonSpaceType().getValueString()));
+                if (dungeonSpace.isVisible()) {
+                    continue;
                 }
+                revealDungeonSpace(dungeonSpace, objectTracks);
             }
         }
 
@@ -279,6 +247,11 @@ public class Player extends DungeonCharacter {
                     || (dungeonObject instanceof DungeonCharacter
                     && !(dungeonObject instanceof Ghost));
             });
+    }
+
+    @Override
+    public Direction getDefaultFacingDirection() {
+        return defaultFacingDirection;
     }
 
 }

@@ -42,16 +42,17 @@ public class TeleportMine extends Mine implements TeleportObject {
     }
 
     @Override
-    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
-        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
+
         if (dungeonObject instanceof Player) {
-            objectTracks.addAll(teleport(dungeonObject));
             setActive(false);
             NotificationManager.notify(
                 new InteractionNotification(
                     "You stepped on a teleport mine and have been transported to another part of the dungeon."));
+            return teleport(dungeonObject);
         }
-        return objectTracks;
+
+        return null;
     }
 
     @Override
@@ -60,7 +61,7 @@ public class TeleportMine extends Mine implements TeleportObject {
     }
 
     @Override
-    public List<DungeonObjectTrack> teleport(DungeonObject dungeonObject) {
+    public DungeonObjectTrack teleport(DungeonObject dungeonObject) {
         Player player = (Player) dungeonObject;
 
         //move the player to the next location

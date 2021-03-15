@@ -34,8 +34,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -43,8 +41,8 @@ import java.util.logging.Logger;
  */
 public class Dungeon {
 
-    private final ExecutorService executorService =
-        Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private final ExecutorService executorService
+        = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     private final List<DungeonCharacter> nonPlayerCharacters;
     private final List<DungeonObject> moveableDungeonObjects;
@@ -221,8 +219,8 @@ public class Dungeon {
         for (DungeonCharacter dungeonCharacter : nonPlayerCharacters) {
             NonPersonDungeonCharacter npc = (NonPersonDungeonCharacter) dungeonCharacter;
             try {
-                Future future =
-                    executorService.submit(() -> dungeonObjectTracks.addAll(npc.move(dungeon, player)));
+                Future future
+                    = executorService.submit(() -> dungeonObjectTracks.addAll(npc.move(dungeon, player)));
                 futures.add(future);
             } catch (RuntimeException e) {
                 NotificationManager.notify(new ExecutionErrorNotification(e.getMessage()));
@@ -240,8 +238,8 @@ public class Dungeon {
 
     public void spawnDungeonMasters() {
 
-        List<DungeonMaster> dungeonMasters =
-            DungeonCharacterUtil.placeDungeonMasters(dungeon, dungeonConfiguration.getDungeonMasterCount());
+        List<DungeonMaster> dungeonMasters
+            = DungeonCharacterUtil.placeDungeonMasters(dungeon, dungeonConfiguration.getDungeonMasterCount());
         nonPlayerCharacters.addAll(dungeonMasters);
         moveableDungeonObjects.addAll(dungeonMasters);
         dungeonMasters.forEach(dungeonMaster -> {

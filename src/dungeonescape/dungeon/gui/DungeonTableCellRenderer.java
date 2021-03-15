@@ -5,8 +5,13 @@
  */
 package dungeonescape.dungeon.gui;
 
+import dungeonescape.dungeon.gui.images.ImageFactory;
 import dungeonescape.dungeon.gui.images.Images;
+import dungeonescape.dungeonobject.DungeonObjectTrack;
+import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpaceType;
+import java.util.Objects;
+import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -14,60 +19,27 @@ import javax.swing.table.DefaultTableCellRenderer;
  * @author Andrew
  */
 public class DungeonTableCellRenderer extends DefaultTableCellRenderer {
-    
+
     @Override
     public void setValue(Object value) {
 
         if (value == null) {
-            System.out.println("setValue value is null.");
-            return;
+            throw new IllegalArgumentException("setValue value is null.");
+        } else if (!Objects.equals(DungeonObjectTrack.class, value.getClass())) {
+            throw new IllegalArgumentException("setValue expected value of type: " + DungeonObjectTrack.class
+                + ", but found value of type: " + value.getClass());
         }
 
-        DungeonSpaceType dungeonSpaceType = DungeonSpaceType.getDungeonSpaceType((String) value);
+        DungeonObjectTrack dungeonObjectTrack = (DungeonObjectTrack) value;
+        DungeonSpaceType dungeonSpaceType
+            = DungeonSpaceType.getDungeonSpaceType(dungeonObjectTrack.getDungeonSpaceSymbol());
 
         if (dungeonSpaceType == null) {
             System.out.println("Unknown dungeon space type character: " + ((String) value));
             return;
         }
 
-        switch (dungeonSpaceType) {
-            case COIN:
-                setIcon(Images.COIN.getImageIcon());
-                break;
-            case DUNGEON_MASTER:
-                setIcon(Images.DUNGEON_MASTER.getImageIcon());
-                break;
-            case FREEZE_MINE:
-                setIcon(Images.FREEZE_MINE.getImageIcon());
-                break;
-            case GHOST:
-                setIcon(Images.GHOST.getImageIcon());
-                break;
-            case GUARD:
-                setIcon(Images.GUARD.getImageIcon());
-                break;
-            case MYSTERY_BOX:
-                setIcon(Images.MYSTERY_BOX.getImageIcon());
-                break;
-            case NON_VISIBLE_SPACE:
-                setIcon(Images.NON_VISIBLE_SPACE.getImageIcon());
-                break;
-            case OPEN_SPACE:
-                setIcon(Images.OPEN_SPACE.getImageIcon());
-                break;
-            case PLAYER:
-                setIcon(Images.PLAYER.getImageIcon());
-                break;
-            case TELEPORT_MINE:
-                setIcon(Images.TELEPORT_MINE.getImageIcon());
-                break;
-            case WALL:
-                setIcon(Images.STONE_WALL.getImageIcon());
-                break;
-
-            default:
-                throw new IllegalArgumentException("Unrecognized dungeon space type: "
-                    + dungeonSpaceType.getValue());
-        }
+        setIcon(ImageFactory.getImageIcon(dungeonSpaceType, dungeonObjectTrack.getPreviousFacingDirection(),
+            dungeonObjectTrack.getCurrentFacingDirection()));
     }
 }

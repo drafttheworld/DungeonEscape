@@ -16,17 +16,18 @@ import java.util.List;
  * @author Andrew
  */
 public abstract class DungeonCharacter extends DungeonObject {
-    
+
     private Player player;
     private int numberOfSpacesToMoveWhenPatrolling;
     private int numberOfSpacesToMoveWhenHunting;
     private DungeonSpace previousDungeonSpace;
+    private Direction currentFacingDirection;
     private boolean active;
-    
+
     public void setPlayer(Player player) {
         this.player = player;
     }
-    
+
     public Player getPlayer() {
         return player;
     }
@@ -54,7 +55,15 @@ public abstract class DungeonCharacter extends DungeonObject {
     public void setPreviousDungeonSpace(DungeonSpace previousDungeonSpace) {
         this.previousDungeonSpace = previousDungeonSpace;
     }
-    
+
+    public Direction getCurrentFacingDirection() {
+        return currentFacingDirection;
+    }
+
+    public void setCurrentFacingDirection(Direction currentFacingDirection) {
+        this.currentFacingDirection = currentFacingDirection;
+    }
+
     public boolean isActive() {
         return active;
     }
@@ -62,8 +71,11 @@ public abstract class DungeonCharacter extends DungeonObject {
     public void setActive(boolean active) {
         this.active = active;
     }
-    
+
+    public abstract Direction getDefaultFacingDirection();
+
     public abstract List<DungeonObjectTrack> move(Direction direction);
+
     public abstract boolean canOccupySpace(DungeonSpace dungeonSpace);
-    
+
 }

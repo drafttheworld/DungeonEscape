@@ -8,10 +8,14 @@ package dungeonescape.dungeonobject.characters;
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
+import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.characters.pathfinder.EnemyPathfinder;
+import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
+import dungeonescape.space.Position;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -21,6 +25,53 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Andrew
  */
 public class CharacterActionUtil {
+
+    protected static DungeonObjectTrack movePlayer(DungeonSpace[][] dungeon, Player player, Direction direction) {
+
+        DungeonSpace currentDungeonSpace = player.getDungeonSpace();
+        DungeonObjectTrack dungeonObjectTrack = new DungeonObjectTrack()
+            .previousPosition(currentDungeonSpace.getPosition())
+            .previousFacingDirection(player.getCurrentFacingDirection())
+            .previousDungeonSpaceSymbol(currentDungeonSpace.getVisibleDungeonSpaceType().getValueString());
+
+        Position nextPosition = determineNextPosition(player.getPosition(), direction);
+
+        if (nextPosition.getPositionX() < 0 || nextPosition.getPositionX() >= dungeon.length
+            || nextPosition.getPositionY() < 0 || nextPosition.getPositionY() >= dungeon.length) {
+            NotificationManager.notify(new WinNotification());
+            return null;
+        }
+        DungeonSpace nextDungeonSpace = dungeon[nextPosition.getPositionY()][nextPosition.getPositionX()];
+
+        if (nextDungeonSpace.containsWall()) {
+            return null;
+        }
+
+        Direction nextFacingDirection = assignCharacterMovement(player, nextDungeonSpace);
+
+        return dungeonObjectTrack.currentPosition(nextPosition)
+            .currentFacingDirection(nextFacingDirection)
+            .currentDungeonSpaceSymbol(nextDungeonSpace.getVisibleDungeonSpaceType().getValueString());
+    }
+
+    private static Position determineNextPosition(Position currentPlayerPosition, Direction direction) {
+
+        switch (direction) {
+            case NORTH:
+                return new Position(currentPlayerPosition.getPositionX(), currentPlayerPosition.getPositionY() - 1);
+            case SOUTH:
+                return new Position(currentPlayerPosition.getPositionX(), currentPlayerPosition.getPositionY() + 1);
+            case EAST:
+                return new Position(currentPlayerPosition.getPositionX() + 1, currentPlayerPosition.getPositionY());
+            case WEST:
+                return new Position(currentPlayerPosition.getPositionX() - 1, currentPlayerPosition.getPositionY());
+            default:
+                String errorMessage = direction + " is not a valid direction. Allowed directions are: "
+                    + Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
+                NotificationManager.notify(new ActionNotAllowedNotification(errorMessage));
+        }
+        return null;
+    }
 
     /**
      * When the player is not in view of the enemy the enemy will patrol randomly (but not moving back to the previous
@@ -37,29 +88,48 @@ public class CharacterActionUtil {
      * @return
      * @throws dungeonescape.dungeon.notifications.GameNotification
      */
-    protected static List<DungeonObjectTrack> moveEnemy(DungeonSpace[][] dungeon, DungeonCharacter enemy,
+    protected static DungeonObjectTrack moveEnemy(DungeonSpace[][] dungeon, DungeonCharacter enemy,
         int numberOfSpacesToMoveWhenPatrolling, int numberOfSpacesToMoveWhenHunting, int detectionDistance,
         Player player) {
 
-        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        DungeonObjectTrack dungeonObjectTrack = new DungeonObjectTrack();
+
+        DungeonSpace startingDungeonSpace = enemy.getDungeonSpace();
+        boolean startingSpaceIsVisible = startingDungeonSpace.isVisible();
+        if (startingSpaceIsVisible) {
+            dungeonObjectTrack.previousPosition(startingDungeonSpace.getPosition())
+                .previousFacingDirection(enemy.getCurrentFacingDirection())
+                .previousDungeonSpaceSymbol(startingDungeonSpace.getVisibleDungeonSpaceType().getValueString());
+        }
+
+        Direction movementDirection = Direction.UNKNOWN;
         if (isPlayerInView(enemy, player, detectionDistance)) {
-            objectTracks.addAll(hunt(dungeon, enemy, player, numberOfSpacesToMoveWhenHunting));
+            movementDirection = hunt(dungeon, enemy, player, numberOfSpacesToMoveWhenHunting);
         } else {
             int movesExecuted = 0;
             for (int moveNumber = 0; moveNumber < numberOfSpacesToMoveWhenPatrolling; moveNumber++) {
-                patrol(dungeon, enemy);
+                movementDirection = patrol(dungeon, enemy);
                 movesExecuted++;
                 if (isPlayerInView(enemy, player, detectionDistance)) {
                     int numberOfMovesRemaining = numberOfSpacesToMoveWhenHunting - movesExecuted;
                     if (numberOfMovesRemaining > 0) {
-                        objectTracks.addAll(hunt(dungeon, enemy, player, numberOfMovesRemaining));
+                        movementDirection = hunt(dungeon, enemy, player, numberOfMovesRemaining);
                     }
                     break;
                 }
             }
         }
 
-        return objectTracks;
+        boolean currentDungeonSpaceIsVisible = enemy.getDungeonSpace().isVisible();
+        if (!startingSpaceIsVisible && !currentDungeonSpaceIsVisible) {
+            return null;
+        } else if (currentDungeonSpaceIsVisible) {
+            dungeonObjectTrack.currentPosition(enemy.getDungeonSpace().getPosition())
+                .currentFacingDirection(movementDirection)
+                .currentDungeonSpaceSymbol(enemy.getDungeonSpace().getVisibleDungeonSpaceType().getValueString());
+        }
+
+        return dungeonObjectTrack;
     }
 
     private static boolean isPlayerInView(DungeonCharacter enemy, Player player, int detectionDistance) {
@@ -87,29 +157,22 @@ public class CharacterActionUtil {
      * @param numberOfMoves
      * @throws GameNotification
      */
-    private synchronized static List<DungeonObjectTrack> hunt(DungeonSpace[][] dungeon, DungeonCharacter enemy, 
+    private synchronized static Direction hunt(DungeonSpace[][] dungeon, DungeonCharacter enemy,
         Player player, int numberOfMoves) {
 
-        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
         List<DungeonSpace> path = EnemyPathfinder.findShortestPathForEnemy(dungeon, enemy, player);
         if (!path.isEmpty()) {
             try {
                 int nextDungeonSpaceIndex = path.size() <= numberOfMoves ? path.size() - 1 : numberOfMoves;
-                DungeonSpace nextDungeonSpace = path.get(nextDungeonSpaceIndex);
-                DungeonSpace currentDungeonSpace = enemy.getDungeonSpace();
-                objectTracks.addAll(nextDungeonSpace.addDungeonObject(enemy));
-                enemy.setPreviousDungeonSpace(currentDungeonSpace);
-                currentDungeonSpace.removeDungeonObject(enemy);
+                return assignCharacterMovement(enemy, path.get(nextDungeonSpaceIndex));
             } catch (Exception e) {
                 System.out.println("path.size(): " + path.size() + ", numberOfMoves: " + numberOfMoves);
                 throw e;
             }
         } else {
             System.out.println("Unable to find path to player.");
-            patrol(dungeon, enemy);
+            return patrol(dungeon, enemy);
         }
-
-        return objectTracks;
     }
 
     private static void printPath(List<DungeonSpace> shortestPathToPlayer) {
@@ -131,7 +194,7 @@ public class CharacterActionUtil {
      * @param dungeon
      * @param enemy
      */
-    private static synchronized void patrol(DungeonSpace[][] dungeon, DungeonCharacter enemy) {
+    private static synchronized Direction patrol(DungeonSpace[][] dungeon, DungeonCharacter enemy) {
 
         DungeonSpace nextDungeonSpace = determineNextPatrolSpace(dungeon, enemy);
         if (nextDungeonSpace == null) {
@@ -139,14 +202,47 @@ public class CharacterActionUtil {
                 new ActionNotAllowedNotification("Unable to find next patrol space for "
                     + enemy.getClass().getSimpleName() + " at [" + enemy.getPosition().getPositionX() + ","
                     + enemy.getPosition().getPositionY() + "]"));
-            return;
+            return Direction.UNKNOWN;
         }
 
-        DungeonSpace currentDungeonSpace = enemy.getDungeonSpace();
+        return assignCharacterMovement(enemy, nextDungeonSpace);
+    }
 
-        nextDungeonSpace.addDungeonObject(enemy);
-        enemy.setPreviousDungeonSpace(currentDungeonSpace);
-        currentDungeonSpace.removeDungeonObject(enemy);
+    private static Direction assignCharacterMovement(DungeonCharacter character, DungeonSpace nextDungeonSpace) {
+
+        DungeonSpace currentDungeonSpace = character.getDungeonSpace();
+        character.setPreviousDungeonSpace(currentDungeonSpace);
+        currentDungeonSpace.removeDungeonObject(character);
+        nextDungeonSpace.addDungeonObject(character);
+
+        return determineDirection(currentDungeonSpace, nextDungeonSpace);
+    }
+
+    private static Direction determineDirection(DungeonSpace startingDungeonSpace, DungeonSpace endingDungeonSpace) {
+
+        int startingPositionX = startingDungeonSpace.getPosition().getPositionX();
+        int endingPositionX = endingDungeonSpace.getPosition().getPositionX();
+        int diffX = startingPositionX - endingPositionX;
+
+        if (diffX == 0) {
+            int startingPositionY = startingDungeonSpace.getPosition().getPositionY();
+            int endingPositionY = endingDungeonSpace.getPosition().getPositionY();
+            int diffY = startingPositionY - endingPositionY;
+
+            if (diffY < 0) {
+                return Direction.SOUTH;
+            } else if (diffY > 0) {
+                return Direction.NORTH;
+            } else {
+                return Direction.UNKNOWN;
+            }
+        } else if (diffX < 0) {
+            return Direction.WEST;
+        } else if (diffX > 0) {
+            return Direction.EAST;
+        } else {
+            return Direction.UNKNOWN;
+        }
     }
 
     private static DungeonSpace determineNextPatrolSpace(DungeonSpace[][] dungeon, DungeonCharacter enemy) {

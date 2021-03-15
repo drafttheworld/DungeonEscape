@@ -8,7 +8,6 @@ package dungeonescape.dungeonobject.coin;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.space.DungeonSpaceType;
-import java.util.List;
 
 /**
  *
@@ -17,7 +16,7 @@ import java.util.List;
 public class Coin extends DungeonObject {
 
     @Override
-    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
+    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

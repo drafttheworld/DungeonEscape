@@ -15,7 +15,6 @@ import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -85,10 +84,10 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
      * @throws GameNotification
      */
     @Override
-    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
+    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
 
         if (!isActive()) {
-            return Collections.emptyList();
+            return null;
         } else if (dungeonObject instanceof Construction) {
             NotificationManager.notify(
                 new ActionNotAllowedNotification("A dungeon master cannot move "
@@ -102,7 +101,7 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
                 new LossNotification(CAPTURE_NOTIFICATION));
         }
 
-        return Collections.emptyList();
+        return null;
     }
 
     /**
@@ -115,7 +114,7 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
      * @throws GameNotification
      */
     @Override
-    public List<DungeonObjectTrack> move(Direction direction) {
+    public DungeonObjectTrack move(Direction direction) {
         throw new UnsupportedOperationException("This method is not supported for a NonPersonDungeonCharacter.");
     }
 
@@ -142,21 +141,14 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
      * @return
      */
     @Override
-    public List<DungeonObjectTrack> move(DungeonSpace[][] dungeon, Player player) {
+    public DungeonObjectTrack move(DungeonSpace[][] dungeon, Player player) {
 
-        DungeonSpace previousDungeonSpace = getDungeonSpace();
-
-        CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
+        return CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
             getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance(), player);
+    }
 
-        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
-        if (getPreviousDungeonSpace().isVisible()) {
-            objectTracks.add(new DungeonObjectTrack(previousDungeonSpace.getPosition(),
-                previousDungeonSpace.getVisibleDungeonSpaceType().getValueString()));
-        }
-        if (getDungeonSpace().isVisible()) {
-            objectTracks.add(new DungeonObjectTrack(getPosition(), getDungeonSpaceType().getValueString()));
-        }
-        return objectTracks;
+    @Override
+    public Direction getDefaultFacingDirection() {
+        return Direction.WEST;
     }
 }

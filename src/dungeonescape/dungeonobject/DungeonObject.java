@@ -15,7 +15,7 @@ import java.util.List;
  * @author Andrew
  */
 public abstract class DungeonObject {
-    
+
     private DungeonSpace dungeonSpace;
 
     public DungeonSpace getDungeonSpace() {
@@ -25,16 +25,17 @@ public abstract class DungeonObject {
     public void setDungeonSpace(DungeonSpace dungeonSpace) {
         this.dungeonSpace = dungeonSpace;
     }
-    
+
     public Position getPosition() {
         if (dungeonSpace == null) {
             return null;
         }
-        
+
         return dungeonSpace.getPosition();
     }
-    
+
     public abstract List<DungeonObjectTrack> interact(DungeonObject dungeonObject);
-    public abstract DungeonSpaceType getDungeonSpaceType();    
-    
+
+    public abstract DungeonSpaceType getDungeonSpaceType();
+
 }
