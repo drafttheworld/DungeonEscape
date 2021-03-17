@@ -8,7 +8,6 @@ package dungeonescape.dungeonobject.characters;
 import dungeonescape.dungeon.notifications.InteractionNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
@@ -26,8 +25,6 @@ public class Ghost extends NonPersonDungeonCharacter {
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 2;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 3;
     public static int DEFAULT_DETECTION_DISTANCE = 10;
-
-    private final Direction defaultFacingDirection = Direction.WEST;
 
     private final DungeonSpace[][] dungeon;
     private final FreezeTime freezeTime;
@@ -79,7 +76,7 @@ public class Ghost extends NonPersonDungeonCharacter {
     }
 
     @Override
-    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
+    public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
         if (isActive() && dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTurns(freezeTime);
@@ -89,7 +86,7 @@ public class Ghost extends NonPersonDungeonCharacter {
                     + freezeTime.getTurns() + " turns."));
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -103,7 +100,7 @@ public class Ghost extends NonPersonDungeonCharacter {
     }
 
     @Override
-    public DungeonObjectTrack move(Direction direction) {
+    public List<DungeonSpace> move(Direction direction) {
         throw new UnsupportedOperationException("This method is not supported for a NonPersonDungeonCharacter.");
     }
 
@@ -115,14 +112,9 @@ public class Ghost extends NonPersonDungeonCharacter {
      * @return
      */
     @Override
-    public DungeonObjectTrack move(DungeonSpace[][] dungeon, Player player) {
+    public List<DungeonSpace> move(DungeonSpace[][] dungeon, Player player) {
 
         return CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
             getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance(), player);
-    }
-
-    @Override
-    public Direction getDefaultFacingDirection() {
-        return defaultFacingDirection;
     }
 }

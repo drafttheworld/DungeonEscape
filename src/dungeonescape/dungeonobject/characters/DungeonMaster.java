@@ -34,6 +34,7 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
     private final DungeonSpace[][] dungeon;
 
     private int detectionDistance;
+    private Direction facingDirection;
 
     public DungeonMaster(DungeonSpace[][] dungeon) {
         this.dungeon = dungeon;
@@ -84,10 +85,10 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
      * @throws GameNotification
      */
     @Override
-    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
+    public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
         if (!isActive()) {
-            return null;
+            return Collections.emptyList();
         } else if (dungeonObject instanceof Construction) {
             NotificationManager.notify(
                 new ActionNotAllowedNotification("A dungeon master cannot move "
@@ -101,7 +102,7 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
                 new LossNotification(CAPTURE_NOTIFICATION));
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     /**
@@ -114,7 +115,7 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
      * @throws GameNotification
      */
     @Override
-    public DungeonObjectTrack move(Direction direction) {
+    public List<DungeonSpace> move(Direction direction) {
         throw new UnsupportedOperationException("This method is not supported for a NonPersonDungeonCharacter.");
     }
 
@@ -141,14 +142,9 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
      * @return
      */
     @Override
-    public DungeonObjectTrack move(DungeonSpace[][] dungeon, Player player) {
+    public List<DungeonSpace> move(DungeonSpace[][] dungeon, Player player) {
 
         return CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
             getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance(), player);
-    }
-
-    @Override
-    public Direction getDefaultFacingDirection() {
-        return Direction.WEST;
     }
 }

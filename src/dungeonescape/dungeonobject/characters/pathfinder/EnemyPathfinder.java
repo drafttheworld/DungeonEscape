@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
@@ -136,8 +135,10 @@ public class EnemyPathfinder {
         StringBuilder sb = new StringBuilder("dungeonArea: \n");
         for (int row = 0; row < dungeonArea.length; row++) {
             for (int col = 0; col < dungeonArea[row].length; col++) {
-                sb.append(dungeonArea[row][col].getVisibleSpaceSymbol());
-                if (dungeonArea[row][col].getVisibleSpaceSymbol() == DungeonSpaceType.PLAYER.getValue()) {
+                char visibleSpaceSymbol
+                    = dungeonArea[row][col].getVisibleDungeonObject().getDungeonSpaceType().getValue();
+                sb.append(visibleSpaceSymbol);
+                if (visibleSpaceSymbol == DungeonSpaceType.PLAYER.getValue()) {
                     playerCol = col;
                     playerRow = row;
                 }
@@ -149,7 +150,7 @@ public class EnemyPathfinder {
     }
 
     private static void addNextPathNode(int row, int col, DungeonSpace[][] dungeonArea,
-            boolean[][] visited, PathNode previousPathNode, Queue<PathNode> pathQueue) {
+        boolean[][] visited, PathNode previousPathNode, Queue<PathNode> pathQueue) {
         try {
             if (col >= 0 && row >= 0 && row < dungeonArea.length && col < dungeonArea[row].length && !visited[row][col]) {
                 pathQueue.add(new PathNode(row, col, dungeonArea[row][col], previousPathNode));
@@ -163,12 +164,12 @@ public class EnemyPathfinder {
 
     private static boolean dungeonSpaceContainsPlayer(DungeonSpace dungeonSpace) {
         return dungeonSpace.getDungeonObjects().stream()
-                .anyMatch(dungeonSpaceObject -> dungeonSpaceObject instanceof Player);
+            .anyMatch(dungeonSpaceObject -> dungeonSpaceObject instanceof Player);
     }
 
     private static boolean containsOnlyGhostsOrPlayers(DungeonSpace dungeonSpace) {
         return dungeonSpace.getDungeonObjects().stream()
-                .allMatch(dungeonObject -> dungeonObject instanceof Ghost || dungeonObject instanceof Player);
+            .allMatch(dungeonObject -> dungeonObject instanceof Ghost || dungeonObject instanceof Player);
     }
 
     private static class PathNode {

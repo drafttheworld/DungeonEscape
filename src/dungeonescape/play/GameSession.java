@@ -10,9 +10,11 @@ import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.characters.Player;
+import dungeonescape.space.DungeonSpace;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -43,9 +45,9 @@ public class GameSession {
         return sessionId;
     }
 
-    public List<DungeonObjectTrack> movePlayerGui(Direction direction) {
+    public Set<DungeonSpace> movePlayerGui(Direction direction) {
         movePlayer(direction);
-        return dungeon.getDungeonObjectTracks();
+        return dungeon.getDungeonSpacesToUpdate();
     }
 
     public String movePlayerHeadless(Direction direction) {

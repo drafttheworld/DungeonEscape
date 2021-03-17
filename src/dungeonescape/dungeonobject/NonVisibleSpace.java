@@ -3,27 +3,27 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package dungeonescape.dungeonobject.powerups;
+package dungeonescape.dungeonobject;
 
-import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
+import java.util.Collections;
 import java.util.List;
 
 /**
  *
  * @author Andrew
  */
-public class PowerUpBox extends DungeonObject {
+public class NonVisibleSpace extends DungeonObject {
 
     @Override
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return Collections.emptyList();
     }
 
     @Override
     public DungeonSpaceType getDungeonSpaceType() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return DungeonSpaceType.NON_VISIBLE_SPACE;
     }
 
 }

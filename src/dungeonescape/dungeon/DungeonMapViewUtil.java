@@ -5,6 +5,7 @@
  */
 package dungeonescape.dungeon;
 
+import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
@@ -24,10 +25,12 @@ public class DungeonMapViewUtil {
                 if (dungeon[row][col].isEmpty()) {
                     dungeonAsString.append(DungeonSpaceType.OPEN_SPACE.getValue());
                 } else {
+                    DungeonSpaceType dungeonSpaceType
+                        = dungeon[row][col].getVisibleDungeonObject().getDungeonSpaceType();
                     if (dungeonSpaceTypeFilters == null) {
-                        dungeonAsString.append(dungeon[row][col].getVisibleSpaceSymbol());
-                    } else if (dungeonSpaceTypeFilters.allow(dungeon[col][row].getVisibleDungeonSpaceType())) {
-                        dungeonAsString.append(dungeon[row][col].getVisibleSpaceSymbol());
+                        dungeonAsString.append(dungeonSpaceType.getValue());
+                    } else if (dungeonSpaceTypeFilters.allow(dungeonSpaceType)) {
+                        dungeonAsString.append(dungeonSpaceType.getValue());
                     } else {
                         dungeonAsString.append(DungeonSpaceType.OPEN_SPACE.getValue());
                     }
@@ -45,11 +48,11 @@ public class DungeonMapViewUtil {
         StringBuilder playerMap = new StringBuilder();
         for (int row = 0; row < dungeon.length; row++) {
             for (int col = 0; col < dungeon.length; col++) {
-                String visibleSymbol;
+                char visibleSymbol;
                 if (dungeon[row][col].isVisible()) {
-                    visibleSymbol = dungeon[row][col].getVisibleDungeonSpaceType().getValueString();
+                    visibleSymbol = dungeon[row][col].getVisibleDungeonObject().getDungeonSpaceType().getValue();
                 } else {
-                    visibleSymbol = DungeonSpaceType.NON_VISIBLE_SPACE.getValueString();
+                    visibleSymbol = DungeonSpaceType.NON_VISIBLE_SPACE.getValue();
                 }
                 playerMap.append(visibleSymbol);
             }

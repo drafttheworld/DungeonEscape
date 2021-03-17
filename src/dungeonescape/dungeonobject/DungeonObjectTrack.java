@@ -6,7 +6,7 @@
 package dungeonescape.dungeonobject;
 
 import dungeonescape.play.Direction;
-import dungeonescape.space.Position;
+import dungeonescape.space.DungeonSpace;
 import java.util.Objects;
 
 /**
@@ -15,95 +15,25 @@ import java.util.Objects;
  */
 public class DungeonObjectTrack {
 
-    private Position previousPosition;
-    private Direction previousFacingDirection;
-    private String previousDungeonSpaceSymbol;
-    private Position currentPosition;
-    private Direction currentFacingDirection;
-    private String currentDungeonSpaceSymbol;
+    private DungeonSpace dungeonSpace;
+    private Direction facingDirection;
 
-    public Position getPreviousPosition() {
-        return previousPosition;
+    public DungeonObjectTrack(DungeonSpace dungeonSpace, Direction facingDirection) {
+        this.dungeonSpace = dungeonSpace;
+        this.facingDirection = facingDirection;
     }
 
-    public void setPreviousPosition(Position previousPosition) {
-        this.previousPosition = previousPosition;
+    public DungeonSpace getDungeonSpace() {
+        return dungeonSpace;
     }
 
-    public DungeonObjectTrack previousPosition(Position previousPosition) {
-        setPreviousPosition(previousPosition);
-        return this;
-    }
-
-    public Direction getPreviousFacingDirection() {
-        return previousFacingDirection;
-    }
-
-    public void setPreviousFacingDirection(Direction previousFacingDirection) {
-        this.previousFacingDirection = previousFacingDirection;
-    }
-
-    public DungeonObjectTrack previousFacingDirection(Direction previousFacingDirection) {
-        setPreviousFacingDirection(previousFacingDirection);
-        return this;
-    }
-
-    public String getPreviousDungeonSpaceSymbol() {
-        return previousDungeonSpaceSymbol;
-    }
-
-    public void setPreviousDungeonSpaceSymbol(String previousDungeonSpaceSymbol) {
-        this.previousDungeonSpaceSymbol = previousDungeonSpaceSymbol;
-    }
-
-    public DungeonObjectTrack previousDungeonSpaceSymbol(String previousDungeonSpaceSymbol) {
-        setPreviousDungeonSpaceSymbol(previousDungeonSpaceSymbol);
-        return this;
-    }
-
-    public Position getCurrentPosition() {
-        return currentPosition;
-    }
-
-    public void setCurrentPosition(Position currentPosition) {
-        this.currentPosition = currentPosition;
-    }
-
-    public DungeonObjectTrack currentPosition(Position currentPosition) {
-        setCurrentPosition(currentPosition);
-        return this;
-    }
-
-    public Direction getCurrentFacingDirection() {
-        return currentFacingDirection;
-    }
-
-    public void setCurrentFacingDirection(Direction currentFacingDirection) {
-        this.currentFacingDirection = currentFacingDirection;
-    }
-
-    public DungeonObjectTrack currentFacingDirection(Direction currentFacingDirection) {
-        setCurrentFacingDirection(currentFacingDirection);
-        return this;
-    }
-
-    public String getCurrentDungeonSpaceSymbol() {
-        return currentDungeonSpaceSymbol;
-    }
-
-    public void setCurrentDungeonSpaceSymbol(String currentDungeonSpaceSymbol) {
-        this.currentDungeonSpaceSymbol = currentDungeonSpaceSymbol;
-    }
-
-    public DungeonObjectTrack currentDungeonSpaceSymbol(String currentDungeonSpaceSymbol) {
-        setCurrentDungeonSpaceSymbol(currentDungeonSpaceSymbol);
-        return this;
+    public Direction getFacingDirection() {
+        return facingDirection;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(previousPosition, previousFacingDirection, previousDungeonSpaceSymbol, currentPosition,
-            currentFacingDirection, currentDungeonSpaceSymbol);
+        return Objects.hash(dungeonSpace, facingDirection);
     }
 
     @Override
@@ -116,21 +46,12 @@ public class DungeonObjectTrack {
         }
 
         final DungeonObjectTrack other = (DungeonObjectTrack) obj;
-        return Objects.equals(this.previousDungeonSpaceSymbol, other.previousDungeonSpaceSymbol)
-            && Objects.equals(this.currentDungeonSpaceSymbol, other.currentDungeonSpaceSymbol)
-            && Objects.equals(this.previousPosition, other.previousPosition)
-            && this.previousFacingDirection == other.previousFacingDirection
-            && Objects.equals(this.currentPosition, other.currentPosition)
-            && this.currentFacingDirection == other.currentFacingDirection;
+        return Objects.equals(this.dungeonSpace, other.dungeonSpace)
+            && this.facingDirection == other.facingDirection;
     }
 
     @Override
     public String toString() {
-        return "DungeonObjectTrack{" + "previousPosition=" + previousPosition
-            + ", previousFacingDirection=" + previousFacingDirection
-            + ", previousDungeonSpaceSymbol=" + previousDungeonSpaceSymbol
-            + ", currentPosition=" + currentPosition
-            + ", currentFacingDirection=" + currentFacingDirection
-            + ", currentDungeonSpaceSymbol=" + currentDungeonSpaceSymbol + '}';
+        return "DungeonObjectTrack{" + "dungeonSpace=" + dungeonSpace + ", facingDirection=" + facingDirection + '}';
     }
 }

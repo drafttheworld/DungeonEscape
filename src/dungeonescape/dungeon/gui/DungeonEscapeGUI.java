@@ -16,6 +16,7 @@ import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.play.Direction;
 import dungeonescape.play.GameDifficulty;
 import dungeonescape.play.GameSession;
+import dungeonescape.space.DungeonSpace;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.TextArea;
@@ -29,6 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BoxLayout;
@@ -237,7 +239,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     }
 
     private void movePlayer(Direction direction) {
-        List<DungeonObjectTrack> dungeonObjectTracks = gameSession.movePlayerGui(direction);
+        Set<DungeonSpace> dungeonObjectTracks = gameSession.movePlayerGui(direction);
         activeDungeonTable.updateMap(dungeonObjectTracks);
     }
 

@@ -16,6 +16,7 @@ import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.Position;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -26,32 +27,29 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class CharacterActionUtil {
 
-    protected static DungeonObjectTrack movePlayer(DungeonSpace[][] dungeon, Player player, Direction direction) {
+    protected static List<DungeonSpace> movePlayer(DungeonSpace[][] dungeon, Player player, Direction direction) {
 
-        DungeonSpace currentDungeonSpace = player.getDungeonSpace();
-        DungeonObjectTrack dungeonObjectTrack = new DungeonObjectTrack()
-            .previousPosition(currentDungeonSpace.getPosition())
-            .previousFacingDirection(player.getCurrentFacingDirection())
-            .previousDungeonSpaceSymbol(currentDungeonSpace.getVisibleDungeonSpaceType().getValueString());
+        List<DungeonSpace> dungeonSpaces = new ArrayList<>();
+        dungeonSpaces.add(player.getDungeonSpace());
 
         Position nextPosition = determineNextPosition(player.getPosition(), direction);
 
         if (nextPosition.getPositionX() < 0 || nextPosition.getPositionX() >= dungeon.length
             || nextPosition.getPositionY() < 0 || nextPosition.getPositionY() >= dungeon.length) {
             NotificationManager.notify(new WinNotification());
-            return null;
+            return Collections.emptyList();
         }
         DungeonSpace nextDungeonSpace = dungeon[nextPosition.getPositionY()][nextPosition.getPositionX()];
 
         if (nextDungeonSpace.containsWall()) {
-            return null;
+            return Collections.emptyList();
         }
 
         Direction nextFacingDirection = assignCharacterMovement(player, nextDungeonSpace);
 
-        return dungeonObjectTrack.currentPosition(nextPosition)
-            .currentFacingDirection(nextFacingDirection)
-            .currentDungeonSpaceSymbol(nextDungeonSpace.getVisibleDungeonSpaceType().getValueString());
+        dungeonSpaces.add(nextDungeonSpace);
+
+        return dungeonSpaces;
     }
 
     private static Position determineNextPosition(Position currentPlayerPosition, Direction direction) {
@@ -88,18 +86,16 @@ public class CharacterActionUtil {
      * @return
      * @throws dungeonescape.dungeon.notifications.GameNotification
      */
-    protected static DungeonObjectTrack moveEnemy(DungeonSpace[][] dungeon, DungeonCharacter enemy,
+    protected static List<DungeonSpace> moveEnemy(DungeonSpace[][] dungeon, DungeonCharacter enemy,
         int numberOfSpacesToMoveWhenPatrolling, int numberOfSpacesToMoveWhenHunting, int detectionDistance,
         Player player) {
 
-        DungeonObjectTrack dungeonObjectTrack = new DungeonObjectTrack();
+        List<DungeonSpace> dungeonSpaces = new ArrayList<>();
 
         DungeonSpace startingDungeonSpace = enemy.getDungeonSpace();
         boolean startingSpaceIsVisible = startingDungeonSpace.isVisible();
         if (startingSpaceIsVisible) {
-            dungeonObjectTrack.previousPosition(startingDungeonSpace.getPosition())
-                .previousFacingDirection(enemy.getCurrentFacingDirection())
-                .previousDungeonSpaceSymbol(startingDungeonSpace.getVisibleDungeonSpaceType().getValueString());
+            dungeonSpaces.add(startingDungeonSpace);
         }
 
         Direction movementDirection = Direction.UNKNOWN;
@@ -122,14 +118,12 @@ public class CharacterActionUtil {
 
         boolean currentDungeonSpaceIsVisible = enemy.getDungeonSpace().isVisible();
         if (!startingSpaceIsVisible && !currentDungeonSpaceIsVisible) {
-            return null;
+            return Collections.emptyList();
         } else if (currentDungeonSpaceIsVisible) {
-            dungeonObjectTrack.currentPosition(enemy.getDungeonSpace().getPosition())
-                .currentFacingDirection(movementDirection)
-                .currentDungeonSpaceSymbol(enemy.getDungeonSpace().getVisibleDungeonSpaceType().getValueString());
+            dungeonSpaces.add(enemy.getDungeonSpace());
         }
 
-        return dungeonObjectTrack;
+        return dungeonSpaces;
     }
 
     private static boolean isPlayerInView(DungeonCharacter enemy, Player player, int detectionDistance) {

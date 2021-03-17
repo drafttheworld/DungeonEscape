@@ -24,8 +24,6 @@ import java.util.List;
  */
 public class Player extends DungeonCharacter {
 
-    private final Direction defaultFacingDirection = Direction.WEST;
-
     private final DungeonSpace[][] dungeon;
     private final String playerName;
     private final int playerLineOfSightDistance;
@@ -84,20 +82,20 @@ public class Player extends DungeonCharacter {
     }
 
     @Override
-    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
+    public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
-        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        List<DungeonSpace> objectTracks = new ArrayList<>();
         if (!isActive()) {
-            return null;
+            return objectTracks;
         } else if (dungeonObject instanceof DungeonMaster) {
-            return ((DungeonMaster) dungeonObject).interact(this);
+            objectTracks.addAll(((DungeonMaster) dungeonObject).interact(this));
         } else if (dungeonObject instanceof Guard) {
-            return ((Guard) dungeonObject).interact(this);
+            objectTracks.addAll(((Guard) dungeonObject).interact(this));
         } else if (dungeonObject instanceof Ghost) {
-            return ((Ghost) dungeonObject).interact(this);
+            objectTracks.addAll(((Ghost) dungeonObject).interact(this));
         }
 
-        return null;
+        return objectTracks;
     }
 
     @Override
@@ -106,12 +104,16 @@ public class Player extends DungeonCharacter {
     }
 
     @Override
-    public DungeonObjectTrack move(Direction direction) {
-        return CharacterActionUtil.movePlayer(dungeon, this, direction);
+    public List<DungeonSpace> move(Direction direction) {
+        List<DungeonSpace> objectTracks = new ArrayList<>();
+        objectTracks.addAll(CharacterActionUtil.movePlayer(dungeon, this, direction));
+        objectTracks.addAll(revealMapForMove(direction));
+        return objectTracks;
     }
 
-    public List<DungeonObjectTrack> revealMapForMove(Direction direction) {
-        List<DungeonObjectTrack> revealedDungeonSpaces = new ArrayList<>();
+    public List<DungeonSpace> revealMapForMove(Direction direction) {
+
+        List<DungeonSpace> revealedDungeonSpaces = new ArrayList<>();
         int exposeRow, exposeCol, fromCol, toCol, fromRow, toRow;
         switch (direction) {
             case NORTH:
@@ -129,7 +131,8 @@ public class Player extends DungeonCharacter {
                         if (dungeonSpace.isVisible()) {
                             continue;
                         }
-                        revealDungeonSpace(dungeonSpace, revealedDungeonSpaces);
+                        dungeonSpace.setVisible(true);
+                        revealedDungeonSpaces.add(dungeonSpace);
                     }
                 }
                 break;
@@ -147,7 +150,8 @@ public class Player extends DungeonCharacter {
                     if (dungeonSpace.isVisible()) {
                         continue;
                     }
-                    revealDungeonSpace(dungeonSpace, revealedDungeonSpaces);
+                    dungeonSpace.setVisible(true);
+                    revealedDungeonSpaces.add(dungeonSpace);
                 }
                 break;
             case EAST:
@@ -165,7 +169,8 @@ public class Player extends DungeonCharacter {
                         if (dungeonSpace.isVisible()) {
                             continue;
                         }
-                        revealDungeonSpace(dungeonSpace, revealedDungeonSpaces);
+                        dungeonSpace.setVisible(true);
+                        revealedDungeonSpaces.add(dungeonSpace);
                     }
                 }
                 break;
@@ -184,7 +189,8 @@ public class Player extends DungeonCharacter {
                         if (dungeonSpace.isVisible()) {
                             continue;
                         }
-                        revealDungeonSpace(dungeonSpace, revealedDungeonSpaces);
+                        dungeonSpace.setVisible(true);
+                        revealedDungeonSpaces.add(dungeonSpace);
                     }
                 }
                 break;
@@ -195,16 +201,7 @@ public class Player extends DungeonCharacter {
         return revealedDungeonSpaces;
     }
 
-    private void revealDungeonSpace(DungeonSpace dungeonSpace, List<DungeonObjectTrack> revealedDungeonSpaces) {
-
-        dungeonSpace.setVisible(true);
-        DungeonObjectTrack dungeonObjectTrack = new DungeonObjectTrack()
-            .currentPosition(dungeonSpace.getPosition())
-            .currentDungeonSpaceSymbol(dungeonSpace.getVisibleDungeonSpaceType().getValueString());
-        revealedDungeonSpaces.add(dungeonObjectTrack);
-    }
-
-    public List<DungeonObjectTrack> revealCurrentMapArea() {
+    public List<DungeonSpace> revealCurrentMapArea() {
         int northStart = getPosition().getPositionY() - playerLineOfSightDistance;
         if (northStart < 0) {
             northStart = 0;
@@ -225,18 +222,19 @@ public class Player extends DungeonCharacter {
             eastEnd = dungeon.length - 1;
         }
 
-        List<DungeonObjectTrack> objectTracks = new ArrayList<>();
+        List<DungeonSpace> revealedDungeonSpaces = new ArrayList<>();
         for (int row = northStart; row <= southEnd; row++) {
             for (int col = westStart; col <= eastEnd; col++) {
                 DungeonSpace dungeonSpace = dungeon[row][col];
                 if (dungeonSpace.isVisible()) {
                     continue;
                 }
-                revealDungeonSpace(dungeonSpace, objectTracks);
+                dungeonSpace.setVisible(true);
+                revealedDungeonSpaces.add(dungeonSpace);
             }
         }
 
-        return objectTracks;
+        return revealedDungeonSpaces;
     }
 
     @Override
@@ -248,10 +246,4 @@ public class Player extends DungeonCharacter {
                     && !(dungeonObject instanceof Ghost));
             });
     }
-
-    @Override
-    public Direction getDefaultFacingDirection() {
-        return defaultFacingDirection;
-    }
-
 }

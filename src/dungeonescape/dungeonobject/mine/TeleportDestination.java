@@ -6,8 +6,10 @@
 package dungeonescape.dungeonobject.mine;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
+import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -16,8 +18,8 @@ import dungeonescape.space.DungeonSpaceType;
 public class TeleportDestination extends DungeonObject {
 
     @Override
-    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
-        return null;
+    public List<DungeonSpace> interact(DungeonObject dungeonObject) {
+        return Collections.emptyList();
     }
 
     @Override

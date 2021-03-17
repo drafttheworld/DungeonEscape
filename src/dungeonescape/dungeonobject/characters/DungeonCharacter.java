@@ -17,6 +17,8 @@ import java.util.List;
  */
 public abstract class DungeonCharacter extends DungeonObject {
 
+    private final Direction defaultFacingDirection = Direction.WEST;
+
     private Player player;
     private int numberOfSpacesToMoveWhenPatrolling;
     private int numberOfSpacesToMoveWhenHunting;
@@ -57,6 +59,9 @@ public abstract class DungeonCharacter extends DungeonObject {
     }
 
     public Direction getCurrentFacingDirection() {
+        if (currentFacingDirection == null) {
+            return defaultFacingDirection;
+        }
         return currentFacingDirection;
     }
 
@@ -72,9 +77,7 @@ public abstract class DungeonCharacter extends DungeonObject {
         this.active = active;
     }
 
-    public abstract Direction getDefaultFacingDirection();
-
-    public abstract List<DungeonObjectTrack> move(Direction direction);
+    public abstract List<DungeonSpace> move(Direction direction);
 
     public abstract boolean canOccupySpace(DungeonSpace dungeonSpace);
 

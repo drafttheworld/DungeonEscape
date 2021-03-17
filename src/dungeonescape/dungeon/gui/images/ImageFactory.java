@@ -15,25 +15,19 @@ import javax.swing.ImageIcon;
  */
 public class ImageFactory {
 
-    private static final ImageIcon defaultDungeonMasterImageIcon = Images.DUNGEON_MASTER_FACING_RIGHT.getImageIcon();
-    private static final ImageIcon defaultGhostImageIcon = Images.GHOST_FACING_RIGHT.getImageIcon();
-    private static final ImageIcon defaultGuardImageIcon = Images.GUARD_FACING_RIGHT.getImageIcon();
-    private static final ImageIcon defaultPlayerImageIcon = Images.PLAYER_FACING_RIGHT.getImageIcon();
-
-    public static ImageIcon getImageIcon(DungeonSpaceType dungeonSpaceType,
-        Direction previousFacingDirection, Direction currentFacingDirection) {
+    public static ImageIcon getImageIcon(DungeonSpaceType dungeonSpaceType, Direction currentFacingDirection) {
 
         switch (dungeonSpaceType) {
             case COIN:
                 return Images.COIN.getImageIcon();
             case DUNGEON_MASTER:
-                return getDungeonMasterImageIcon(previousFacingDirection, currentFacingDirection);
+                return getDungeonMasterImageIcon(currentFacingDirection);
             case FREEZE_MINE:
                 return Images.FREEZE_MINE.getImageIcon();
             case GHOST:
-                return getGhostImageIcon(previousFacingDirection, currentFacingDirection);
+                return getGhostImageIcon(currentFacingDirection);
             case GUARD:
-                return getGuardImageIcon(previousFacingDirection, currentFacingDirection);
+                return getGuardImageIcon(currentFacingDirection);
             case MYSTERY_BOX:
                 return Images.MYSTERY_BOX.getImageIcon();
             case NON_VISIBLE_SPACE:
@@ -41,7 +35,7 @@ public class ImageFactory {
             case OPEN_SPACE:
                 return Images.OPEN_SPACE.getImageIcon();
             case PLAYER:
-                return getPlayerImageIcon(previousFacingDirection, currentFacingDirection);
+                return getPlayerImageIcon(currentFacingDirection);
             case TELEPORT_MINE:
                 return Images.TELEPORT_MINE.getImageIcon();
             case WALL:
@@ -52,79 +46,43 @@ public class ImageFactory {
         }
     }
 
-    private static ImageIcon getDungeonMasterImageIcon(Direction previousFacingDirection, Direction currentFacingDirection) {
+    private static ImageIcon getDungeonMasterImageIcon(Direction currentFacingDirection) {
 
         switch (currentFacingDirection) {
             case EAST:
                 return Images.DUNGEON_MASTER_FACING_LEFT.getImageIcon();
-            case WEST:
-                return Images.DUNGEON_MASTER_FACING_RIGHT.getImageIcon();
             default:
-                switch (previousFacingDirection) {
-                    case EAST:
-                        return Images.DUNGEON_MASTER_FACING_LEFT.getImageIcon();
-                    case WEST:
-                        return Images.DUNGEON_MASTER_FACING_RIGHT.getImageIcon();
-                    default:
-                        return defaultDungeonMasterImageIcon;
-                }
+                return Images.DUNGEON_MASTER_FACING_RIGHT.getImageIcon();
         }
     }
 
-    private static ImageIcon getGhostImageIcon(Direction previousFacingDirection, Direction currentFacingDirection) {
+    private static ImageIcon getGhostImageIcon(Direction currentFacingDirection) {
 
         switch (currentFacingDirection) {
             case EAST:
                 return Images.GHOST_FACING_LEFT.getImageIcon();
-            case WEST:
-                return Images.GHOST_FACING_RIGHT.getImageIcon();
             default:
-                switch (previousFacingDirection) {
-                    case EAST:
-                        return Images.GHOST_FACING_LEFT.getImageIcon();
-                    case WEST:
-                        return Images.GHOST_FACING_RIGHT.getImageIcon();
-                    default:
-                        return defaultGhostImageIcon;
-                }
+                return Images.GHOST_FACING_RIGHT.getImageIcon();
         }
     }
 
-    private static ImageIcon getGuardImageIcon(Direction previousFacingDirection, Direction currentFacingDirection) {
+    private static ImageIcon getGuardImageIcon(Direction currentFacingDirection) {
 
         switch (currentFacingDirection) {
             case EAST:
                 return Images.GUARD_FACING_LEFT.getImageIcon();
-            case WEST:
-                return Images.GUARD_FACING_RIGHT.getImageIcon();
             default:
-                switch (previousFacingDirection) {
-                    case EAST:
-                        return Images.GUARD_FACING_LEFT.getImageIcon();
-                    case WEST:
-                        return Images.GUARD_FACING_RIGHT.getImageIcon();
-                    default:
-                        return defaultGuardImageIcon;
-                }
+                return Images.GUARD_FACING_RIGHT.getImageIcon();
         }
     }
 
-    private static ImageIcon getPlayerImageIcon(Direction previousFacingDirection, Direction currentFacingDirection) {
+    private static ImageIcon getPlayerImageIcon(Direction currentFacingDirection) {
 
         switch (currentFacingDirection) {
             case EAST:
                 return Images.PLAYER_FACING_LEFT.getImageIcon();
-            case WEST:
-                return Images.PLAYER_FACING_RIGHT.getImageIcon();
             default:
-                switch (previousFacingDirection) {
-                    case EAST:
-                        return Images.PLAYER_FACING_LEFT.getImageIcon();
-                    case WEST:
-                        return Images.PLAYER_FACING_RIGHT.getImageIcon();
-                    default:
-                        return defaultPlayerImageIcon;
-                }
+                return Images.PLAYER_FACING_RIGHT.getImageIcon();
         }
     }
 }

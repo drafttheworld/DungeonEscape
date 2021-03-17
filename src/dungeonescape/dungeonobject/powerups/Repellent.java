@@ -6,7 +6,7 @@
 package dungeonescape.dungeonobject.powerups;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
+import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import java.util.List;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public class Repellent extends DungeonObject {
 
     @Override
-    public List<DungeonObjectTrack> interact(DungeonObject dungeonObject) {
+    public List<DungeonSpace> interact(DungeonObject dungeonObject) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -5,6 +5,7 @@
  */
 package dungeonescape.dungeonobject;
 
+import dungeonescape.space.DungeonSpace;
 import java.util.List;
 
 /**
@@ -13,6 +14,6 @@ import java.util.List;
  */
 public interface TeleportObject {
 
-    public List<DungeonObjectTrack> teleport(DungeonObject dungeonObject);
+    public List<DungeonSpace> teleport(DungeonObject dungeonObject);
 
 }

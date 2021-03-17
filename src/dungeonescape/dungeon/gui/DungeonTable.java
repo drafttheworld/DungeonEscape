@@ -5,12 +5,16 @@
  */
 package dungeonescape.dungeon.gui;
 
+import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.DungeonObjectTrack;
+import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.play.GameSession;
+import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import java.awt.Rectangle;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -58,8 +62,8 @@ public class DungeonTable extends JTable {
         }
 
         this.setModel(new DefaultTableModel(
-                rows,
-                columns
+            rows,
+            columns
         ) {
             @Override
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -106,16 +110,16 @@ public class DungeonTable extends JTable {
         return rows;
     }
 
-    protected void updateMap(List<DungeonObjectTrack> dungeonObjectTracks) {
-        dungeonObjectTracks.parallelStream().forEach(dungeonObjectTrack -> {
+    protected void updateMap(Set<DungeonSpace> dungeonSpacesToUpdate) {
+        dungeonSpacesToUpdate.parallelStream().forEach(dungeonSpace -> {
 
-            String mapSymbol = dungeonObjectTrack.getDungeonSpaceSymbol();
-            int row = dungeonObjectTrack.getPosition().getPositionY();
-            int col = dungeonObjectTrack.getPosition().getPositionX();
-            this.setValueAt(mapSymbol, row, col);
+            DungeonObject dungeonObject = dungeonSpace.getVisibleDungeonObject();
+            int row = dungeonSpace.getPosition().getPositionY();
+            int col = dungeonSpace.getPosition().getPositionX();
+            this.setValueAt(dungeonObject, row, col);
 
             int dungeonMasterCount = 0;
-            if (DungeonSpaceType.PLAYER.getValueString().equals(mapSymbol)) {
+            if (dungeonObject instanceof Player) {
                 mapCenterX = col;
                 mapCenterY = row;
             }
@@ -133,7 +137,7 @@ public class DungeonTable extends JTable {
         nextVisible.x = (int) (totalColWidth - (currentlyVisible.getWidth() / 2));
         this.scrollRectToVisible(nextVisible);
     }
-    
+
     public int getMapCenterX() {
         return mapCenterX;
     }

@@ -8,12 +8,11 @@ package dungeonescape.dungeonobject.mine;
 import dungeonescape.dungeon.notifications.InteractionNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,7 +41,7 @@ public class TeleportMine extends Mine implements TeleportObject {
     }
 
     @Override
-    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
+    public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
         if (dungeonObject instanceof Player) {
             setActive(false);
@@ -52,7 +51,7 @@ public class TeleportMine extends Mine implements TeleportObject {
             return teleport(dungeonObject);
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -61,7 +60,7 @@ public class TeleportMine extends Mine implements TeleportObject {
     }
 
     @Override
-    public DungeonObjectTrack teleport(DungeonObject dungeonObject) {
+    public List<DungeonSpace> teleport(DungeonObject dungeonObject) {
         Player player = (Player) dungeonObject;
 
         //move the player to the next location

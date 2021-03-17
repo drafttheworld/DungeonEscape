@@ -5,8 +5,8 @@
  */
 package dungeonescape.dungeonobject.characters;
 
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.space.DungeonSpace;
+import java.util.List;
 
 /**
  *
@@ -14,6 +14,6 @@ import dungeonescape.space.DungeonSpace;
  */
 public abstract class NonPersonDungeonCharacter extends DungeonCharacter {
 
-    public abstract DungeonObjectTrack move(DungeonSpace[][] dungeon, Player player);
+    public abstract List<DungeonSpace> move(DungeonSpace[][] dungeon, Player player);
 
 }

@@ -34,8 +34,7 @@ public abstract class DungeonObject {
         return dungeonSpace.getPosition();
     }
 
-    public abstract List<DungeonObjectTrack> interact(DungeonObject dungeonObject);
+    public abstract List<DungeonSpace> interact(DungeonObject dungeonObject);
 
     public abstract DungeonSpaceType getDungeonSpaceType();
-
 }

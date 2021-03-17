@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,7 +48,7 @@ public class Dungeon {
 
     private final List<DungeonCharacter> nonPlayerCharacters;
     private final List<DungeonObject> moveableDungeonObjects;
-    private final List<DungeonObjectTrack> dungeonObjectTracks;
+    private final Set<DungeonSpace> dungeonSpacesToUpdate;
     private final DungeonConfiguration dungeonConfiguration;
 
     private Player player;
@@ -59,7 +61,7 @@ public class Dungeon {
 
         nonPlayerCharacters = new ArrayList<>();
         moveableDungeonObjects = new ArrayList<>();
-        dungeonObjectTracks = Collections.synchronizedList(new ArrayList<>());
+        dungeonSpacesToUpdate = new ConcurrentSkipListSet<>();
         dungeon = generateDungeon();
         dungeonTimeElapsed = 0;
     }
@@ -143,8 +145,10 @@ public class Dungeon {
         System.out.println("Added " + ghosts.size() + " ghosts.");
 
         moveableDungeonObjects.forEach(dungeonObject -> {
-            dungeonObjectTracks.add(new DungeonObjectTrack(dungeonObject.getPosition(),
-                dungeonObject.getDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
+            DungeonSpace dungeonSpace = dungeonObject.getDungeonSpace();
+            if (dungeonSpace.isVisible()) {
+                dungeonSpacesToUpdate.add(dungeonSpace);
+            }
         });
 
         return dungeon;
@@ -164,11 +168,11 @@ public class Dungeon {
 
         if (!player.isFrozen()) {
             try {
-                List<DungeonObjectTrack> playerTracks = player.move(direction);
+                List<DungeonSpace> playerTracks = player.move(direction);
                 if (playerTracks.isEmpty()) {
                     return;
                 }
-                dungeonObjectTracks.addAll(playerTracks);
+                dungeonSpacesToUpdate.addAll(playerTracks);
             } catch (UnsupportedOperationException e) {
                 e.printStackTrace();
                 NotificationManager.notify(new ActionNotAllowedNotification(e.getMessage()));
@@ -181,23 +185,6 @@ public class Dungeon {
             moveNonPlayerCharacters();
             dungeonTimeElapsed++;
         }
-
-        cleanupDungeonTracks();
-    }
-
-    private void cleanupDungeonTracks() {
-
-        Map<Position, DungeonObjectTrack> dotMap = new HashMap<>();
-        for (DungeonObjectTrack dot : dungeonObjectTracks) {
-            Position dotPosition = dot.getPosition();
-            String dungeonSpaceCharacter = dungeon[dotPosition.getPositionY()][dotPosition.getPositionX()]
-                .getVisibleDungeonSpaceType().getValueString();
-            dotMap.putIfAbsent(dotPosition, new DungeonObjectTrack(dotPosition, dungeonSpaceCharacter));
-        }
-        dungeonObjectTracks.clear();
-        dotMap.values().forEach(dot -> {
-            dungeonObjectTracks.add(dot);
-        });
     }
 
     private void cleanupExpendedItems() {
@@ -210,7 +197,7 @@ public class Dungeon {
             }
         }
 
-        dungeonObjectTracks.clear();
+        dungeonSpacesToUpdate.clear();
     }
 
     private void moveNonPlayerCharacters() {
@@ -220,7 +207,7 @@ public class Dungeon {
             NonPersonDungeonCharacter npc = (NonPersonDungeonCharacter) dungeonCharacter;
             try {
                 Future future
-                    = executorService.submit(() -> dungeonObjectTracks.addAll(npc.move(dungeon, player)));
+                    = executorService.submit(() -> dungeonSpacesToUpdate.addAll(npc.move(dungeon, player)));
                 futures.add(future);
             } catch (RuntimeException e) {
                 NotificationManager.notify(new ExecutionErrorNotification(e.getMessage()));
@@ -243,8 +230,10 @@ public class Dungeon {
         nonPlayerCharacters.addAll(dungeonMasters);
         moveableDungeonObjects.addAll(dungeonMasters);
         dungeonMasters.forEach(dungeonMaster -> {
-            dungeonObjectTracks.add(new DungeonObjectTrack(dungeonMaster.getPosition(),
-                dungeonMaster.getDungeonSpace().getVisibleDungeonSpaceType().getValueString()));
+            DungeonSpace dungeonSpace = dungeonMaster.getDungeonSpace();
+            if (dungeonSpace.isVisible()) {
+                dungeonSpacesToUpdate.add(dungeonSpace);
+            }
         });
     }
 
@@ -255,8 +244,8 @@ public class Dungeon {
 //        return DungeonMapViewUtil.getFullDungeonAsString(dungeon, null);
     }
 
-    public List<DungeonObjectTrack> getDungeonObjectTracks() {
-        return Collections.unmodifiableList(dungeonObjectTracks);
+    public Set<DungeonSpace> getDungeonSpacesToUpdate() {
+        return dungeonSpacesToUpdate;
     }
 
     public DungeonSpace[][] getDungeon() {

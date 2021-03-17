@@ -15,6 +15,9 @@ import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -25,8 +28,6 @@ public class Guard extends NonPersonDungeonCharacter implements TeleportObject {
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 5;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
     public static int DEFAULT_DETECTION_DISTANCE = 5;
-
-    private final Direction defaultFacingDirection = Direction.WEST;
 
     private final DungeonSpace[][] dungeon;
     private final DungeonSpace jailCellSpace;
@@ -74,7 +75,7 @@ public class Guard extends NonPersonDungeonCharacter implements TeleportObject {
     }
 
     @Override
-    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
+    public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
         if (!isActive()) {
             return null;
@@ -91,7 +92,7 @@ public class Guard extends NonPersonDungeonCharacter implements TeleportObject {
             return teleport(dungeonObject);
         }
 
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -110,7 +111,7 @@ public class Guard extends NonPersonDungeonCharacter implements TeleportObject {
     }
 
     @Override
-    public DungeonObjectTrack move(Direction direction) {
+    public List<DungeonSpace> move(Direction direction) {
         throw new UnsupportedOperationException("This method is not supported for a NonPersonDungeonCharacter.");
     }
 
@@ -122,34 +123,22 @@ public class Guard extends NonPersonDungeonCharacter implements TeleportObject {
      * @return
      */
     @Override
-    public DungeonObjectTrack move(DungeonSpace[][] dungeon, Player player) {
+    public List<DungeonSpace> move(DungeonSpace[][] dungeon, Player player) {
 
         return CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
             getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance(), player);
     }
 
     @Override
-    public DungeonObjectTrack teleport(DungeonObject dungeonObject) {
+    public List<DungeonSpace> teleport(DungeonObject dungeonObject) {
+
         Player player = (Player) dungeonObject;
 
         //move the player and then remove the player from the previous location
-        DungeonSpace currentSpace = player.getDungeonSpace();
+        DungeonSpace startingSpace = player.getDungeonSpace();
         jailCellSpace.addDungeonObject(player);
-        currentSpace.removeDungeonObject(player);
+        startingSpace.removeDungeonObject(player);
 
-        DungeonObjectTrack dungeonObjectTrack = new DungeonObjectTrack()
-            .previousPosition(currentSpace.getPosition())
-            .previousFacingDirection(player.getCurrentFacingDirection())
-            .previousDungeonSpaceSymbol(currentSpace.getVisibleDungeonSpaceType().getValueString())
-            .currentPosition(player.getPosition())
-            .currentFacingDirection(player.getCurrentFacingDirection())
-            .currentDungeonSpaceSymbol(player.getDungeonSpace().getVisibleDungeonSpaceType().getValueString());
-
-        return dungeonObjectTrack;
-    }
-
-    @Override
-    public Direction getDefaultFacingDirection() {
-        return defaultFacingDirection;
+        return Arrays.asList(startingSpace, jailCellSpace);
     }
 }

@@ -7,8 +7,8 @@ package dungeonescape.dungeonobject.mine;
 
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.characters.Player;
+import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import java.util.Collections;
 import java.util.List;
@@ -42,12 +42,12 @@ public class FreezeMine extends Mine {
     }
 
     @Override
-    public DungeonObjectTrack interact(DungeonObject dungeonObject) {
+    public List<DungeonSpace> interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
             ((Player) dungeonObject).addFrozenTurns(freezeTime);
             setActive(false);
         }
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
