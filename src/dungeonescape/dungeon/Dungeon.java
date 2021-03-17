@@ -10,7 +10,6 @@ import dungeonescape.dungeon.notifications.ExecutionErrorNotification;
 import dungeonescape.dungeon.notifications.GameOverNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import dungeonescape.dungeonobject.characters.DungeonMaster;
 import dungeonescape.dungeonobject.characters.Ghost;
@@ -25,11 +24,8 @@ import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.Position;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
@@ -168,11 +164,12 @@ public class Dungeon {
 
         if (!player.isFrozen()) {
             try {
-                List<DungeonSpace> playerTracks = player.move(direction);
-                if (playerTracks.isEmpty()) {
+                List<DungeonSpace> playerDungeonSpaces = player.move(direction);
+                if (playerDungeonSpaces.isEmpty()) {
                     return;
                 }
-                dungeonSpacesToUpdate.addAll(playerTracks);
+
+                dungeonSpacesToUpdate.addAll(playerDungeonSpaces);
             } catch (UnsupportedOperationException e) {
                 e.printStackTrace();
                 NotificationManager.notify(new ActionNotAllowedNotification(e.getMessage()));
@@ -204,10 +201,9 @@ public class Dungeon {
 
         List<Future<?>> futures = new ArrayList<>();
         for (DungeonCharacter dungeonCharacter : nonPlayerCharacters) {
-            NonPersonDungeonCharacter npc = (NonPersonDungeonCharacter) dungeonCharacter;
             try {
                 Future future
-                    = executorService.submit(() -> dungeonSpacesToUpdate.addAll(npc.move(dungeon, player)));
+                    = executorService.submit(() -> dungeonSpacesToUpdate.addAll(dungeonCharacter.move(dungeon, player)));
                 futures.add(future);
             } catch (RuntimeException e) {
                 NotificationManager.notify(new ExecutionErrorNotification(e.getMessage()));

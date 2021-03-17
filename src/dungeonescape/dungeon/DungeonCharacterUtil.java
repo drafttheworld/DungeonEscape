@@ -25,11 +25,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class DungeonCharacterUtil {
 
     /**
-     * Guards start at random dungeon entrances. If there are more guards than
-     * entrances then some entrances will have multiple guards. Guards patrol 2
-     * random spaces per turn along the open spaces and will chase the player
-     * when within 10 spaces (including the guard's current space). Guards are
-     * unaffected by mines but cannot walk through walls.
+     * Guards start at random dungeon entrances. If there are more guards than entrances then some entrances will have
+     * multiple guards. Guards patrol 2 random spaces per turn along the open spaces and will chase the player when
+     * within 10 spaces (including the guard's current space). Guards are unaffected by mines but cannot walk through
+     * walls.
      *
      * @param dungeon
      * @param numberOfGuardsToPlace
@@ -37,7 +36,7 @@ public class DungeonCharacterUtil {
      * @throws dungeonescape.dungeon.notifications.GameNotification
      */
     protected static List<Guard> placeGuards(DungeonSpace[][] dungeon, int numberOfGuardsToPlace) {
-        
+
         if (numberOfGuardsToPlace < 1) {
             return Collections.emptyList();
         }
@@ -54,7 +53,7 @@ public class DungeonCharacterUtil {
             }
 
             DungeonSpace dungeonExitSpace = dungeonExits.get(dungeonExitNumber);
-            Guard guard = new Guard(dungeon, jailCellSpace);
+            Guard guard = new Guard(jailCellSpace);
             dungeonExitSpace.addDungeonObject(guard);
             guards.add(guard);
 
@@ -76,7 +75,7 @@ public class DungeonCharacterUtil {
                 while (usedSpaces.contains(emptyDungeonSpaceNumber)) {
                     emptyDungeonSpaceNumber = ThreadLocalRandom.current().nextInt(0, emptyDungeonSpaces.size());
                 }
-                Guard guard = new Guard(dungeon, jailCellSpace);
+                Guard guard = new Guard(jailCellSpace);
                 DungeonSpace dungeonSpace = emptyDungeonSpaces.get(emptyDungeonSpaceNumber);
                 dungeonSpace.addDungeonObject(guard);
                 guards.add(guard);
@@ -88,10 +87,9 @@ public class DungeonCharacterUtil {
     }
 
     /**
-     * Ghosts are distributed evenly along the outside of the map and are
-     * allowed to wander through walls. Ghosts are unaffected by all dungeon
-     * objects and will chase the player when within 50 spaces (includes the
-     * current space of the ghost).
+     * Ghosts are distributed evenly along the outside of the map and are allowed to wander through walls. Ghosts are
+     * unaffected by all dungeon objects and will chase the player when within 50 spaces (includes the current space of
+     * the ghost).
      *
      * @param dungeon
      * @param numberOfGhostsToPlace
@@ -101,8 +99,8 @@ public class DungeonCharacterUtil {
      * @throws dungeonescape.dungeon.notifications.GameNotification
      */
     protected static List<Ghost> placeGhosts(DungeonSpace[][] dungeon,
-            int numberOfGhostsToPlace, FreezeTime ghostFreezeTime, int offsetFromBorder) {
-        
+        int numberOfGhostsToPlace, FreezeTime ghostFreezeTime, int offsetFromBorder) {
+
         if (numberOfGhostsToPlace < 1) {
             return Collections.emptyList();
         }
@@ -155,7 +153,7 @@ public class DungeonCharacterUtil {
     }
 
     private static List<Ghost> placeGhosts(Integer row, Integer col, DungeonSpace[][] dungeon,
-            int numberOfGhostsToPlaceOnThisBorder, FreezeTime ghostFreezeTime, List<Ghost> ghosts) {
+        int numberOfGhostsToPlaceOnThisBorder, FreezeTime ghostFreezeTime, List<Ghost> ghosts) {
 
         boolean selectRow = row == null;
         for (int ghostNumber = 0; ghostNumber < numberOfGhostsToPlaceOnThisBorder; ghostNumber++) {
@@ -173,7 +171,7 @@ public class DungeonCharacterUtil {
                 }
                 dungeonBorderSpace = dungeon[col][row];
             }
-            Ghost ghost = new Ghost(dungeon, ghostFreezeTime);
+            Ghost ghost = new Ghost(ghostFreezeTime);
             dungeonBorderSpace.addDungeonObject(ghost);
             ghosts.add(ghost);
         }
@@ -182,20 +180,20 @@ public class DungeonCharacterUtil {
 
     private static boolean dungeonBoardSpaceIsOccupiedByAnotherCharacter(DungeonSpace dungeonSpace) {
         return !dungeonSpace.getDungeonObjects().stream()
-                .noneMatch(dungeonObject -> dungeonObject instanceof DungeonCharacter);
+            .noneMatch(dungeonObject -> dungeonObject instanceof DungeonCharacter);
     }
 
     protected static List<DungeonMaster> placeDungeonMasters(DungeonSpace[][] dungeon, int numberOfDungeonMasters) {
         if (numberOfDungeonMasters < 1) {
             return Collections.emptyList();
         }
-        
+
         int center = dungeon.length / 2;
 
         List<DungeonMaster> dungeonMasters = new ArrayList<>();
 
         //First dungeon master will spawn at the center of the map
-        DungeonMaster dungeonMaster = new DungeonMaster(dungeon);
+        DungeonMaster dungeonMaster = new DungeonMaster();
         dungeon[center][center].addDungeonObject(dungeonMaster);
         dungeonMasters.add(dungeonMaster);
 
@@ -208,7 +206,7 @@ public class DungeonCharacterUtil {
             while (usedSpaces.contains(position)) {
                 position = ThreadLocalRandom.current().nextInt(0, availableDungeonSpaces.size());
             }
-            dungeonMaster = new DungeonMaster(dungeon);
+            dungeonMaster = new DungeonMaster();
             availableDungeonSpaces.get(position).addDungeonObject(dungeonMaster);
             dungeonMasters.add(dungeonMaster);
             usedSpaces.add(position);

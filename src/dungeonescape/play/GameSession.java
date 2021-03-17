@@ -7,13 +7,8 @@ package dungeonescape.play;
 
 import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.DungeonConfiguration;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.FreezeTime;
-import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.space.DungeonSpace;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -75,6 +70,10 @@ public class GameSession {
         FreezeTime freezeTime = dungeon.getPlayer().getFrozenTurnsRemaining();
         playerStats.append("Frozen time remaining: ").append(freezeTime.getTurns()).append(" turns").append("\n");
         return playerStats.toString();
+    }
+
+    public Dungeon getDungeon() {
+        return dungeon;
     }
 
     public String getPlayerMap() {

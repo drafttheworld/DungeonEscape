@@ -32,6 +32,7 @@ public class ImageFactory {
                 return Images.MYSTERY_BOX.getImageIcon();
             case NON_VISIBLE_SPACE:
                 return Images.NON_VISIBLE_SPACE.getImageIcon();
+            case TELEPORT_LOCATION:
             case OPEN_SPACE:
                 return Images.OPEN_SPACE.getImageIcon();
             case PLAYER:
@@ -42,7 +43,7 @@ public class ImageFactory {
                 return Images.STONE_WALL.getImageIcon();
             default:
                 throw new IllegalArgumentException("Unrecognized dungeon space type: "
-                    + dungeonSpaceType.getValue());
+                    + dungeonSpaceType);
         }
     }
 

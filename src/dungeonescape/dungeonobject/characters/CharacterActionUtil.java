@@ -9,7 +9,6 @@ import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeon.notifications.WinNotification;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.characters.pathfinder.EnemyPathfinder;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
@@ -46,6 +45,7 @@ public class CharacterActionUtil {
         }
 
         Direction nextFacingDirection = assignCharacterMovement(player, nextDungeonSpace);
+        player.setCurrentFacingDirection(nextFacingDirection);
 
         dungeonSpaces.add(nextDungeonSpace);
 
@@ -115,6 +115,7 @@ public class CharacterActionUtil {
                 }
             }
         }
+        enemy.setCurrentFacingDirection(movementDirection);
 
         boolean currentDungeonSpaceIsVisible = enemy.getDungeonSpace().isVisible();
         if (!startingSpaceIsVisible && !currentDungeonSpaceIsVisible) {

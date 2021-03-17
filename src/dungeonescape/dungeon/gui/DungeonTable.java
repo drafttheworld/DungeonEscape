@@ -6,14 +6,11 @@
 package dungeonescape.dungeon.gui;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.play.GameSession;
 import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.DungeonSpaceType;
 import java.awt.Rectangle;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Set;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -46,15 +43,19 @@ public class DungeonTable extends JTable {
     private void initTable() {
         int dungeonSize = gameSession.getDungeonConfiguration().getDungeonWidth();
 
-        String[][] rows = populateMapRows(gameSession.getPlayerMap(), dungeonSize);
-        for (int row = 0; row < dungeonSize; row++) {
-            for (int col = 0; col < dungeonSize; col++) {
-                if (DungeonSpaceType.PLAYER.getValueString().equals(rows[row][col])) {
-                    mapCenterX = col;
-                    mapCenterY = row;
-                }
-            }
-        }
+//        String[][] rows = populateMapRows(gameSession.getPlayerMap(), dungeonSize);
+        DungeonSpace[][] rows = gameSession.getDungeon().getDungeon();
+        Player player = gameSession.getDungeon().getPlayer();
+        mapCenterX = player.getPosition().getPositionX();
+        mapCenterY = player.getPosition().getPositionY();
+//        for (int row = 0; row < dungeonSize; row++) {
+//            for (int col = 0; col < dungeonSize; col++) {
+//                if (DungeonSpaceType.PLAYER.getValueString().equals(rows[row][col])) {
+//                    mapCenterX = col;
+//                    mapCenterY = row;
+//                }
+//            }
+//        }
 
         String[] columns = new String[dungeonSize];
         for (int index = 0; index < columns.length; index++) {
@@ -111,14 +112,14 @@ public class DungeonTable extends JTable {
     }
 
     protected void updateMap(Set<DungeonSpace> dungeonSpacesToUpdate) {
+
         dungeonSpacesToUpdate.parallelStream().forEach(dungeonSpace -> {
 
-            DungeonObject dungeonObject = dungeonSpace.getVisibleDungeonObject();
             int row = dungeonSpace.getPosition().getPositionY();
             int col = dungeonSpace.getPosition().getPositionX();
-            this.setValueAt(dungeonObject, row, col);
+            this.setValueAt(dungeonSpace, row, col);
 
-            int dungeonMasterCount = 0;
+            DungeonObject dungeonObject = dungeonSpace.getVisibleDungeonObject();
             if (dungeonObject instanceof Player) {
                 mapCenterX = col;
                 mapCenterY = row;

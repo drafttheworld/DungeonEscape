@@ -6,7 +6,6 @@
 package dungeonescape.space;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.NonVisibleSpace;
 import dungeonescape.dungeonobject.OpenSpace;
 import dungeonescape.dungeonobject.TeleportObject;
@@ -17,12 +16,13 @@ import dungeonescape.dungeonobject.mine.Mine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
  * @author Andrew
  */
-public class DungeonSpace {
+public class DungeonSpace implements Comparable<DungeonSpace> {
 
     private Position position;
     private boolean visible;
@@ -169,4 +169,33 @@ public class DungeonSpace {
             });
     }
 
+    @Override
+    public int compareTo(DungeonSpace o) {
+        return Integer.compare(this.hashCode(), o.hashCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, visible, dungeonObjects);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (this == obj) {
+            return true;
+        } else if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final DungeonSpace other = (DungeonSpace) obj;
+        return this.visible != other.visible
+            && Objects.equals(this.position, other.position)
+            && Objects.equals(this.dungeonObjects, other.dungeonObjects);
+    }
+
+    @Override
+    public String toString() {
+        return "DungeonSpace{" + "position=" + position + ", visible=" + visible + ", dungeonObjects=" + dungeonObjects + '}';
+    }
 }

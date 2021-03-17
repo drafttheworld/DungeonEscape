@@ -14,24 +14,23 @@ import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
  * @author Andrew
  */
-public class Ghost extends NonPersonDungeonCharacter {
+public class Ghost extends DungeonCharacter {
 
     public static final FreezeTime DEFAULT_FREEZE_TIME = new FreezeTime(30);
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 2;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 3;
     public static int DEFAULT_DETECTION_DISTANCE = 10;
 
-    private final DungeonSpace[][] dungeon;
     private final FreezeTime freezeTime;
     private int detectionDistance;
 
-    public Ghost(DungeonSpace[][] dungeon, FreezeTime freezeTime) {
-        this.dungeon = dungeon;
+    public Ghost(FreezeTime freezeTime) {
         this.freezeTime = freezeTime;
         super.setActive(true);
     }
@@ -99,11 +98,6 @@ public class Ghost extends NonPersonDungeonCharacter {
         return true;
     }
 
-    @Override
-    public List<DungeonSpace> move(Direction direction) {
-        throw new UnsupportedOperationException("This method is not supported for a NonPersonDungeonCharacter.");
-    }
-
     /**
      * Use the player's position to determine whether they are in range rather than searching the surrounding tiles.
      *
@@ -116,5 +110,39 @@ public class Ghost extends NonPersonDungeonCharacter {
 
         return CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
             getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance(), player);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.freezeTime);
+        hash = 29 * hash + this.detectionDistance;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Ghost other = (Ghost) obj;
+        if (this.detectionDistance != other.detectionDistance) {
+            return false;
+        }
+        if (!Objects.equals(this.freezeTime, other.freezeTime)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Ghost{" + "freezeTime=" + freezeTime + ", detectionDistance=" + detectionDistance + '}';
     }
 }

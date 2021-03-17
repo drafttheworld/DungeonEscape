@@ -8,6 +8,7 @@ package dungeonescape.dungeonobject.construction;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public class Wall extends Construction {
 
     @Override
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

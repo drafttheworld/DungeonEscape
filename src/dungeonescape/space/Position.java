@@ -10,14 +10,14 @@ package dungeonescape.space;
  * @author Andrew
  */
 public class Position {
-    
+
     int positionX;
     int positionY;
-    
+
     public Position() {
-        
+
     }
-    
+
     public Position(int positionX, int positionY) {
         this.positionX = positionX;
         this.positionY = positionY;
@@ -30,7 +30,7 @@ public class Position {
     public void setPositionX(int positionX) {
         this.positionX = positionX;
     }
-    
+
     public Position positionX(int positionX) {
         setPositionX(positionX);
         return this;
@@ -43,15 +43,10 @@ public class Position {
     public void setPositionY(int positionY) {
         this.positionY = positionY;
     }
-    
+
     public Position positionY(int positionY) {
         setPositionY(positionY);
         return this;
-    }
-
-    @Override
-    public String toString() {
-        return "Position{" + "positionX=" + positionX + ", positionY=" + positionY + '}';
     }
 
     @Override
@@ -79,5 +74,10 @@ public class Position {
         }
         return this.positionY == other.positionY;
     }
-    
+
+    @Override
+    public String toString() {
+        return "Position{" + "positionX=" + positionX + ", positionY=" + positionY + '}';
+    }
+
 }

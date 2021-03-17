@@ -10,7 +10,6 @@ import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
@@ -22,7 +21,7 @@ import java.util.List;
  *
  * @author Andrew
  */
-public class DungeonMaster extends NonPersonDungeonCharacter {
+public class DungeonMaster extends DungeonCharacter {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 3;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
@@ -31,13 +30,9 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
     public static final String CAPTURE_NOTIFICATION
         = "You have been caught and executed by a DUNGEON MASTER!";
 
-    private final DungeonSpace[][] dungeon;
-
     private int detectionDistance;
-    private Direction facingDirection;
 
-    public DungeonMaster(DungeonSpace[][] dungeon) {
-        this.dungeon = dungeon;
+    public DungeonMaster() {
         super.setActive(true);
     }
 
@@ -105,20 +100,6 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
         return Collections.emptyList();
     }
 
-    /**
-     * Moves 3 spaces per turn. Can only occupy empty dungeon spaces. Movement direction is random unless the player is
-     * within line of sight. When the player is in the dungeon master's line of sight movement direction will be toward
-     * the player.
-     *
-     * @param direction
-     * @return
-     * @throws GameNotification
-     */
-    @Override
-    public List<DungeonSpace> move(Direction direction) {
-        throw new UnsupportedOperationException("This method is not supported for a NonPersonDungeonCharacter.");
-    }
-
     @Override
     public DungeonSpaceType getDungeonSpaceType() {
         return DungeonSpaceType.DUNGEON_MASTER;
@@ -146,5 +127,35 @@ public class DungeonMaster extends NonPersonDungeonCharacter {
 
         return CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
             getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance(), player);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + this.detectionDistance;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DungeonMaster other = (DungeonMaster) obj;
+        if (this.detectionDistance != other.detectionDistance) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "DungeonMaster{" + "detectionDistance=" + detectionDistance + '}';
     }
 }

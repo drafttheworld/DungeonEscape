@@ -9,7 +9,6 @@ import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.InteractionNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
@@ -18,23 +17,22 @@ import dungeonescape.space.DungeonSpaceType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
  * @author Andrew
  */
-public class Guard extends NonPersonDungeonCharacter implements TeleportObject {
+public class Guard extends DungeonCharacter implements TeleportObject {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 5;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
     public static int DEFAULT_DETECTION_DISTANCE = 5;
 
-    private final DungeonSpace[][] dungeon;
     private final DungeonSpace jailCellSpace;
     private int detectionDistance;
 
-    public Guard(DungeonSpace[][] dungeon, DungeonSpace jailCellSpace) {
-        this.dungeon = dungeon;
+    public Guard(DungeonSpace jailCellSpace) {
         this.jailCellSpace = jailCellSpace;
         super.setActive(true);
     }
@@ -78,7 +76,7 @@ public class Guard extends NonPersonDungeonCharacter implements TeleportObject {
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
         if (!isActive()) {
-            return null;
+            return Collections.emptyList();
         } else if (dungeonObject instanceof Construction) {
             NotificationManager.notify(
                 new ActionNotAllowedNotification("Guards cannot move through obstacles."));
@@ -110,11 +108,6 @@ public class Guard extends NonPersonDungeonCharacter implements TeleportObject {
             });
     }
 
-    @Override
-    public List<DungeonSpace> move(Direction direction) {
-        throw new UnsupportedOperationException("This method is not supported for a NonPersonDungeonCharacter.");
-    }
-
     /**
      * Use the player's position to determine whether they are in range rather than searching the surrounding tiles.
      *
@@ -140,5 +133,39 @@ public class Guard extends NonPersonDungeonCharacter implements TeleportObject {
         startingSpace.removeDungeonObject(player);
 
         return Arrays.asList(startingSpace, jailCellSpace);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 67 * hash + Objects.hashCode(this.jailCellSpace);
+        hash = 67 * hash + this.detectionDistance;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Guard other = (Guard) obj;
+        if (this.detectionDistance != other.detectionDistance) {
+            return false;
+        }
+        if (!Objects.equals(this.jailCellSpace, other.jailCellSpace)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Guard{" + "jailCellSpace=" + jailCellSpace + ", detectionDistance=" + detectionDistance + '}';
     }
 }

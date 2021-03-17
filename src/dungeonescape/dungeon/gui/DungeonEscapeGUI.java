@@ -12,7 +12,6 @@ import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.NotificationListener;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeon.notifications.WinNotification;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.play.Direction;
 import dungeonescape.play.GameDifficulty;
 import dungeonescape.play.GameSession;
@@ -239,8 +238,8 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     }
 
     private void movePlayer(Direction direction) {
-        Set<DungeonSpace> dungeonObjectTracks = gameSession.movePlayerGui(direction);
-        activeDungeonTable.updateMap(dungeonObjectTracks);
+        Set<DungeonSpace> dungeonSpaces = gameSession.movePlayerGui(direction);
+        activeDungeonTable.updateMap(dungeonSpaces);
     }
 
     @Override

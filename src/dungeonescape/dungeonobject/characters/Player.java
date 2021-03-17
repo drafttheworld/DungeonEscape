@@ -5,18 +5,16 @@
  */
 package dungeonescape.dungeonobject.characters;
 
-import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
-import dungeonescape.dungeon.notifications.NotificationManager;
-import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.dungeonobject.DungeonObjectTrack;
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.space.DungeonSpace;
 import dungeonescape.space.DungeonSpaceType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -104,6 +102,10 @@ public class Player extends DungeonCharacter {
     }
 
     @Override
+    public List<DungeonSpace> move(DungeonSpace[][] dungeon, Player player) {
+        throw new UnsupportedOperationException("Not supported.");
+    }
+
     public List<DungeonSpace> move(Direction direction) {
         List<DungeonSpace> objectTracks = new ArrayList<>();
         objectTracks.addAll(CharacterActionUtil.movePlayer(dungeon, this, direction));
@@ -245,5 +247,54 @@ public class Player extends DungeonCharacter {
                     || (dungeonObject instanceof DungeonCharacter
                     && !(dungeonObject instanceof Ghost));
             });
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.playerName);
+        hash = 29 * hash + this.playerLineOfSightDistance;
+        hash = 29 * hash + this.frozenTurnsRemaining;
+        hash = 29 * hash + (this.won ? 1 : 0);
+        hash = 29 * hash + (this.lost ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Player other = (Player) obj;
+        if (this.playerLineOfSightDistance != other.playerLineOfSightDistance) {
+            return false;
+        }
+        if (this.frozenTurnsRemaining != other.frozenTurnsRemaining) {
+            return false;
+        }
+        if (this.won != other.won) {
+            return false;
+        }
+        if (this.lost != other.lost) {
+            return false;
+        }
+        if (!Objects.equals(this.playerName, other.playerName)) {
+            return false;
+        }
+        if (!Arrays.deepEquals(this.dungeon, other.dungeon)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" + "dungeon=" + dungeon + ", playerName=" + playerName + ", playerLineOfSightDistance=" + playerLineOfSightDistance + ", frozenTurnsRemaining=" + frozenTurnsRemaining + ", won=" + won + ", lost=" + lost + '}';
     }
 }
