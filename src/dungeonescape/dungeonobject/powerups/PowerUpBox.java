@@ -8,6 +8,8 @@ package dungeonescape.dungeonobject.powerups;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
+import dungeonescape.dungeonobject.characters.Player;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,7 +26,16 @@ public class PowerUpBox extends DungeonObject {
 
     @Override
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (dungeonObject instanceof Player) {
+            Player player = (Player) dungeonObject;
+            player.addPowerUp(powerUp);
+            DungeonSpace dungeonSpace = getDungeonSpace();
+            dungeonSpace.removeDungeonObject(this);
+            return Collections.singletonList(dungeonSpace);
+        }
+
+        return Collections.emptyList();
     }
 
     @Override

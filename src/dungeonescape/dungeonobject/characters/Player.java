@@ -11,6 +11,9 @@ import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
+import dungeonescape.dungeonobject.coin.Coin;
+import dungeonescape.dungeonobject.powerups.PowerUp;
+import dungeonescape.dungeonobject.powerups.PowerUpBox;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +29,7 @@ public class Player extends DungeonCharacter {
     private final String playerName;
     private final int playerLineOfSightDistance;
     private int frozenTurnsRemaining;
+    private final List<PowerUp> powerUps;
     private int coinsCollected;
     private boolean won;
     private boolean lost;
@@ -36,6 +40,8 @@ public class Player extends DungeonCharacter {
         this.dungeon = dungeon;
         super.setActive(true);
         frozenTurnsRemaining = 0;
+        powerUps = new ArrayList<>();
+        coinsCollected = 0;
         won = false;
         lost = false;
     }
@@ -90,6 +96,13 @@ public class Player extends DungeonCharacter {
         }
     }
 
+    public void addPowerUp(PowerUp powerUp) {
+
+        if (powerUp != null) {
+            powerUps.add(powerUp);
+        }
+    }
+
     public boolean hasWon() {
         return won;
     }
@@ -112,6 +125,10 @@ public class Player extends DungeonCharacter {
         List<DungeonSpace> objectTracks = new ArrayList<>();
         if (!isActive()) {
             return objectTracks;
+        } else if (dungeonObject instanceof Coin) {
+            objectTracks.addAll(((Coin) dungeonObject).interact(this));
+        } else if (dungeonObject instanceof PowerUpBox) {
+            objectTracks.addAll(((PowerUpBox) dungeonObject).interact(this));
         } else if (dungeonObject instanceof DungeonMaster) {
             objectTracks.addAll(((DungeonMaster) dungeonObject).interact(this));
         } else if (dungeonObject instanceof Guard) {
