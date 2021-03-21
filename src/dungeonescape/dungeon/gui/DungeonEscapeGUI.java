@@ -6,6 +6,7 @@
 package dungeonescape.dungeon.gui;
 
 import dungeonescape.DungeonEscapeApplication;
+import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeon.gui.images.Images;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.LossNotification;
@@ -15,9 +16,10 @@ import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.play.Direction;
 import dungeonescape.play.GameDifficulty;
 import dungeonescape.play.GameSession;
-import dungeonescape.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpace;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.TextArea;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -65,7 +67,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private JButton recenterButton;
     private List<DungeonTable> dungeonTables;
     private DungeonTable activeDungeonTable;
-    private JComponent gamePane;
+    private JComponent gameConfigurationPane;
     private JPanel informationPanel;
     TextArea playerInformationTextArea;
     TextArea playerNotificationsTextArea;
@@ -157,29 +159,29 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
         startButton.setText("Start New Game");
         startButton.addActionListener((ActionEvent e) -> {
-            applicationPanel.remove(gamePane);
+            applicationPanel.remove(gameConfigurationPane);
             applicationPanel.remove(recenterButton);
             applicationPanel.remove(startButton);
-            gamePane = new GameConfigurationPane(this);
-            applicationPanel.add(gamePane, BorderLayout.CENTER);
+            gameConfigurationPane = new GameConfigurationPane(this);
+            applicationPanel.add(gameConfigurationPane, BorderLayout.CENTER);
 
             if (playerInformationTextArea != null) {
-                playerInformationTextArea.setText("Player stats:");
+                playerInformationTextArea.setText(gameSession.getPlayerStats());
             }
 
             if (playerNotificationsTextArea != null) {
-                playerNotificationsTextArea.setText("Player notifications:");
+                playerNotificationsTextArea.setText("");
             }
 
             refresh();
         });
 
-        gamePane = new ImagePanel(Images.START_SCREEN_BACKGROUND.getBufferedImage());
+        gameConfigurationPane = new ImagePanel(Images.START_SCREEN_BACKGROUND.getBufferedImage());
 
         applicationPanel.setLayout(new BorderLayout());
         applicationPanel.setPreferredSize(new Dimension(STARTING_WIDTH, STARTING_HEIGHT));
         applicationPanel.add(startButton, BorderLayout.NORTH);
-        applicationPanel.add(gamePane, BorderLayout.CENTER);
+        applicationPanel.add(gameConfigurationPane, BorderLayout.CENTER);
 
         this.setLayout(new BorderLayout());
         this.add(applicationPanel);
@@ -197,22 +199,23 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         this.setLocation(x, y);
     }
 
-    protected void startNewGame(GameDifficulty gameDifficulty) {
-        applicationPanel.remove(gamePane);
+    protected void startNewGame(DungeonConfiguration dungeonConfiguration) {
+        applicationPanel.remove(gameConfigurationPane);
         loadingLabel.setText("Loading map...");
         applicationPanel.add(loadingLabel, BorderLayout.CENTER);
         loadingLabel.setVisible(true);
         SwingUtilities.invokeLater(() -> {
             //Create the game session
-            gameSession = new DungeonEscapeApplication().startNewGame(PLAYER_NAME, gameDifficulty);
+            dungeonConfiguration.setPlayerName(PLAYER_NAME);
+            gameSession = new DungeonEscapeApplication().startNewGame(dungeonConfiguration);
             activeDungeonTable = new DungeonTable(gameSession);
             dungeonTables.add(activeDungeonTable);
 
             //Once ready remove the loading label and add the map
-            gamePane = buildDungeonScrollPane();
+            gameConfigurationPane = buildDungeonScrollPane();
             applicationPanel.remove(loadingLabel);
             applicationPanel.add(startButton, BorderLayout.NORTH);
-            applicationPanel.add(gamePane, BorderLayout.CENTER);
+            applicationPanel.add(gameConfigurationPane, BorderLayout.CENTER);
             if (informationPanel == null) {
                 informationPanel = buildInformationPane();
                 applicationPanel.add(informationPanel, BorderLayout.EAST);
@@ -225,7 +228,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             recenterButton.setVisible(true);
             recenterButton.setText("Recenter Map");
             recenterButton.addActionListener((ActionEvent ev) -> {
-                gamePane.requestFocus();
+                gameConfigurationPane.requestFocus();
                 activeDungeonTable.centerOnPlayer();
                 refresh();
             });
@@ -260,11 +263,11 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     }
 
     private void displayNotificationPane(BufferedImage backgroundImage) throws IOException {
-        applicationPanel.remove(gamePane);
-        gamePane = new ImagePanel(backgroundImage);
+        applicationPanel.remove(gameConfigurationPane);
+        gameConfigurationPane = new ImagePanel(backgroundImage);
         applicationPanel.remove(recenterButton);
         applicationPanel.add(startButton, BorderLayout.NORTH);
-        applicationPanel.add(gamePane, BorderLayout.CENTER);
+        applicationPanel.add(gameConfigurationPane, BorderLayout.CENTER);
         refresh();
     }
 
@@ -279,21 +282,30 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.PAGE_AXIS));
         infoPanel.setFocusable(false);
 
+        JLabel playerInformationLabel = new JLabel("Player Stats");
+        playerInformationLabel.setFont(new Font(Font.SERIF, Font.BOLD, 12));
+
         JPanel playerInformation = new JPanel();
-        playerInformationTextArea = new TextArea();
+        playerInformationTextArea = new TextArea(gameSession.getPlayerStats());
         playerInformationTextArea.setPreferredSize(new Dimension(300, 200));
         playerInformationTextArea.setFocusable(false);
         playerInformationTextArea.setEditable(false);
-        playerInformationTextArea.append("Player stats:");
+
+        playerInformation.add(playerInformationLabel);
         playerInformation.add(playerInformationTextArea);
+
+        JLabel playerNotificationsLabel = new JLabel("Player Notifications");
+        playerInformationLabel.setFont(new Font(Font.SERIF, Font.BOLD, 12));
 
         JPanel playerNotifications = new JPanel();
         playerNotificationsTextArea = new TextArea();
         playerNotificationsTextArea.setPreferredSize(new Dimension(300, 200));
         playerNotificationsTextArea.setFocusable(false);
         playerNotificationsTextArea.setEditable(false);
-        playerNotificationsTextArea.append("Notifications:");
+
+        playerNotifications.add(playerNotificationsLabel);
         playerNotifications.add(playerNotificationsTextArea);
+
         infoPanel.add(playerInformation);
         infoPanel.add(playerNotifications);
 

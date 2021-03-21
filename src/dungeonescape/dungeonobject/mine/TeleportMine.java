@@ -10,8 +10,8 @@ import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.characters.Player;
-import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpaceType;
 import java.util.Collections;
 import java.util.List;
 

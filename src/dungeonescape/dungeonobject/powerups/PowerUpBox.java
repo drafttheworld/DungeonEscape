@@ -6,8 +6,8 @@
 package dungeonescape.dungeonobject.powerups;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpaceType;
 import java.util.List;
 
 /**
@@ -16,6 +16,12 @@ import java.util.List;
  */
 public class PowerUpBox extends DungeonObject {
 
+    private final PowerUp powerUp;
+
+    public PowerUpBox(PowerUp powerUp) {
+        this.powerUp = powerUp;
+    }
+
     @Override
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -23,7 +29,7 @@ public class PowerUpBox extends DungeonObject {
 
     @Override
     public DungeonSpaceType getDungeonSpaceType() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return DungeonSpaceType.POWER_UP_BOX;
     }
 
 }

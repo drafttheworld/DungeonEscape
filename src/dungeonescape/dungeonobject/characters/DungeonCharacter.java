@@ -7,7 +7,7 @@ package dungeonescape.dungeonobject.characters;
 
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.play.Direction;
-import dungeonescape.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpace;
 import java.util.List;
 
 /**

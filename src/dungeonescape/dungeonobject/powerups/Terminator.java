@@ -6,9 +6,6 @@
 package dungeonescape.dungeonobject.powerups;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.DungeonSpaceType;
-import java.util.List;
 
 /**
  * Enemies (except for the dungeon master) are killed (do not respawn) when attacking the player. The dungeon master
@@ -16,16 +13,16 @@ import java.util.List;
  *
  * @author Andrew
  */
-public class Terminator extends DungeonObject {
+public class Terminator implements PowerUp<Terminator> {
 
     @Override
-    public List<DungeonSpace> interact(DungeonObject dungeonObject) {
+    public void applyPowerUp(DungeonObject dungeonObject) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public DungeonSpaceType getDungeonSpaceType() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Terminator newInstance() {
+        return new Terminator();
     }
 
 }

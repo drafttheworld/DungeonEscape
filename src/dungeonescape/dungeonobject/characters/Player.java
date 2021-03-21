@@ -9,8 +9,8 @@ import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
-import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpaceType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +26,7 @@ public class Player extends DungeonCharacter {
     private final String playerName;
     private final int playerLineOfSightDistance;
     private int frozenTurnsRemaining;
+    private int coinsCollected;
     private boolean won;
     private boolean lost;
 
@@ -61,6 +62,32 @@ public class Player extends DungeonCharacter {
 
     public void decrementFrozenTurnsRemaining(long turns) {
         frozenTurnsRemaining -= turns;
+    }
+
+    public int getCoinsCollected() {
+        return coinsCollected;
+    }
+
+    public void addCoinsCollected(int coinsCollected) {
+
+        if (coinsCollected >= 0) {
+            if (Integer.MAX_VALUE - coinsCollected <= this.coinsCollected) {
+                this.coinsCollected = Integer.MAX_VALUE;
+            } else {
+                this.coinsCollected += coinsCollected;
+            }
+        }
+    }
+
+    public void removeCoinsCollected(int coins) {
+
+        if (coins >= 0) {
+            if (this.coinsCollected - coins < 0) {
+                this.coinsCollected = 0;
+            } else {
+                this.coinsCollected -= coins;
+            }
+        }
     }
 
     public boolean hasWon() {
@@ -126,16 +153,28 @@ public class Player extends DungeonCharacter {
                 }
 
                 fromCol = getPosition().getPositionX() - playerLineOfSightDistance;
+                if (fromCol < 0) {
+                    fromCol = 0;
+                }
+
                 toCol = getPosition().getPositionX() + playerLineOfSightDistance;
+                if (toCol >= dungeon.length) {
+                    toCol = dungeon.length - 1;
+                }
                 for (int col = fromCol; col <= toCol; col++) {
-                    if (col >= 0 && col < dungeon.length) {
-                        DungeonSpace dungeonSpace = dungeon[exposeRow][col];
-                        if (dungeonSpace.isVisible()) {
-                            continue;
-                        }
-                        dungeonSpace.setVisible(true);
-                        revealedDungeonSpaces.add(dungeonSpace);
+
+                    if (col < 0) {
+                        continue;
+                    } else if (col >= dungeon.length) {
+                        break;
                     }
+
+                    DungeonSpace dungeonSpace = dungeon[exposeRow][col];
+                    if (dungeonSpace.isVisible()) {
+                        continue;
+                    }
+                    dungeonSpace.setVisible(true);
+                    revealedDungeonSpaces.add(dungeonSpace);
                 }
                 break;
             case SOUTH:
@@ -146,7 +185,14 @@ public class Player extends DungeonCharacter {
                 }
 
                 fromCol = getPosition().getPositionX() - playerLineOfSightDistance;
+                if (fromCol < 0) {
+                    fromCol = 0;
+                }
+
                 toCol = getPosition().getPositionX() + playerLineOfSightDistance;
+                if (toCol >= dungeon.length) {
+                    toCol = dungeon.length - 1;
+                }
                 for (int col = fromCol; col <= toCol; col++) {
                     DungeonSpace dungeonSpace = dungeon[exposeRow][col];
                     if (dungeonSpace.isVisible()) {
@@ -157,23 +203,28 @@ public class Player extends DungeonCharacter {
                 }
                 break;
             case EAST:
-                //reveal eastern row
+                //reveal eastern column
                 exposeCol = getPosition().getPositionX() + playerLineOfSightDistance;
                 if (exposeCol >= dungeon.length) {
                     break;
                 }
 
                 fromRow = getPosition().getPositionY() - playerLineOfSightDistance;
+                if (fromRow < 0) {
+                    fromRow = 0;
+                }
+
                 toRow = getPosition().getPositionY() + playerLineOfSightDistance;
+                if (toRow >= dungeon.length) {
+                    toRow = dungeon.length - 1;
+                }
                 for (int row = fromRow; row <= toRow; row++) {
-                    if (row >= 0 && row < dungeon.length) {
-                        DungeonSpace dungeonSpace = dungeon[row][exposeCol];
-                        if (dungeonSpace.isVisible()) {
-                            continue;
-                        }
-                        dungeonSpace.setVisible(true);
-                        revealedDungeonSpaces.add(dungeonSpace);
+                    DungeonSpace dungeonSpace = dungeon[row][exposeCol];
+                    if (dungeonSpace.isVisible()) {
+                        continue;
                     }
+                    dungeonSpace.setVisible(true);
+                    revealedDungeonSpaces.add(dungeonSpace);
                 }
                 break;
             case WEST:
@@ -184,16 +235,21 @@ public class Player extends DungeonCharacter {
                 }
 
                 fromRow = getPosition().getPositionY() - playerLineOfSightDistance;
+                if (fromRow < 0) {
+                    fromRow = 0;
+                }
+
                 toRow = getPosition().getPositionY() + playerLineOfSightDistance;
+                if (toRow >= dungeon.length) {
+                    toRow = dungeon.length - 1;
+                }
                 for (int row = fromRow; row <= toRow; row++) {
-                    if (row >= 0 && row < dungeon.length) {
-                        DungeonSpace dungeonSpace = dungeon[row][exposeCol];
-                        if (dungeonSpace.isVisible()) {
-                            continue;
-                        }
-                        dungeonSpace.setVisible(true);
-                        revealedDungeonSpaces.add(dungeonSpace);
+                    DungeonSpace dungeonSpace = dungeon[row][exposeCol];
+                    if (dungeonSpace.isVisible()) {
+                        continue;
                     }
+                    dungeonSpace.setVisible(true);
+                    revealedDungeonSpaces.add(dungeonSpace);
                 }
                 break;
             default:

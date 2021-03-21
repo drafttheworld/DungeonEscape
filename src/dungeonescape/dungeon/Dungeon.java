@@ -14,15 +14,14 @@ import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import dungeonescape.dungeonobject.characters.DungeonMaster;
 import dungeonescape.dungeonobject.characters.Ghost;
 import dungeonescape.dungeonobject.characters.Guard;
-import dungeonescape.dungeonobject.characters.NonPersonDungeonCharacter;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.dungeonobject.construction.Wall;
 import dungeonescape.dungeonobject.mine.Mine;
 import dungeonescape.dungeonobject.mine.TargetBoundaries;
 import dungeonescape.dungeonobject.mine.TargetBoundary;
 import dungeonescape.play.Direction;
-import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.Position;
+import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeon.space.Position;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -100,12 +99,15 @@ public class Dungeon {
         System.out.println("Number of open dungeon spaces: " + numberOfOpenDungeonSpaces);
 
         // Define the target boundaries for the mines
+        // target boundaries provide a way to specify a percentage of the mines to
+        // be placed at a certain distance ranges away from the center of the map.
         TargetBoundaries targetBoundaries = new TargetBoundaries();
         targetBoundaries.addTargetBoundary(new TargetBoundary(1, width / 4, .6));
         targetBoundaries.addTargetBoundary(new TargetBoundary(width / 4 + 1, width / 2, .4));
 
         // Lay the freeze mines
-        List<Mine> freezeMines = DungeonConstructionUtil.placeFreezeMines(dungeon, dungeonConfiguration.getFreezeMineCount(),
+        List<Mine> freezeMines = DungeonConstructionUtil.placeFreezeMines(dungeon,
+            dungeonConfiguration.getFreezeMineCount(), dungeonConfiguration.getFreezeMineMinFreezeTime(),
             dungeonConfiguration.getFreezeMineMaxFreezeTime(), targetBoundaries);
         moveableDungeonObjects.addAll(freezeMines);
         System.out.println("Layed " + freezeMines.size() + " freeze mines.");
@@ -115,6 +117,15 @@ public class Dungeon {
             dungeonConfiguration.getTeleportMineCount(), targetBoundaries);
         moveableDungeonObjects.addAll(teleportMines);
         System.out.println("Layed " + teleportMines.size() + " teleport mines.");
+
+        // Place the mystery boxes (should not occupy the same space as a mine)
+        DungeonConstructionUtil.placePowerUpBoxes(dungeon, dungeonConfiguration.getPowerUpBoxCount(),
+            dungeonConfiguration.getInvincibilityProbability(), dungeonConfiguration.getInvisibilityProbability(),
+            dungeonConfiguration.getRepellentProbability(), dungeonConfiguration.getTerminatorProbability());
+
+        // Place coins (should not occupy the same space as a mine)
+        DungeonConstructionUtil.placeCoins(dungeon, dungeonConfiguration.getCoinCoveragePercentOfOpenSpaces(),
+            dungeonConfiguration.getCoinCountOverride());
 
         // Place the guards
         List<Guard> guards = DungeonCharacterUtil.placeGuards(dungeon, dungeonConfiguration.getGuardCount());
@@ -130,7 +141,8 @@ public class Dungeon {
         // Place the ghosts, offset 1/4 of the total dungeon width from the border
         int borderOffset = dungeon.length / 4;
         List<Ghost> ghosts = DungeonCharacterUtil.placeGhosts(dungeon,
-            dungeonConfiguration.getGhostCount(), dungeonConfiguration.getGhostFreezeTime(), borderOffset);
+            dungeonConfiguration.getGhostCount(), dungeonConfiguration.getGhostMinFreezeTime(),
+            dungeonConfiguration.getGhostMaxFreezeTime(), borderOffset);
         ghosts.forEach(ghost -> {
             ghost.setDetectionDistance(dungeonConfiguration.getGhostDetectionDistance());
             ghost.setNumberOfSpacesToMoveWhenHunting(dungeonConfiguration.getGhostNumberOfMovesWhenHunting());

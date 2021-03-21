@@ -6,18 +6,24 @@
 package dungeonescape.dungeon.gui;
 
 import dungeonescape.dungeon.DungeonConfiguration;
+import dungeonescape.exceptions.GameInitializationFailureException;
 import dungeonescape.play.GameDifficulty;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -25,13 +31,14 @@ import javax.swing.JScrollPane;
  */
 public class GameConfigurationPane extends JPanel {
 
-    DungeonEscapeGUI applicationGUI;
+    private final DungeonEscapeGUI applicationGUI;
 
-    JComboBox gameDifficultyComboBox;
-    JComboBox dungeonSizeComboBox;
+    private JComboBox gameDifficultyComboBox;
+    private JComboBox dungeonSizeComboBox;
+    private CustomDungeonConfigurationPanel customDungeonConfigurationPanel;
 
-    JScrollPane dungeonSettingsScrollPane;
-    JLabel dungeonSizeValue;
+    private JScrollPane dungeonSettingsScrollPane;
+    private JLabel dungeonSizeValue;
 
     public GameConfigurationPane(DungeonEscapeGUI applicationGUI) {
         this.applicationGUI = applicationGUI;
@@ -44,11 +51,20 @@ public class GameConfigurationPane extends JPanel {
 
         JPanel gameDifficultyPanel = new JPanel();
         gameDifficultyPanel.setLayout(new BorderLayout());
+
         gameDifficultyComboBox = new JComboBox(GameDifficulty.values());
         gameDifficultyComboBox.addItemListener((ItemEvent e) -> {
+            GameDifficulty gameDifficulty = (GameDifficulty) e.getItem();
             gameDifficultyPanel.remove(dungeonSettingsScrollPane);
-            dungeonSettingsScrollPane
-                    = new JScrollPane(generateGameDifficultySettingsPanel((GameDifficulty) e.getItem()));
+            if (gameDifficulty == GameDifficulty.CUSTOM) {
+                customDungeonConfigurationPanel = new CustomDungeonConfigurationPanel();
+                dungeonSettingsScrollPane
+                    = new JScrollPane(customDungeonConfigurationPanel);
+            } else {
+                dungeonSettingsScrollPane
+                    = new JScrollPane(generateStaticGameDifficultySettingsPanel(gameDifficulty));
+            }
+
             gameDifficultyPanel.add(dungeonSettingsScrollPane, BorderLayout.CENTER);
             gameDifficultyPanel.revalidate();
             gameDifficultyPanel.repaint();
@@ -58,7 +74,7 @@ public class GameConfigurationPane extends JPanel {
 
         GameDifficulty gameDifficulty = (GameDifficulty) gameDifficultyComboBox.getSelectedItem();
         dungeonSettingsScrollPane
-                = new JScrollPane(generateGameDifficultySettingsPanel(gameDifficulty));
+            = new JScrollPane(generateStaticGameDifficultySettingsPanel(gameDifficulty));
 
         gameDifficultyPanel.add(dungeonSettingsScrollPane, BorderLayout.CENTER);
 
@@ -68,14 +84,25 @@ public class GameConfigurationPane extends JPanel {
 
         JButton startGameButton = new JButton("Start Game");
         startGameButton.addActionListener((ActionEvent e) -> {
-            applicationGUI.startNewGame((GameDifficulty) gameDifficultyComboBox.getSelectedItem());
+            GameDifficulty selectedGameDifficulty = (GameDifficulty) gameDifficultyComboBox.getSelectedItem();
+            DungeonConfiguration dungeonConfiguration;
+            if (selectedGameDifficulty == GameDifficulty.CUSTOM) {
+                if (customDungeonConfigurationPanel == null) {
+                    throw new GameInitializationFailureException("Could not find the request custom configuration.");
+                }
+                dungeonConfiguration = customDungeonConfigurationPanel.getDungeonConfiguration();
+            } else {
+                dungeonConfiguration = selectedGameDifficulty.getDungeonConfiguration();
+            }
+
+            applicationGUI.startNewGame(dungeonConfiguration);
         });
 
         add(centerPanel, BorderLayout.CENTER);
         add(startGameButton, BorderLayout.SOUTH);
     }
 
-    private JPanel generateGameDifficultySettingsPanel(GameDifficulty gameDifficulty) {
+    private JPanel generateStaticGameDifficultySettingsPanel(GameDifficulty gameDifficulty) {
         DungeonConfiguration dungeonConfiguration = gameDifficulty.getDungeonConfiguration();
         JLabel dungeon = new JLabel("Dungeon:");
         int dungeonWidth = dungeonConfiguration.getDungeonWidth();
@@ -97,7 +124,8 @@ public class GameConfigurationPane extends JPanel {
         JLabel ghostNumberOfMovesWhenPatrolling = new JLabel("Ghost patrol moves: " + dungeonConfiguration.getGhostNumberOfMovesWhenPatrolling());
         JLabel ghostNumberOfMovesWhenHunting = new JLabel("Ghost hunting moves: " + dungeonConfiguration.getGhostNumberOfMovesWhenHunting());
         JLabel ghostDetectionDistance = new JLabel("Ghost detection range: " + dungeonConfiguration.getGhostDetectionDistance());
-        JLabel ghostFreezeTime = new JLabel("Ghost " + dungeonConfiguration.getGhostFreezeTime().toString());
+        JLabel ghostMinFreezeTime = new JLabel("Ghost min freeze time: " + dungeonConfiguration.getGhostMinFreezeTime().toString());
+        JLabel ghostMaxFreezeTime = new JLabel("Ghost max freeze time: " + dungeonConfiguration.getGhostMaxFreezeTime().toString());
         JLabel mines = new JLabel("Mines:");
         JLabel freezeMineCount = new JLabel("Freeze mine count: " + dungeonConfiguration.getFreezeMineCount());
         JLabel freezeMineMaxFreezeTime = new JLabel("Freeze mine max " + dungeonConfiguration.getFreezeMineMaxFreezeTime());
@@ -124,7 +152,8 @@ public class GameConfigurationPane extends JPanel {
         configurationPanel.add(ghostNumberOfMovesWhenPatrolling);
         configurationPanel.add(ghostNumberOfMovesWhenHunting);
         configurationPanel.add(ghostDetectionDistance);
-        configurationPanel.add(ghostFreezeTime);
+        configurationPanel.add(ghostMinFreezeTime);
+        configurationPanel.add(ghostMaxFreezeTime);
         configurationPanel.add(mines);
         configurationPanel.add(freezeMineCount);
         configurationPanel.add(freezeMineMaxFreezeTime);

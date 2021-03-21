@@ -23,23 +23,9 @@ public class DungeonEscapeApplication {
 
     private final Map<String, GameSession> gameSessions = new HashMap<>();
 
-    public GameSession startNewCustomGame(DungeonConfiguration dungeonConfiguration) {
+    public GameSession startNewGame(DungeonConfiguration dungeonConfiguration) {
         GameSession gameSession = new GameSession(dungeonConfiguration);
         gameSessions.put(gameSession.getSessionId(), gameSession);
-        return gameSession;
-    }
-
-    public GameSession startNewGame(String playerName, GameDifficulty gameDifficulty) {
-        GameSession gameSession = null;
-        try {
-            DungeonConfiguration dungeonConfiguration = gameDifficulty.getDungeonConfiguration()
-                .playerName(playerName);
-            gameSession = new GameSession(dungeonConfiguration);
-            gameSessions.put(gameSession.getSessionId(), gameSession);
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            NotificationManager.notify(new ExecutionErrorNotification(e.getMessage()));
-        }
         return gameSession;
     }
 

@@ -17,7 +17,7 @@ public class TargetBoundary {
 
     public TargetBoundary(int minDistanceFromCenter, int maxDistanceFromCenter, double targetPercentage) {
         if (targetPercentage > 1) {
-            throw new IllegalArgumentException("Target percentage must be from 0 and 1, found: " + targetPercentage);
+            throw new IllegalArgumentException("Target percentage must be from 0 to 1, found: " + targetPercentage);
         }
 
         this.minDistanceFromCenter = minDistanceFromCenter;

@@ -9,8 +9,8 @@ import dungeonescape.dungeon.gui.images.ImageFactory;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import dungeonescape.play.Direction;
-import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpaceType;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**

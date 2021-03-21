@@ -8,7 +8,7 @@ package dungeonescape.dungeon.gui;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.play.GameSession;
-import dungeonescape.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpace;
 import java.awt.Rectangle;
 import java.util.Enumeration;
 import java.util.Set;

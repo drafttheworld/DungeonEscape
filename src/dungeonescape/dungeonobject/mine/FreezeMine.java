@@ -8,8 +8,8 @@ package dungeonescape.dungeonobject.mine;
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.characters.Player;
-import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpaceType;
 import java.util.Collections;
 import java.util.List;
 

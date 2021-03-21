@@ -10,9 +10,6 @@ import dungeonescape.dungeonobject.characters.DungeonMaster;
 import dungeonescape.dungeonobject.characters.Ghost;
 import dungeonescape.dungeonobject.characters.Guard;
 import dungeonescape.dungeonobject.mine.FreezeMine;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  *
@@ -42,12 +39,25 @@ public class DungeonConfiguration {
     private int ghostNumberOfMovesWhenPatrolling;
     private int ghostNumberOfMovesWhenHunting;
     private int ghostDetectionDistance;
-    private FreezeTime ghostFreezeTime;
+    private FreezeTime ghostMinFreezeTime;
+    private FreezeTime ghostMaxFreezeTime;
 
     //Mine settings
     private int freezeMineCount;
+    private FreezeTime freezeMineMinFreezeTime;
     private FreezeTime freezeMineMaxFreezeTime;
     private int teleportMineCount;
+
+    //Power Up settings
+    private int powerUpBoxCount;
+    private int invincibilityProbability;
+    private int invisibilityProbability;
+    private int repellentProbability;
+    private int terminatorProbability;
+
+    //Coin settings
+    private Integer coinCoveragePercentOfOpenSpaces;//null to disable, 0-100 to populate a percent of open spaces.
+    private Integer coinCountOverride;//null to disable, 0-n to populate specific number of coins.
 
     public String getPlayerName() {
         return playerName;
@@ -252,19 +262,35 @@ public class DungeonConfiguration {
         return this;
     }
 
-    public FreezeTime getGhostFreezeTime() {
-        if (ghostFreezeTime == null) {
+    public FreezeTime getGhostMinFreezeTime() {
+        if (ghostMinFreezeTime == null) {
             return Ghost.DEFAULT_FREEZE_TIME;
         }
-        return ghostFreezeTime;
+        return ghostMinFreezeTime;
     }
 
-    public void setGhostFreezeTime(FreezeTime ghostFreezeTime) {
-        this.ghostFreezeTime = ghostFreezeTime;
+    public void setGhostMinFreezeTime(FreezeTime ghostFreezeTime) {
+        this.ghostMinFreezeTime = ghostFreezeTime;
     }
 
-    public DungeonConfiguration ghostFreezeTime(FreezeTime freezeTime) {
-        setGhostFreezeTime(freezeTime);
+    public DungeonConfiguration ghostMinFreezeTime(FreezeTime freezeTime) {
+        setGhostMinFreezeTime(freezeTime);
+        return this;
+    }
+
+    public FreezeTime getGhostMaxFreezeTime() {
+        if (ghostMaxFreezeTime == null) {
+            return Ghost.DEFAULT_FREEZE_TIME;
+        }
+        return ghostMaxFreezeTime;
+    }
+
+    public void setGhostMaxFreezeTime(FreezeTime ghostFreezeTime) {
+        this.ghostMaxFreezeTime = ghostFreezeTime;
+    }
+
+    public DungeonConfiguration ghostMaxFreezeTime(FreezeTime freezeTime) {
+        setGhostMaxFreezeTime(freezeTime);
         return this;
     }
 
@@ -329,6 +355,22 @@ public class DungeonConfiguration {
         return this;
     }
 
+    public FreezeTime getFreezeMineMinFreezeTime() {
+        if (freezeMineMinFreezeTime == null) {
+            return FreezeMine.DEFAULT_MAX_FREEZE_TIME;
+        }
+        return freezeMineMinFreezeTime;
+    }
+
+    public void setFreezeMineMinFreezeTime(FreezeTime freezeMineMinFreezeTime) {
+        this.freezeMineMinFreezeTime = freezeMineMinFreezeTime;
+    }
+
+    public DungeonConfiguration freezeMineMinFreezeTime(FreezeTime freezeMineMinFreezeTime) {
+        setFreezeMineMinFreezeTime(freezeMineMinFreezeTime);
+        return this;
+    }
+
     public FreezeTime getFreezeMineMaxFreezeTime() {
         if (freezeMineMaxFreezeTime == null) {
             return FreezeMine.DEFAULT_MAX_FREEZE_TIME;
@@ -336,12 +378,12 @@ public class DungeonConfiguration {
         return freezeMineMaxFreezeTime;
     }
 
-    public void setFreezeMineMaxFreezeTime(FreezeTime maxFreezeTime) {
-        this.freezeMineMaxFreezeTime = maxFreezeTime;
+    public void setFreezeMineMaxFreezeTime(FreezeTime freezeMineMaxFreezeTime) {
+        this.freezeMineMaxFreezeTime = freezeMineMaxFreezeTime;
     }
 
-    public DungeonConfiguration maxFreezeMineTime(FreezeTime maxFreezeTime) {
-        setFreezeMineMaxFreezeTime(maxFreezeTime);
+    public DungeonConfiguration freezeMineMaxFreezeTime(FreezeTime freezeMineMaxFreezeTime) {
+        setFreezeMineMaxFreezeTime(freezeMineMaxFreezeTime);
         return this;
     }
 
@@ -358,13 +400,104 @@ public class DungeonConfiguration {
         return this;
     }
 
+    public int getPowerUpBoxCount() {
+        return powerUpBoxCount;
+    }
+
+    public void setPowerUpBoxCount(int powerUpBoxCount) {
+        this.powerUpBoxCount = powerUpBoxCount;
+    }
+
+    public DungeonConfiguration powerUpBoxCount(int powerUpBoxCount) {
+        setPowerUpBoxCount(powerUpBoxCount);
+        return this;
+    }
+
+    public int getInvincibilityProbability() {
+        return invincibilityProbability;
+    }
+
+    public void setInvincibilityProbability(int invincibilityProbability) {
+        this.invincibilityProbability = invincibilityProbability;
+    }
+
+    public DungeonConfiguration invincibilityProbability(int invincibilityProbability) {
+        setInvincibilityProbability(invincibilityProbability);
+        return this;
+    }
+
+    public int getInvisibilityProbability() {
+        return invisibilityProbability;
+    }
+
+    public void setInvisibilityProbability(int invisibilityProbability) {
+        this.invisibilityProbability = invisibilityProbability;
+    }
+
+    public DungeonConfiguration invisibilityProbability(int invisibilityProbability) {
+        setInvisibilityProbability(invisibilityProbability);
+        return this;
+    }
+
+    public int getRepellentProbability() {
+        return repellentProbability;
+    }
+
+    public void setRepellentProbability(int repellentProbability) {
+        this.repellentProbability = repellentProbability;
+    }
+
+    public DungeonConfiguration repellentProbability(int repellentProbability) {
+        setRepellentProbability(repellentProbability);
+        return this;
+    }
+
+    public int getTerminatorProbability() {
+        return terminatorProbability;
+    }
+
+    public void setTerminatorProbability(int terminatorProbability) {
+        this.terminatorProbability = terminatorProbability;
+    }
+
+    public DungeonConfiguration terminatorProbability(int terminatorProbability) {
+        setTerminatorProbability(terminatorProbability);
+        return this;
+    }
+
+    public Integer getCoinCoveragePercentOfOpenSpaces() {
+        return coinCoveragePercentOfOpenSpaces;
+    }
+
+    public void setCoinCoveragePercentOfOpenSpaces(Integer coinCoveragePercentOfOpenSpaces) {
+        this.coinCoveragePercentOfOpenSpaces = coinCoveragePercentOfOpenSpaces;
+    }
+
+    public DungeonConfiguration coinCoveragePercentOfOpenSpaces(Integer coinCoveragePercentOfOpenSpaces) {
+        setCoinCoveragePercentOfOpenSpaces(coinCoveragePercentOfOpenSpaces);
+        return this;
+    }
+
+    public Integer getCoinCountOverride() {
+        return coinCountOverride;
+    }
+
+    public void setCoinCountOverride(Integer coinCountOverride) {
+        this.coinCountOverride = coinCountOverride;
+    }
+
+    public DungeonConfiguration coinCountOverride(Integer coinCountOverride) {
+        setCoinCountOverride(coinCountOverride);
+        return this;
+    }
+
     public boolean enemyAndMinePercentagesAreValid() {
         return Math.ceil(getDungeonMasterCount()
-                + getGuardCount()
-                + getGhostCount()
-                + getFreezeMineCount()
-                + getTeleportMineCount())
-                <= 100;
+            + getGuardCount()
+            + getGhostCount()
+            + getFreezeMineCount()
+            + getTeleportMineCount())
+            <= 100;
     }
 
 }

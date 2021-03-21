@@ -5,7 +5,7 @@
  */
 package dungeonescape.dungeonobject.characters;
 
-import dungeonescape.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpace;
 import java.util.List;
 
 /**

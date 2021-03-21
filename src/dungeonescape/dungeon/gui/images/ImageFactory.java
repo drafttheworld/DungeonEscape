@@ -6,7 +6,7 @@
 package dungeonescape.dungeon.gui.images;
 
 import dungeonescape.play.Direction;
-import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.dungeon.space.DungeonSpaceType;
 import javax.swing.ImageIcon;
 
 /**
@@ -28,7 +28,7 @@ public class ImageFactory {
                 return getGhostImageIcon(currentFacingDirection);
             case GUARD:
                 return getGuardImageIcon(currentFacingDirection);
-            case MYSTERY_BOX:
+            case POWER_UP_BOX:
                 return Images.MYSTERY_BOX.getImageIcon();
             case NON_VISIBLE_SPACE:
                 return Images.NON_VISIBLE_SPACE.getImageIcon();

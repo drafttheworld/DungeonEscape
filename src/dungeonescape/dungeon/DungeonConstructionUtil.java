@@ -12,8 +12,14 @@ import dungeonescape.dungeonobject.mine.TargetBoundaries;
 import dungeonescape.dungeonobject.mine.TargetBoundary;
 import dungeonescape.dungeonobject.mine.TeleportDestination;
 import dungeonescape.dungeonobject.mine.TeleportMine;
-import dungeonescape.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeonobject.DungeonObject;
+import dungeonescape.dungeonobject.coin.Coin;
+import dungeonescape.dungeonobject.powerups.PowerUp;
+import dungeonescape.dungeonobject.powerups.PowerUpBox;
+import dungeonescape.dungeonobject.powerups.PowerUpFactory;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -97,11 +103,12 @@ public class DungeonConstructionUtil {
     }
 
     protected static List<Mine> placeFreezeMines(DungeonSpace[][] dungeon, int numberOfFreezeMines,
-        FreezeTime maxFreezeTime, TargetBoundaries targetBoundaries) {
+        FreezeTime minFreezeTime, FreezeTime maxFreezeTime, TargetBoundaries targetBoundaries) {
 
         List<Mine> freezeMines = new ArrayList<>();
         for (int i = 0; i < numberOfFreezeMines; i++) {
-            int randomFrozenTurns = ThreadLocalRandom.current().nextInt(1, (int) maxFreezeTime.getTurns() + 1);
+            int randomFrozenTurns
+                = ThreadLocalRandom.current().nextInt(minFreezeTime.getTurns(), maxFreezeTime.getTurns() + 1);
             freezeMines.add(new FreezeMine(new FreezeTime(randomFrozenTurns)));
         }
 
@@ -130,14 +137,83 @@ public class DungeonConstructionUtil {
         return deployMines(dungeon, teleportMines, targetBoundaries);
     }
 
-    protected static List<Mine> deployMines(DungeonSpace[][] dungeon, List<Mine> mines,
+    protected static List<PowerUpBox> placePowerUpBoxes(DungeonSpace[][] dungeon, int countOfPowerUpMysterBoxes,
+        int invincibilityProbability, int invisibilityProbability, int repellentProbability,
+        int terminatorProbability) {
+
+        List<DungeonSpace> emptyDungeonSpaces = getEmptyDungeonSpaces(dungeon);
+        PowerUpFactory powerUpFactory = new PowerUpFactory(invincibilityProbability, invisibilityProbability,
+            repellentProbability, terminatorProbability);
+
+        List<PowerUpBox> powerUpBoxes = new ArrayList<>();
+        for (int i = 0; i < countOfPowerUpMysterBoxes; i++) {
+            PowerUp powerUp = powerUpFactory.generatePowerUp();
+            PowerUpBox powerUpBox = new PowerUpBox(powerUp);
+            placeDungeonObject(emptyDungeonSpaces, powerUpBox);
+            powerUpBoxes.add(powerUpBox);
+        }
+
+        return powerUpBoxes;
+    }
+
+    protected static List<Coin> placeCoins(DungeonSpace[][] dungeon, Integer coinCoveragePercentOfOpenSpaces,
+        Integer coinCountOverride) {
+
+        if ((coinCoveragePercentOfOpenSpaces == null || coinCoveragePercentOfOpenSpaces == 0)
+            && (coinCountOverride == null || coinCountOverride == 0)) {
+
+            return Collections.emptyList();
+        }
+
+        List<DungeonSpace> emptyDungeonSpaces = getEmptyDungeonSpaces(dungeon);
+        int numberOfCoins;
+        if (coinCountOverride != null) {
+            numberOfCoins = coinCountOverride;
+        } else {
+            double percentageAsDecimal = coinCoveragePercentOfOpenSpaces / 100.0;
+            numberOfCoins = (int) Math.ceil(emptyDungeonSpaces.size() * percentageAsDecimal);
+        }
+
+        List<Coin> coins = new ArrayList<>();
+        for (int i = 0; i < numberOfCoins; i++) {
+            Coin coin = new Coin();
+            placeDungeonObject(emptyDungeonSpaces, coin);
+            coins.add(coin);
+        }
+
+        return coins;
+    }
+
+    private static void placeDungeonObject(List<DungeonSpace> emptyDungeonSpaces, DungeonObject dungeonObject) {
+
+        int emptyDungeonSpaceIndex = ThreadLocalRandom.current().nextInt(emptyDungeonSpaces.size());
+        DungeonSpace dungeonSpace = emptyDungeonSpaces.remove(emptyDungeonSpaceIndex);
+        dungeonSpace.addDungeonObject(dungeonObject);
+    }
+
+    private static List<DungeonSpace> getEmptyDungeonSpaces(DungeonSpace[][] dungeon) {
+
+        List<DungeonSpace> emptyDungeonSpaces = new ArrayList<>();
+        for (int y = 0; y < dungeon.length; y++) {
+            for (int x = 0; x < dungeon.length; x++) {
+                DungeonSpace dungeonSpace = dungeon[x][y];
+                if (dungeonSpace.isEmpty()) {
+                    emptyDungeonSpaces.add(dungeonSpace);
+                }
+            }
+        }
+
+        return emptyDungeonSpaces;
+    }
+
+    private static List<Mine> deployMines(DungeonSpace[][] dungeon, List<Mine> mines,
         TargetBoundaries targetBoundaries) {
 
         Map<Double, List<DungeonSpace>> targetAreas = new HashMap<>();
 
         List<TargetBoundary> targeBoundaryAreas = targetBoundaries.getTargetBoundaries();
 
-        targeBoundaryAreas.forEach((targetBoundary) -> {
+        targeBoundaryAreas.forEach(targetBoundary -> {
             List<DungeonSpace> emptyDungeonSpacesInTargetArea = new ArrayList<>();
             for (int row = 0; row < dungeon.length; row++) {
                 for (int col = 0; col < dungeon.length; col++) {

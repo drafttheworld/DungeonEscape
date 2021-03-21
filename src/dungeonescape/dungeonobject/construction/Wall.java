@@ -6,8 +6,8 @@
 package dungeonescape.dungeonobject.construction;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpaceType;
 import java.util.Collections;
 import java.util.List;
 

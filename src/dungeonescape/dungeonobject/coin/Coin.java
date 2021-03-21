@@ -6,8 +6,10 @@
 package dungeonescape.dungeonobject.coin;
 
 import dungeonescape.dungeonobject.DungeonObject;
-import dungeonescape.space.DungeonSpace;
-import dungeonescape.space.DungeonSpaceType;
+import dungeonescape.dungeonobject.characters.Player;
+import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpaceType;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,12 +20,21 @@ public class Coin extends DungeonObject {
 
     @Override
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        List<DungeonSpace> dungeonSpaces = new ArrayList<>();
+        if (dungeonObject instanceof Player) {
+            ((Player) dungeonObject).addCoinsCollected(1);
+            DungeonSpace dungeonSpace = dungeonObject.getDungeonSpace();
+            dungeonSpace.removeDungeonObject(this);
+            dungeonSpaces.add(dungeonSpace);
+        }
+
+        return dungeonSpaces;
     }
 
     @Override
     public DungeonSpaceType getDungeonSpaceType() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return DungeonSpaceType.COIN;
     }
 
 }

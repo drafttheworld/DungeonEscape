@@ -8,7 +8,7 @@ package dungeonescape.play;
 import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeonobject.FreezeTime;
-import dungeonescape.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpace;
 import java.util.Set;
 import java.util.UUID;
 
@@ -62,9 +62,8 @@ public class GameSession {
 
     public String getPlayerStats() {
 
-        String playerName = dungeonConfiguration.getPlayerName();
         int dungeonTimeElapsed = dungeon.getDungeonTimeElapsed();
-        StringBuilder playerStats = new StringBuilder("Stats for ").append(playerName).append(":\n")
+        StringBuilder playerStats = new StringBuilder()
             .append("Dungeon time elapsed: ").append(dungeonTimeElapsed).append(" turns").append("\n");
 
         FreezeTime freezeTime = dungeon.getPlayer().getFrozenTurnsRemaining();

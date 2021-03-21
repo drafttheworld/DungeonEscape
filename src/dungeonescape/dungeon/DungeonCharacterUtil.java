@@ -10,7 +10,7 @@ import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import dungeonescape.dungeonobject.characters.DungeonMaster;
 import dungeonescape.dungeonobject.characters.Ghost;
 import dungeonescape.dungeonobject.characters.Guard;
-import dungeonescape.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpace;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -93,13 +93,12 @@ public class DungeonCharacterUtil {
      *
      * @param dungeon
      * @param numberOfGhostsToPlace
-     * @param ghostFreezeTime
      * @param offsetFromBorder
      * @return
      * @throws dungeonescape.dungeon.notifications.GameNotification
      */
-    protected static List<Ghost> placeGhosts(DungeonSpace[][] dungeon,
-        int numberOfGhostsToPlace, FreezeTime ghostFreezeTime, int offsetFromBorder) {
+    protected static List<Ghost> placeGhosts(DungeonSpace[][] dungeon, int numberOfGhostsToPlace,
+        FreezeTime ghostMinFreezeTime, FreezeTime ghostMaxFreezeTime, int offsetFromBorder) {
 
         if (numberOfGhostsToPlace < 1) {
             return Collections.emptyList();
@@ -129,18 +128,22 @@ public class DungeonCharacterUtil {
 
             switch (borderNumber) {
                 case 0://northern border
-                    ghosts = placeGhosts(offsetFromBorder, null, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
+                    ghosts = placeGhosts(offsetFromBorder, null, dungeon, numberOfGhostsToPlaceOnThisBorder,
+                        ghostMinFreezeTime, ghostMaxFreezeTime, ghosts);
                     break;
                 case 1://eastern border
                     col = (dungeon.length - 1) - offsetFromBorder;
-                    ghosts = placeGhosts(null, col, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
+                    ghosts = placeGhosts(null, col, dungeon, numberOfGhostsToPlaceOnThisBorder,
+                        ghostMinFreezeTime, ghostMaxFreezeTime, ghosts);
                     break;
                 case 2://southern border
                     row = (dungeon.length - 1) - offsetFromBorder;
-                    ghosts = placeGhosts(row, null, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
+                    ghosts = placeGhosts(row, null, dungeon, numberOfGhostsToPlaceOnThisBorder,
+                        ghostMinFreezeTime, ghostMaxFreezeTime, ghosts);
                     break;
                 case 3://western border
-                    ghosts = placeGhosts(null, offsetFromBorder, dungeon, numberOfGhostsToPlaceOnThisBorder, ghostFreezeTime, ghosts);
+                    ghosts = placeGhosts(null, offsetFromBorder, dungeon, numberOfGhostsToPlaceOnThisBorder,
+                        ghostMinFreezeTime, ghostMaxFreezeTime, ghosts);
                     break;
             }
 
@@ -153,7 +156,8 @@ public class DungeonCharacterUtil {
     }
 
     private static List<Ghost> placeGhosts(Integer row, Integer col, DungeonSpace[][] dungeon,
-        int numberOfGhostsToPlaceOnThisBorder, FreezeTime ghostFreezeTime, List<Ghost> ghosts) {
+        int numberOfGhostsToPlaceOnThisBorder, FreezeTime ghostMinFreezeTime, FreezeTime ghostMaxFreezeTime,
+        List<Ghost> ghosts) {
 
         boolean selectRow = row == null;
         for (int ghostNumber = 0; ghostNumber < numberOfGhostsToPlaceOnThisBorder; ghostNumber++) {
@@ -171,7 +175,9 @@ public class DungeonCharacterUtil {
                 }
                 dungeonBorderSpace = dungeon[col][row];
             }
-            Ghost ghost = new Ghost(ghostFreezeTime);
+            int freezeTime
+                = ThreadLocalRandom.current().nextInt(ghostMinFreezeTime.getTurns(), ghostMaxFreezeTime.getTurns() + 1);
+            Ghost ghost = new Ghost(new FreezeTime(freezeTime));
             dungeonBorderSpace.addDungeonObject(ghost);
             ghosts.add(ghost);
         }
