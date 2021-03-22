@@ -22,6 +22,7 @@ public abstract class DungeonCharacter extends DungeonObject {
     private int numberOfSpacesToMoveWhenPatrolling;
     private int numberOfSpacesToMoveWhenHunting;
     private DungeonSpace previousDungeonSpace;
+    private Direction previousFacingDirection;
     private Direction currentFacingDirection;
     private boolean active;
 
@@ -47,6 +48,14 @@ public abstract class DungeonCharacter extends DungeonObject {
 
     public void setNumberOfSpacesToMoveWhenHunting(int numberOfSpacesToMoveWhenHunting) {
         this.numberOfSpacesToMoveWhenHunting = numberOfSpacesToMoveWhenHunting;
+    }
+
+    public Direction getPreviousFacingDirection() {
+        return previousFacingDirection;
+    }
+
+    public void setPreviousFacingDirection(Direction previousFacingDirection) {
+        this.previousFacingDirection = previousFacingDirection;
     }
 
     public DungeonSpace getPreviousDungeonSpace() {

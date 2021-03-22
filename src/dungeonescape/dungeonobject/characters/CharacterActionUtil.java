@@ -30,10 +30,15 @@ public class CharacterActionUtil {
 
         List<DungeonSpace> dungeonSpaces = new ArrayList<>();
         dungeonSpaces.add(player.getDungeonSpace());
+        Direction previousFacingDirection = player.getCurrentFacingDirection();
+        if (previousFacingDirection == Direction.EAST || previousFacingDirection == Direction.WEST) {
+            player.setPreviousFacingDirection(previousFacingDirection);
+        }
 
         Position nextPosition = determineNextPosition(player.getPosition(), direction);
 
-        if (nextPosition.getPositionX() < 0 || nextPosition.getPositionX() >= dungeon.length
+        if (nextPosition.getPositionX()
+            < 0 || nextPosition.getPositionX() >= dungeon.length
             || nextPosition.getPositionY() < 0 || nextPosition.getPositionY() >= dungeon.length) {
             NotificationManager.notify(new WinNotification());
             return Collections.emptyList();
@@ -45,6 +50,7 @@ public class CharacterActionUtil {
         }
 
         Direction nextFacingDirection = assignCharacterMovement(player, nextDungeonSpace);
+
         player.setCurrentFacingDirection(nextFacingDirection);
 
         dungeonSpaces.add(nextDungeonSpace);
@@ -96,6 +102,11 @@ public class CharacterActionUtil {
         boolean startingSpaceIsVisible = startingDungeonSpace.isVisible();
         if (startingSpaceIsVisible) {
             dungeonSpaces.add(startingDungeonSpace);
+        }
+        
+        Direction previousFacingDirection = enemy.getCurrentFacingDirection();
+        if (previousFacingDirection == Direction.EAST || previousFacingDirection == Direction.WEST) {
+            enemy.setPreviousFacingDirection(previousFacingDirection);
         }
 
         Direction movementDirection = Direction.UNKNOWN;
@@ -232,9 +243,9 @@ public class CharacterActionUtil {
                 return Direction.UNKNOWN;
             }
         } else if (diffX < 0) {
-            return Direction.WEST;
-        } else if (diffX > 0) {
             return Direction.EAST;
+        } else if (diffX > 0) {
+            return Direction.WEST;
         } else {
             return Direction.UNKNOWN;
         }

@@ -32,12 +32,14 @@ public class DungeonTableCellRenderer extends DefaultTableCellRenderer {
         DungeonSpace dungeonSpace = (DungeonSpace) value;
         DungeonObject dungeonObject = dungeonSpace.getVisibleDungeonObject();
         DungeonSpaceType dungeonSpaceType = dungeonObject.getDungeonSpaceType();
+        Direction previousFacingDirection = null;
         Direction currentFacingDirection = null;
         if (dungeonObject instanceof DungeonCharacter) {
             DungeonCharacter dungeonCharacter = (DungeonCharacter) dungeonObject;
+            previousFacingDirection = dungeonCharacter.getPreviousFacingDirection();
             currentFacingDirection = dungeonCharacter.getCurrentFacingDirection();
         }
 
-        setIcon(ImageFactory.getImageIcon(dungeonSpaceType, currentFacingDirection));
+        setIcon(ImageFactory.getImageIcon(dungeonSpaceType, previousFacingDirection, currentFacingDirection));
     }
 }

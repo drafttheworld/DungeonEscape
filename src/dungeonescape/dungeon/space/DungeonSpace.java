@@ -68,10 +68,9 @@ public class DungeonSpace implements Comparable<DungeonSpace> {
         boolean isTeleported = false;
         List<DungeonObject> existingDungeonObjects = new ArrayList<>(dungeonObjects);
         for (DungeonObject existingDungeonObject : existingDungeonObjects) {
-            if ((existingDungeonObject instanceof TeleportObject
-                && dungeonObject instanceof Player)
-                || (existingDungeonObject instanceof Player
-                && dungeonObject instanceof TeleportObject)) {
+            if ((existingDungeonObject instanceof TeleportObject && dungeonObject instanceof Player)
+                || (existingDungeonObject instanceof Player && dungeonObject instanceof TeleportObject)) {
+
                 isTeleported = true;
             }
 

@@ -41,21 +41,13 @@ public class DungeonTable extends JTable {
     }
 
     private void initTable() {
+
         int dungeonSize = gameSession.getDungeonConfiguration().getDungeonWidth();
 
-//        String[][] rows = populateMapRows(gameSession.getPlayerMap(), dungeonSize);
         DungeonSpace[][] rows = gameSession.getDungeon().getDungeon();
         Player player = gameSession.getDungeon().getPlayer();
         mapCenterX = player.getPosition().getPositionX();
         mapCenterY = player.getPosition().getPositionY();
-//        for (int row = 0; row < dungeonSize; row++) {
-//            for (int col = 0; col < dungeonSize; col++) {
-//                if (DungeonSpaceType.PLAYER.getValueString().equals(rows[row][col])) {
-//                    mapCenterX = col;
-//                    mapCenterY = row;
-//                }
-//            }
-//        }
 
         String[] columns = new String[dungeonSize];
         for (int index = 0; index < columns.length; index++) {
@@ -90,46 +82,26 @@ public class DungeonTable extends JTable {
         this.setCellSelectionEnabled(false);
     }
 
-    private String[][] populateMapRows(String mapString, int dungeonSize) {
-
-        String[][] rows = new String[dungeonSize][dungeonSize];
-        char[] dungeonMap = mapString.toCharArray();
-        int mapIndex = 0;
-        for (int row = 0; row < dungeonSize; row++) {
-            for (int col = 0; col < dungeonSize; col++) {
-                char mapChar = dungeonMap == null ? '#' : dungeonMap[mapIndex++];
-                if (mapChar == '\n') {
-                    mapChar = dungeonMap[mapIndex++];
-                } else if (mapChar == 'P') {
-                    mapCenterX = col;
-                    mapCenterY = row;
-                }
-                rows[row][col] = "" + mapChar;
-            }
-        }
-
-        return rows;
-    }
-
     protected void updateMap(Set<DungeonSpace> dungeonSpacesToUpdate) {
-
+        
         dungeonSpacesToUpdate.parallelStream().forEach(dungeonSpace -> {
 
             int row = dungeonSpace.getPosition().getPositionY();
             int col = dungeonSpace.getPosition().getPositionX();
             this.setValueAt(dungeonSpace, row, col);
-
+            
             DungeonObject dungeonObject = dungeonSpace.getVisibleDungeonObject();
             if (dungeonObject instanceof Player) {
                 mapCenterX = col;
                 mapCenterY = row;
             }
         });
-
+        
         centerOnPlayer();
     }
 
     public void centerOnPlayer() {
+        
         Rectangle currentlyVisible = this.getVisibleRect();
         Rectangle nextVisible = new Rectangle(currentlyVisible);
         int totalRowHeight = mapCenterY * CELL_SIZE;

@@ -9,7 +9,7 @@ import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,15 +21,14 @@ public class Coin extends DungeonObject {
     @Override
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
-        List<DungeonSpace> dungeonSpaces = new ArrayList<>();
         if (dungeonObject instanceof Player) {
             ((Player) dungeonObject).addCoinsCollected(1);
-            DungeonSpace dungeonSpace = dungeonObject.getDungeonSpace();
+            DungeonSpace dungeonSpace = getDungeonSpace();
             dungeonSpace.removeDungeonObject(this);
-            dungeonSpaces.add(dungeonSpace);
+            return Collections.singletonList(dungeonSpace);
         }
 
-        return dungeonSpaces;
+        return Collections.emptyList();
     }
 
     @Override

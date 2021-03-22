@@ -33,6 +33,7 @@ public class Player extends DungeonCharacter {
     private int coinsCollected;
     private boolean won;
     private boolean lost;
+    private boolean teleported;
 
     public Player(String playerName, int playerLineOfSightDistance, DungeonSpace[][] dungeon) {
         this.playerName = playerName;
@@ -119,25 +120,30 @@ public class Player extends DungeonCharacter {
         this.lost = lost;
     }
 
+    public boolean isTeleported() {
+        return teleported;
+    }
+
+    public void setTeleported(boolean teleported) {
+        this.teleported = teleported;
+    }
+
     @Override
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
-        List<DungeonSpace> objectTracks = new ArrayList<>();
+        List<DungeonSpace> dungeonSpaces = new ArrayList<>();
         if (!isActive()) {
-            return objectTracks;
-        } else if (dungeonObject instanceof Coin) {
-            objectTracks.addAll(((Coin) dungeonObject).interact(this));
-        } else if (dungeonObject instanceof PowerUpBox) {
-            objectTracks.addAll(((PowerUpBox) dungeonObject).interact(this));
-        } else if (dungeonObject instanceof DungeonMaster) {
-            objectTracks.addAll(((DungeonMaster) dungeonObject).interact(this));
-        } else if (dungeonObject instanceof Guard) {
-            objectTracks.addAll(((Guard) dungeonObject).interact(this));
-        } else if (dungeonObject instanceof Ghost) {
-            objectTracks.addAll(((Ghost) dungeonObject).interact(this));
+            return dungeonSpaces;
+        } else if (dungeonObject instanceof Coin
+            || dungeonObject instanceof PowerUpBox
+            || dungeonObject instanceof DungeonMaster
+            || dungeonObject instanceof Guard
+            || dungeonObject instanceof Ghost) {
+
+            dungeonSpaces.addAll(dungeonObject.interact(this));
         }
 
-        return objectTracks;
+        return dungeonSpaces;
     }
 
     @Override
@@ -151,10 +157,18 @@ public class Player extends DungeonCharacter {
     }
 
     public List<DungeonSpace> move(Direction direction) {
-        List<DungeonSpace> objectTracks = new ArrayList<>();
-        objectTracks.addAll(CharacterActionUtil.movePlayer(dungeon, this, direction));
-        objectTracks.addAll(revealMapForMove(direction));
-        return objectTracks;
+        
+        teleported = false;// reset the teleported flag
+        
+        List<DungeonSpace> dungeonSpaces = new ArrayList<>();
+        dungeonSpaces.addAll(CharacterActionUtil.movePlayer(dungeon, this, direction));
+        if (teleported) {
+            dungeonSpaces.addAll(revealCurrentMapArea());
+        } else {
+            dungeonSpaces.addAll(revealMapForMove(direction));
+        }
+        
+        return dungeonSpaces;
     }
 
     public List<DungeonSpace> revealMapForMove(Direction direction) {
@@ -277,6 +291,7 @@ public class Player extends DungeonCharacter {
     }
 
     public List<DungeonSpace> revealCurrentMapArea() {
+
         int northStart = getPosition().getPositionY() - playerLineOfSightDistance;
         if (northStart < 0) {
             northStart = 0;
@@ -301,15 +316,19 @@ public class Player extends DungeonCharacter {
         for (int row = northStart; row <= southEnd; row++) {
             for (int col = westStart; col <= eastEnd; col++) {
                 DungeonSpace dungeonSpace = dungeon[row][col];
-                if (dungeonSpace.isVisible()) {
-                    continue;
+                if (!dungeonSpace.isVisible()) {
+                    dungeonSpace.setVisible(true);
                 }
-                dungeonSpace.setVisible(true);
                 revealedDungeonSpaces.add(dungeonSpace);
             }
         }
 
+        System.out.println("Revealing " + revealedDungeonSpaces.size() + " spaces.");
         return revealedDungeonSpaces;
+    }
+    
+    public String getPlayerStats() {
+        
     }
 
     @Override
@@ -324,50 +343,25 @@ public class Player extends DungeonCharacter {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + Objects.hashCode(this.playerName);
-        hash = 29 * hash + this.playerLineOfSightDistance;
-        hash = 29 * hash + this.frozenTurnsRemaining;
-        hash = 29 * hash + (this.won ? 1 : 0);
-        hash = 29 * hash + (this.lost ? 1 : 0);
-        return hash;
+        return Objects.hash(dungeon, playerName, playerLineOfSightDistance, frozenTurnsRemaining,
+            powerUps, coinsCollected, won, lost, teleported);
     }
 
     @Override
     public boolean equals(Object obj) {
+        
         if (this == obj) {
             return true;
-        }
-        if (obj == null) {
+        } else if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
+        
         final Player other = (Player) obj;
-        if (this.playerLineOfSightDistance != other.playerLineOfSightDistance) {
-            return false;
-        }
-        if (this.frozenTurnsRemaining != other.frozenTurnsRemaining) {
-            return false;
-        }
-        if (this.won != other.won) {
-            return false;
-        }
-        if (this.lost != other.lost) {
-            return false;
-        }
-        if (!Objects.equals(this.playerName, other.playerName)) {
-            return false;
-        }
-        if (!Arrays.deepEquals(this.dungeon, other.dungeon)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "Player{" + "dungeon=" + dungeon + ", playerName=" + playerName + ", playerLineOfSightDistance=" + playerLineOfSightDistance + ", frozenTurnsRemaining=" + frozenTurnsRemaining + ", won=" + won + ", lost=" + lost + '}';
+        return this.playerLineOfSightDistance == other.playerLineOfSightDistance
+            && this.frozenTurnsRemaining == other.frozenTurnsRemaining
+            && this.coinsCollected == other.coinsCollected
+            && Objects.equals(this.playerName, other.playerName)
+            && Arrays.deepEquals(this.dungeon, other.dungeon)
+            && Objects.equals(this.powerUps, other.powerUps);
     }
 }

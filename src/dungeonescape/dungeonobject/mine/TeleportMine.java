@@ -12,6 +12,7 @@ import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,13 +62,19 @@ public class TeleportMine extends Mine implements TeleportObject {
 
     @Override
     public List<DungeonSpace> teleport(DungeonObject dungeonObject) {
+        
         Player player = (Player) dungeonObject;
-
+        List<DungeonSpace> dungeonSpaces = new ArrayList<>();
+        
         //move the player to the next location
-        player.setPreviousDungeonSpace(player.getDungeonSpace());
+        DungeonSpace currentPlayerDungeonSpace = player.getDungeonSpace();
+        player.setPreviousDungeonSpace(currentPlayerDungeonSpace);
         player.getDungeonSpace().removeDungeonObject(player);
         teleportSpace.addDungeonObject(player);
-        return player.revealCurrentMapArea();
+        dungeonSpaces.add(teleportSpace);
+        player.setTeleported(true);
+        
+        return dungeonSpaces;
     }
 
 }
