@@ -49,9 +49,9 @@ public class CharacterActionUtil {
             return Collections.emptyList();
         }
 
-        Direction nextFacingDirection = assignCharacterMovement(player, nextDungeonSpace);
+        MovementAction movementAction = assignCharacterMovement(player, nextDungeonSpace);
 
-        player.setCurrentFacingDirection(nextFacingDirection);
+        player.setCurrentFacingDirection(movementAction.getDirection());
 
         dungeonSpaces.add(nextDungeonSpace);
 
@@ -103,37 +103,31 @@ public class CharacterActionUtil {
         if (startingSpaceIsVisible) {
             dungeonSpaces.add(startingDungeonSpace);
         }
-        
+
         Direction previousFacingDirection = enemy.getCurrentFacingDirection();
         if (previousFacingDirection == Direction.EAST || previousFacingDirection == Direction.WEST) {
             enemy.setPreviousFacingDirection(previousFacingDirection);
         }
 
-        Direction movementDirection = Direction.UNKNOWN;
+        MovementAction movementAction = new MovementAction(Direction.UNKNOWN, Collections.emptyList());
         if (isPlayerInView(enemy, player, detectionDistance)) {
-            movementDirection = hunt(dungeon, enemy, player, numberOfSpacesToMoveWhenHunting);
+            movementAction = hunt(dungeon, enemy, player, numberOfSpacesToMoveWhenHunting);
         } else {
             int movesExecuted = 0;
             for (int moveNumber = 0; moveNumber < numberOfSpacesToMoveWhenPatrolling; moveNumber++) {
-                movementDirection = patrol(dungeon, enemy);
+                movementAction = patrol(dungeon, enemy);
                 movesExecuted++;
                 if (isPlayerInView(enemy, player, detectionDistance)) {
                     int numberOfMovesRemaining = numberOfSpacesToMoveWhenHunting - movesExecuted;
                     if (numberOfMovesRemaining > 0) {
-                        movementDirection = hunt(dungeon, enemy, player, numberOfMovesRemaining);
+                        movementAction = hunt(dungeon, enemy, player, numberOfMovesRemaining);
                     }
                     break;
                 }
             }
         }
-        enemy.setCurrentFacingDirection(movementDirection);
-
-        boolean currentDungeonSpaceIsVisible = enemy.getDungeonSpace().isVisible();
-        if (!startingSpaceIsVisible && !currentDungeonSpaceIsVisible) {
-            return Collections.emptyList();
-        } else if (currentDungeonSpaceIsVisible) {
-            dungeonSpaces.add(enemy.getDungeonSpace());
-        }
+        enemy.setCurrentFacingDirection(movementAction.getDirection());
+        dungeonSpaces.addAll(movementAction.getDungeonSpaces());
 
         return dungeonSpaces;
     }
@@ -163,7 +157,7 @@ public class CharacterActionUtil {
      * @param numberOfMoves
      * @throws GameNotification
      */
-    private synchronized static Direction hunt(DungeonSpace[][] dungeon, DungeonCharacter enemy,
+    private synchronized static MovementAction hunt(DungeonSpace[][] dungeon, DungeonCharacter enemy,
         Player player, int numberOfMoves) {
 
         List<DungeonSpace> path = EnemyPathfinder.findShortestPathForEnemy(dungeon, enemy, player);
@@ -200,7 +194,7 @@ public class CharacterActionUtil {
      * @param dungeon
      * @param enemy
      */
-    private static synchronized Direction patrol(DungeonSpace[][] dungeon, DungeonCharacter enemy) {
+    private static synchronized MovementAction patrol(DungeonSpace[][] dungeon, DungeonCharacter enemy) {
 
         DungeonSpace nextDungeonSpace = determineNextPatrolSpace(dungeon, enemy);
         if (nextDungeonSpace == null) {
@@ -208,20 +202,22 @@ public class CharacterActionUtil {
                 new ActionNotAllowedNotification("Unable to find next patrol space for "
                     + enemy.getClass().getSimpleName() + " at [" + enemy.getPosition().getPositionX() + ","
                     + enemy.getPosition().getPositionY() + "]"));
-            return Direction.UNKNOWN;
+            return new MovementAction(Direction.UNKNOWN, Collections.emptyList());
         }
 
         return assignCharacterMovement(enemy, nextDungeonSpace);
     }
 
-    private static Direction assignCharacterMovement(DungeonCharacter character, DungeonSpace nextDungeonSpace) {
+    private static MovementAction assignCharacterMovement(DungeonCharacter character, DungeonSpace nextDungeonSpace) {
 
         DungeonSpace currentDungeonSpace = character.getDungeonSpace();
         character.setPreviousDungeonSpace(currentDungeonSpace);
         currentDungeonSpace.removeDungeonObject(character);
-        nextDungeonSpace.addDungeonObject(character);
 
-        return determineDirection(currentDungeonSpace, nextDungeonSpace);
+        List<DungeonSpace> dungeonSpaces = nextDungeonSpace.addDungeonObject(character);
+        Direction direction = determineDirection(currentDungeonSpace, nextDungeonSpace);
+
+        return new MovementAction(direction, dungeonSpaces);
     }
 
     private static Direction determineDirection(DungeonSpace startingDungeonSpace, DungeonSpace endingDungeonSpace) {
@@ -291,6 +287,49 @@ public class CharacterActionUtil {
         }
 
         return nextDungeonSpace;
+    }
+
+    private static class MovementAction {
+
+        private final Direction direction;
+        private final List<DungeonSpace> dungeonSpaces;
+
+        public MovementAction(Direction direction, List<DungeonSpace> dungeonSpaces) {
+            this.direction = direction;
+            this.dungeonSpaces = dungeonSpaces;
+        }
+
+        public Direction getDirection() {
+            return direction;
+        }
+
+        public List<DungeonSpace> getDungeonSpaces() {
+            return dungeonSpaces;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(direction, dungeonSpaces);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+
+            if (this == obj) {
+                return true;
+            } else if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+
+            final MovementAction other = (MovementAction) obj;
+            return this.direction == other.direction
+                && Objects.equals(this.dungeonSpaces, other.dungeonSpaces);
+        }
+
+        @Override
+        public String toString() {
+            return "MovementAction{" + "direction=" + direction + ", dungeonSpaces=" + dungeonSpaces + '}';
+        }
     }
 
 }

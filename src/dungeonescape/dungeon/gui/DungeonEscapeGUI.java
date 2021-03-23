@@ -14,7 +14,6 @@ import dungeonescape.dungeon.notifications.NotificationListener;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.play.Direction;
-import dungeonescape.play.GameDifficulty;
 import dungeonescape.play.GameSession;
 import dungeonescape.dungeon.space.DungeonSpace;
 import java.awt.BorderLayout;
@@ -218,10 +217,10 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             applicationPanel.add(gameConfigurationPane, BorderLayout.CENTER);
             if (informationPanel == null) {
                 informationPanel = buildInformationPane();
-                applicationPanel.add(informationPanel, BorderLayout.EAST);
             } else {
                 updateStats();
             }
+            applicationPanel.add(informationPanel, BorderLayout.EAST);
 
             //Add the recenter button
             applicationPanel.add(recenterButton, BorderLayout.SOUTH);
@@ -264,6 +263,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
     private void displayNotificationPane(BufferedImage backgroundImage) throws IOException {
         applicationPanel.remove(gameConfigurationPane);
+        applicationPanel.remove(informationPanel);
         gameConfigurationPane = new ImagePanel(backgroundImage);
         applicationPanel.remove(recenterButton);
         applicationPanel.add(startButton, BorderLayout.NORTH);

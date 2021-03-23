@@ -157,9 +157,9 @@ public class Player extends DungeonCharacter {
     }
 
     public List<DungeonSpace> move(Direction direction) {
-        
+
         teleported = false;// reset the teleported flag
-        
+
         List<DungeonSpace> dungeonSpaces = new ArrayList<>();
         dungeonSpaces.addAll(CharacterActionUtil.movePlayer(dungeon, this, direction));
         if (teleported) {
@@ -167,7 +167,7 @@ public class Player extends DungeonCharacter {
         } else {
             dungeonSpaces.addAll(revealMapForMove(direction));
         }
-        
+
         return dungeonSpaces;
     }
 
@@ -326,9 +326,11 @@ public class Player extends DungeonCharacter {
         System.out.println("Revealing " + revealedDungeonSpaces.size() + " spaces.");
         return revealedDungeonSpaces;
     }
-    
+
     public String getPlayerStats() {
-        
+        return new StringBuilder().append("Coins collected: ").append(coinsCollected).append("\n")
+            .append("Frozen turns remaining: ").append(frozenTurnsRemaining)
+            .toString();
     }
 
     @Override
@@ -349,13 +351,13 @@ public class Player extends DungeonCharacter {
 
     @Override
     public boolean equals(Object obj) {
-        
+
         if (this == obj) {
             return true;
         } else if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        
+
         final Player other = (Player) obj;
         return this.playerLineOfSightDistance == other.playerLineOfSightDistance
             && this.frozenTurnsRemaining == other.frozenTurnsRemaining

@@ -51,6 +51,7 @@ public class GameSession {
     }
 
     private void movePlayer(Direction direction) {
+
         dungeon.movePlayer(direction);
 
         turnCount++;
@@ -63,12 +64,9 @@ public class GameSession {
     public String getPlayerStats() {
 
         int dungeonTimeElapsed = dungeon.getDungeonTimeElapsed();
-        StringBuilder playerStats = new StringBuilder()
-            .append("Dungeon time elapsed: ").append(dungeonTimeElapsed).append(" turns").append("\n");
-
-        FreezeTime freezeTime = dungeon.getPlayer().getFrozenTurnsRemaining();
-        playerStats.append("Frozen time remaining: ").append(freezeTime.getTurns()).append(" turns").append("\n");
-        return playerStats.toString();
+        return new StringBuilder()
+            .append("Dungeon time elapsed: ").append(dungeonTimeElapsed).append(" turns").append("\n")
+            .append(dungeon.getPlayer().getPlayerStats()).toString();
     }
 
     public Dungeon getDungeon() {

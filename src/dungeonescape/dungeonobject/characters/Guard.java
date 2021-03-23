@@ -11,7 +11,6 @@ import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.construction.Construction;
-import dungeonescape.play.Direction;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
 import java.util.Arrays;
@@ -84,7 +83,7 @@ public class Guard extends DungeonCharacter implements TeleportObject {
             NotificationManager.notify(
                 new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master."));
         } else if (dungeonObject instanceof Player) {
-            super.setActive(false);
+            setActive(false);
             NotificationManager.notify(
                 new InteractionNotification("A guard has caught you and moved you back to the center of the map."));
             return teleport(dungeonObject);
@@ -102,9 +101,7 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     public boolean canOccupySpace(DungeonSpace dungeonSpace) {
         return dungeonSpace.getDungeonObjects().stream()
             .noneMatch(dungeonObject -> {
-                return dungeonObject instanceof Construction
-                    || (dungeonObject instanceof DungeonCharacter
-                    && !(dungeonObject instanceof Ghost));
+                return dungeonObject instanceof Construction || dungeonObject instanceof Ghost;
             });
     }
 
@@ -129,8 +126,8 @@ public class Guard extends DungeonCharacter implements TeleportObject {
 
         //move the player and then remove the player from the previous location
         DungeonSpace startingSpace = player.getDungeonSpace();
-        jailCellSpace.addDungeonObject(player);
         startingSpace.removeDungeonObject(player);
+        jailCellSpace.addDungeonObject(player);
 
         return Arrays.asList(startingSpace, jailCellSpace);
     }

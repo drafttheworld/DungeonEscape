@@ -124,11 +124,8 @@ public class DungeonSpace implements Comparable<DungeonSpace> {
         DungeonObject visibleDungeonObject = null;
         for (int index = dungeonObjects.size() - 1; index >= 0; index--) {
             DungeonObject dungeonObject = dungeonObjects.get(index);
-            if (dungeonObject instanceof DungeonCharacter
-                && !((DungeonCharacter) dungeonObject).isActive()) {
-                continue;
-            } else if (dungeonObject instanceof Mine
-                && !((Mine) dungeonObject).isActive()) {
+            if (dungeonObject instanceof DungeonCharacter && !((DungeonCharacter) dungeonObject).isActive()
+                || dungeonObject instanceof Mine && !((Mine) dungeonObject).isActive()) {
                 continue;
             }
 
