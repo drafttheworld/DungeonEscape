@@ -11,7 +11,6 @@ import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.construction.Construction;
-import dungeonescape.play.Direction;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
 import java.util.Collections;
@@ -21,7 +20,7 @@ import java.util.List;
  *
  * @author Andrew
  */
-public class DungeonMaster extends DungeonCharacter {
+public class DungeonMaster extends DungeonCharacter implements Runnable {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 3;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
@@ -157,5 +156,10 @@ public class DungeonMaster extends DungeonCharacter {
     @Override
     public String toString() {
         return "DungeonMaster{" + "detectionDistance=" + detectionDistance + '}';
+    }
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

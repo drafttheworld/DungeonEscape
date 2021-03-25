@@ -9,7 +9,6 @@ import dungeonescape.dungeon.notifications.InteractionNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.FreezeTime;
-import dungeonescape.play.Direction;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
 import java.util.Collections;
@@ -20,7 +19,7 @@ import java.util.Objects;
  *
  * @author Andrew
  */
-public class Ghost extends DungeonCharacter {
+public class Ghost extends DungeonCharacter implements Runnable {
 
     public static final FreezeTime DEFAULT_FREEZE_TIME = new FreezeTime(30);
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 2;
@@ -144,5 +143,10 @@ public class Ghost extends DungeonCharacter {
     @Override
     public String toString() {
         return "Ghost{" + "freezeTime=" + freezeTime + ", detectionDistance=" + detectionDistance + '}';
+    }
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

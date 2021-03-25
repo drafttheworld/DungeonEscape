@@ -13,7 +13,7 @@ import javax.swing.ImageIcon;
  *
  * @author Andrew
  */
-public enum Images {
+public enum Image {
 
     COIN("items/coin.png"),
     DUNGEON_MASTER_FACING_LEFT("characters/dungeon_master_facing_left.png"),
@@ -36,7 +36,7 @@ public enum Images {
 
     LoadedImage loadedImage;
 
-    private Images(String path) {
+    private Image(String path) {
         loadedImage = new LoadedImage(path);
     }
 

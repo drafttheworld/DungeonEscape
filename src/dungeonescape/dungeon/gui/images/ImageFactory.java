@@ -20,28 +20,28 @@ public class ImageFactory {
 
         switch (dungeonSpaceType) {
             case COIN:
-                return Images.COIN.getImageIcon();
+                return Image.COIN.getImageIcon();
             case DUNGEON_MASTER:
                 return getDungeonMasterImageIcon(previousFacingDirection, currentFacingDirection);
             case FREEZE_MINE:
-                return Images.FREEZE_MINE.getImageIcon();
+                return Image.FREEZE_MINE.getImageIcon();
             case GHOST:
                 return getGhostImageIcon(previousFacingDirection, currentFacingDirection);
             case GUARD:
                 return getGuardImageIcon(previousFacingDirection, currentFacingDirection);
             case POWER_UP_BOX:
-                return Images.MYSTERY_BOX.getImageIcon();
+                return Image.MYSTERY_BOX.getImageIcon();
             case NON_VISIBLE_SPACE:
-                return Images.NON_VISIBLE_SPACE.getImageIcon();
+                return Image.NON_VISIBLE_SPACE.getImageIcon();
             case TELEPORT_LOCATION:
             case OPEN_SPACE:
-                return Images.OPEN_SPACE.getImageIcon();
+                return Image.OPEN_SPACE.getImageIcon();
             case PLAYER:
                 return getPlayerImageIcon(previousFacingDirection, currentFacingDirection);
             case TELEPORT_MINE:
-                return Images.TELEPORT_MINE.getImageIcon();
+                return Image.TELEPORT_MINE.getImageIcon();
             case WALL:
-                return Images.STONE_WALL.getImageIcon();
+                return Image.STONE_WALL.getImageIcon();
             default:
                 throw new IllegalArgumentException("Unrecognized dungeon space type: "
                     + dungeonSpaceType);
@@ -52,7 +52,7 @@ public class ImageFactory {
         Direction currentFacingDirection) {
         
         if (currentFacingDirection == null) {
-            return Images.DUNGEON_MASTER_FACING_RIGHT.getImageIcon();
+            return Image.DUNGEON_MASTER_FACING_RIGHT.getImageIcon();
         }
 
         switch (currentFacingDirection) {
@@ -67,14 +67,14 @@ public class ImageFactory {
     private static ImageIcon getDungeonMasterImageIcon(Direction direction) {
         
         if (direction == null) {
-            return Images.DUNGEON_MASTER_FACING_RIGHT.getImageIcon();
+            return Image.DUNGEON_MASTER_FACING_RIGHT.getImageIcon();
         }
         
         switch (direction) {
             case EAST:
-                return Images.DUNGEON_MASTER_FACING_RIGHT.getImageIcon();
+                return Image.DUNGEON_MASTER_FACING_RIGHT.getImageIcon();
             case WEST:
-                return Images.DUNGEON_MASTER_FACING_LEFT.getImageIcon();
+                return Image.DUNGEON_MASTER_FACING_LEFT.getImageIcon();
             default:
                 throw new IllegalArgumentException("Unsupported dungeon master direction: " + direction);
         }
@@ -83,7 +83,7 @@ public class ImageFactory {
     private static ImageIcon getGhostImageIcon(Direction previousFacingDirection, Direction currentFacingDirection) {
         
         if (currentFacingDirection == null) {
-            return Images.GHOST_FACING_RIGHT.getImageIcon();
+            return Image.GHOST_FACING_RIGHT.getImageIcon();
         }
 
         switch (currentFacingDirection) {
@@ -98,14 +98,14 @@ public class ImageFactory {
     private static ImageIcon getGhostImageIcon(Direction direction) {
         
         if (direction == null) {
-            return Images.GHOST_FACING_RIGHT.getImageIcon();
+            return Image.GHOST_FACING_RIGHT.getImageIcon();
         }
         
         switch (direction) {
             case EAST:
-                return Images.GHOST_FACING_RIGHT.getImageIcon();
+                return Image.GHOST_FACING_RIGHT.getImageIcon();
             case WEST:
-                return Images.GHOST_FACING_LEFT.getImageIcon();
+                return Image.GHOST_FACING_LEFT.getImageIcon();
             default:
                 throw new IllegalArgumentException("Unsupported ghost direction: " + direction);
         }
@@ -114,7 +114,7 @@ public class ImageFactory {
     private static ImageIcon getGuardImageIcon(Direction previousFacingDirection, Direction currentFacingDirection) {
         
         if (currentFacingDirection == null) {
-            return Images.GUARD_FACING_RIGHT.getImageIcon();
+            return Image.GUARD_FACING_RIGHT.getImageIcon();
         }
 
         switch (currentFacingDirection) {
@@ -129,14 +129,14 @@ public class ImageFactory {
     private static ImageIcon getGuardImageIcon(Direction direction) {
         
         if (direction == null) {
-            return Images.GUARD_FACING_RIGHT.getImageIcon();
+            return Image.GUARD_FACING_RIGHT.getImageIcon();
         }
         
         switch (direction) {
             case EAST:
-                return Images.GUARD_FACING_RIGHT.getImageIcon();
+                return Image.GUARD_FACING_RIGHT.getImageIcon();
             case WEST:
-                return Images.GUARD_FACING_LEFT.getImageIcon();
+                return Image.GUARD_FACING_LEFT.getImageIcon();
             default:
                 throw new IllegalArgumentException("Unsupported guard direction: " + direction);
         }
@@ -145,7 +145,7 @@ public class ImageFactory {
     private static ImageIcon getPlayerImageIcon(Direction previousFacingDirection, Direction currentFacingDirection) {
         
         if (currentFacingDirection == null) {
-            return Images.PLAYER_FACING_RIGHT.getImageIcon();
+            return Image.PLAYER_FACING_RIGHT.getImageIcon();
         }
 
         switch (currentFacingDirection) {
@@ -160,14 +160,14 @@ public class ImageFactory {
     private static ImageIcon getPlayerImageIcon(Direction direction) {
         
         if (direction == null) {
-            return Images.PLAYER_FACING_RIGHT.getImageIcon();
+            return Image.PLAYER_FACING_RIGHT.getImageIcon();
         }
         
         switch (direction) {
             case EAST:
-                return Images.PLAYER_FACING_RIGHT.getImageIcon();
+                return Image.PLAYER_FACING_RIGHT.getImageIcon();
             case WEST:
-                return Images.PLAYER_FACING_LEFT.getImageIcon();
+                return Image.PLAYER_FACING_LEFT.getImageIcon();
             default:
                 throw new IllegalArgumentException("Unsupported player direction: " + direction);
         }

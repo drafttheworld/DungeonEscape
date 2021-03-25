@@ -7,7 +7,9 @@ package dungeonescape.dungeon.gui;
 
 import dungeonescape.DungeonEscapeApplication;
 import dungeonescape.dungeon.DungeonConfiguration;
-import dungeonescape.dungeon.gui.images.Images;
+import dungeonescape.dungeon.gui.images.Image;
+import dungeonescape.dungeon.gui.soundfx.AudioPlayer;
+import dungeonescape.dungeon.gui.soundfx.AudioTrack;
 import dungeonescape.dungeon.notifications.GameNotification;
 import dungeonescape.dungeon.notifications.LossNotification;
 import dungeonescape.dungeon.notifications.NotificationListener;
@@ -31,6 +33,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BoxLayout;
@@ -58,6 +63,8 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
     private static final String PLAYER_NAME = "Hero";
 
+    private static final ExecutorService backgroundMusicExecutorService = Executors.newSingleThreadExecutor();
+
     private boolean gameOver = true;
 
     private JPanel applicationPanel;
@@ -68,11 +75,12 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private DungeonTable activeDungeonTable;
     private JComponent gameConfigurationPane;
     private JPanel informationPanel;
-    TextArea playerInformationTextArea;
-    TextArea playerNotificationsTextArea;
+    private TextArea playerInformationTextArea;
+    private TextArea playerNotificationsTextArea;
 
-    DungeonEscapeApplication dungeonEscapeApplication;
+    private DungeonEscapeApplication dungeonEscapeApplication;
     private GameSession gameSession;
+    private Future backgroundAudioTrack;
 
     public DungeonEscapeGUI(DungeonEscapeApplication dungeonEscapeApplication) throws IOException {
         this.dungeonEscapeApplication = dungeonEscapeApplication;
@@ -158,9 +166,16 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
         startButton.setText("Start New Game");
         startButton.addActionListener((ActionEvent e) -> {
+            if (backgroundAudioTrack != null) {
+                System.out.println("cancelled audio track.");
+                backgroundAudioTrack.cancel(true);
+            }
             applicationPanel.remove(gameConfigurationPane);
             applicationPanel.remove(recenterButton);
             applicationPanel.remove(startButton);
+            if (informationPanel != null) {
+                applicationPanel.remove(informationPanel);
+            }
             gameConfigurationPane = new GameConfigurationPane(this);
             applicationPanel.add(gameConfigurationPane, BorderLayout.CENTER);
 
@@ -175,7 +190,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             refresh();
         });
 
-        gameConfigurationPane = new ImagePanel(Images.START_SCREEN_BACKGROUND.getBufferedImage());
+        gameConfigurationPane = new ImagePanel(Image.START_SCREEN_BACKGROUND.getBufferedImage());
 
         applicationPanel.setLayout(new BorderLayout());
         applicationPanel.setPreferredSize(new Dimension(STARTING_WIDTH, STARTING_HEIGHT));
@@ -236,6 +251,8 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             refresh();
             activeDungeonTable.centerOnPlayer();
             gameOver = false;
+            backgroundAudioTrack
+                = backgroundMusicExecutorService.submit(new AudioPlayer(AudioTrack.BACKGROUND_EPIC));
         });
     }
 
@@ -248,10 +265,16 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     public void processNotification(GameNotification gameNotification) {
         try {
             if (gameNotification instanceof LossNotification) {
-                displayNotificationPane(Images.GAME_LOST.getBufferedImage());
+                if (backgroundAudioTrack != null) {
+                    backgroundAudioTrack.cancel(true);
+                }
+                displayNotificationPane(Image.GAME_LOST.getBufferedImage());
                 gameOver = true;
             } else if (gameNotification instanceof WinNotification) {
-                displayNotificationPane(Images.GAME_WON.getBufferedImage());
+                if (backgroundAudioTrack != null) {
+                    backgroundAudioTrack.cancel(true);
+                }
+                displayNotificationPane(Image.GAME_WON.getBufferedImage());
                 gameOver = true;
             } else {
                 playerNotificationsTextArea.setText(gameNotification.getNotificationMessage());

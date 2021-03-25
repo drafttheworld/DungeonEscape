@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  *
@@ -45,6 +46,8 @@ public class Dungeon {
     private final List<DungeonObject> moveableDungeonObjects;
     private final Set<DungeonSpace> dungeonSpacesToUpdate;
     private final DungeonConfiguration dungeonConfiguration;
+    private final ScheduledExecutorService npcScheduledExecutorService
+        = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 
     private Player player;
     private int dungeonTimeElapsed;

@@ -22,7 +22,7 @@ import java.util.Objects;
  *
  * @author Andrew
  */
-public class Guard extends DungeonCharacter implements TeleportObject {
+public class Guard extends DungeonCharacter implements Runnable, TeleportObject {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 5;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
@@ -164,5 +164,10 @@ public class Guard extends DungeonCharacter implements TeleportObject {
     @Override
     public String toString() {
         return "Guard{" + "jailCellSpace=" + jailCellSpace + ", detectionDistance=" + detectionDistance + '}';
+    }
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
