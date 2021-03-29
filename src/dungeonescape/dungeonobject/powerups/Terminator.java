@@ -25,4 +25,9 @@ public class Terminator implements PowerUp<Terminator> {
         return new Terminator();
     }
 
+    @Override
+    public PowerUpEnum getCorrespondingPowerUpEnum() {
+        return PowerUpEnum.TERMINATOR;
+    }
+
 }

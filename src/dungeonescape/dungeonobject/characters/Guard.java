@@ -13,27 +13,34 @@ import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
+import dungeonescape.dungeon.space.Position;
+import dungeonescape.dungeonobject.powerups.PowerUp;
+import dungeonescape.dungeonobject.powerups.PowerUpEnum;
+import dungeonescape.play.Direction;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author Andrew
  */
-public class Guard extends DungeonCharacter implements Runnable, TeleportObject {
+public class Guard extends NonPlayerCharacter implements TeleportObject {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 5;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
     public static int DEFAULT_DETECTION_DISTANCE = 5;
 
     private final DungeonSpace jailCellSpace;
+    private final DungeonSpace[][] dungeon;
     private int detectionDistance;
 
-    public Guard(DungeonSpace jailCellSpace) {
+    public Guard(DungeonSpace jailCellSpace, DungeonSpace[][] dungeon, Player player) {
         this.jailCellSpace = jailCellSpace;
-        super.setActive(true);
+        this.dungeon = dungeon;
     }
 
     @Override
@@ -83,10 +90,27 @@ public class Guard extends DungeonCharacter implements Runnable, TeleportObject 
             NotificationManager.notify(
                 new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master."));
         } else if (dungeonObject instanceof Player) {
-            setActive(false);
-            NotificationManager.notify(
-                new InteractionNotification("A guard has caught you and moved you back to the center of the map."));
-            return teleport(dungeonObject);
+            Player player = (Player) dungeonObject;
+            PowerUp activePowerUp = player.getActivePowerUp();
+            boolean isAttackable = activePowerUp == null
+                || (activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVINCIBILITY
+                && activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVISIBILITY
+                && activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.TERMINATOR);
+            if (isAttackable) {
+                NotificationManager.notify(
+                    new InteractionNotification("A guard has caught you and moved you back to the center of the map."));
+                List<DungeonSpace> dungeonSpaces = teleport(dungeonObject);
+                DungeonSpace nextDungeonSpace = teleportGuard();
+                setPreviousDungeonSpace(getDungeonSpace());
+                getDungeonSpace().removeDungeonObject(this);
+                nextDungeonSpace.addDungeonObject(this);
+                setDungeonSpace(nextDungeonSpace);
+                return dungeonSpaces;
+            } else if (activePowerUp != null
+                && activePowerUp.getCorrespondingPowerUpEnum() == PowerUpEnum.TERMINATOR) {
+                setActive(false);
+                getDungeonSpace().removeDungeonObject(this);
+            }
         }
 
         return Collections.emptyList();
@@ -129,7 +153,70 @@ public class Guard extends DungeonCharacter implements Runnable, TeleportObject 
         startingSpace.removeDungeonObject(player);
         jailCellSpace.addDungeonObject(player);
 
-        return Arrays.asList(startingSpace, jailCellSpace);
+        List<DungeonSpace> dungeonSpaces = Arrays.asList(startingSpace, jailCellSpace);
+        return dungeonSpaces;
+    }
+
+    private DungeonSpace teleportGuard() {
+
+        int direction = ThreadLocalRandom.current().nextInt(4);
+        int startingRow;
+        int startingCol;
+        switch (direction) {
+            case 0:// North
+                startingRow = dungeon.length / 4;
+                for (int row = startingRow; row < dungeon.length; row++) {
+                    for (int col = 0; col < dungeon.length; col++) {
+                        DungeonSpace dungeonSpace = dungeon[row][col];
+                        if (dungeonSpace.isEmpty()) {
+                            return dungeonSpace;
+                        }
+                    }
+                }
+                break;
+            case 1:// South
+                startingRow = dungeon.length - dungeon.length / 4;
+                for (int row = startingRow; row >= 0; row--) {
+                    for (int col = 0; col < dungeon.length; col++) {
+                        DungeonSpace dungeonSpace = dungeon[row][col];
+                        if (dungeonSpace.isEmpty()) {
+                            return dungeonSpace;
+                        }
+                    }
+                }
+                break;
+            case 2: // East
+                startingCol = dungeon.length - dungeon.length / 4;
+                for (int col = startingCol; col >= 0; col--) {
+                    for (int row = 0; row < dungeon.length; row++) {
+                        DungeonSpace dungeonSpace = dungeon[row][col];
+                        if (dungeonSpace.isEmpty()) {
+                            return dungeonSpace;
+                        }
+                    }
+                }
+                break;
+            case 3: // West
+                startingCol = dungeon.length / 4;
+                for (int col = startingCol; col < dungeon.length; col++) {
+                    for (int row = 0; row < dungeon.length; row++) {
+                        DungeonSpace dungeonSpace = dungeon[row][col];
+                        if (dungeonSpace.isEmpty()) {
+                            return dungeonSpace;
+                        }
+                    }
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported direction: " + direction);
+        }
+
+        throw new RuntimeException("Unable to find next location for guard.");
+    }
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -164,10 +251,5 @@ public class Guard extends DungeonCharacter implements Runnable, TeleportObject 
     @Override
     public String toString() {
         return "Guard{" + "jailCellSpace=" + jailCellSpace + ", detectionDistance=" + detectionDistance + '}';
-    }
-
-    @Override
-    public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

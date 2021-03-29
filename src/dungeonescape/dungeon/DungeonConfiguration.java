@@ -29,15 +29,18 @@ public class DungeonConfiguration {
     private int dungeonMasterCount;
     private int dungeonMasterNumberOfMovesWhenPatrolling;
     private int dungeonMasterNumberOfMovesWhenHunting;
+    private long dungeonMasterMovementRateMs;
     private int dungeonMasterDetectionDistance;
     private int spawnDungeonMastersTurnCount;
     private int guardCount;
     private int guardNumberOfMovesWhenPatrolling;
     private int guardNumberOfMovesWhenHunting;
+    private long guardMovementRateMs;
     private int guardDetectionDistance;
     private int ghostCount;
     private int ghostNumberOfMovesWhenPatrolling;
     private int ghostNumberOfMovesWhenHunting;
+    private long ghostMovementRateMs;
     private int ghostDetectionDistance;
     private FreezeTime ghostMinFreezeTime;
     private FreezeTime ghostMaxFreezeTime;
@@ -159,6 +162,19 @@ public class DungeonConfiguration {
         return this;
     }
 
+    public long getDungeonMasterMovementRateMs() {
+        return dungeonMasterMovementRateMs;
+    }
+
+    public void setDungeonMasterMovementRateMs(long dungeonMasterMovementRateMs) {
+        this.dungeonMasterMovementRateMs = dungeonMasterMovementRateMs;
+    }
+
+    public DungeonConfiguration dungeonMasterMovementRateMs(long dungeonMasterMovementRateMs) {
+        setDungeonMasterMovementRateMs(dungeonMasterMovementRateMs);
+        return this;
+    }
+
     public int getDungeonMasterDetectionDistance() {
         if (dungeonMasterDetectionDistance == 0) {
             return DungeonMaster.DEFAULT_DETECTION_DISTANCE;
@@ -230,6 +246,19 @@ public class DungeonConfiguration {
 
     public DungeonConfiguration guardNumberOfMovesWhenHunting(int guardNumberOfMovesWhenHunting) {
         setGuardNumberOfMovesWhenHunting(guardNumberOfMovesWhenHunting);
+        return this;
+    }
+
+    public long getGuardMovementRateMs() {
+        return guardMovementRateMs;
+    }
+
+    public void setGuardMovementRateMs(long guardMovementRateMs) {
+        this.guardMovementRateMs = guardMovementRateMs;
+    }
+
+    public DungeonConfiguration guardMovementRateMs(long guardMovementRateMs) {
+        setGuardMovementRateMs(guardMovementRateMs);
         return this;
     }
 
@@ -323,6 +352,19 @@ public class DungeonConfiguration {
 
     public DungeonConfiguration ghostNumberOfMovesWhenHunting(int ghostNumberOfMovesWhenHunting) {
         setGhostNumberOfMovesWhenHunting(ghostNumberOfMovesWhenHunting);
+        return this;
+    }
+
+    public long getGhostMovementRateMs() {
+        return ghostMovementRateMs;
+    }
+
+    public void setGhostMovementRateMs(long ghostMovementRateMs) {
+        this.ghostMovementRateMs = ghostMovementRateMs;
+    }
+
+    public DungeonConfiguration ghostMovementRateMs(long ghostMovementRateMs) {
+        setGhostMovementRateMs(ghostMovementRateMs);
         return this;
     }
 

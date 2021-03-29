@@ -18,7 +18,9 @@ import dungeonescape.dungeon.notifications.WinNotification;
 import dungeonescape.play.Direction;
 import dungeonescape.play.GameSession;
 import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeonobject.powerups.PowerUpEnum;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.TextArea;
@@ -45,6 +47,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 /**
@@ -78,12 +81,10 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private TextArea playerInformationTextArea;
     private TextArea playerNotificationsTextArea;
 
-    private DungeonEscapeApplication dungeonEscapeApplication;
     private GameSession gameSession;
     private Future backgroundAudioTrack;
 
-    public DungeonEscapeGUI(DungeonEscapeApplication dungeonEscapeApplication) throws IOException {
-        this.dungeonEscapeApplication = dungeonEscapeApplication;
+    public DungeonEscapeGUI() throws IOException {
         initComponents();
     }
 
@@ -167,7 +168,6 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         startButton.setText("Start New Game");
         startButton.addActionListener((ActionEvent e) -> {
             if (backgroundAudioTrack != null) {
-                System.out.println("cancelled audio track.");
                 backgroundAudioTrack.cancel(true);
             }
             applicationPanel.remove(gameConfigurationPane);
@@ -303,37 +303,69 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private JPanel buildInformationPane() {
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.PAGE_AXIS));
+        infoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         infoPanel.setFocusable(false);
 
         JLabel playerInformationLabel = new JLabel("Player Stats");
         playerInformationLabel.setFont(new Font(Font.SERIF, Font.BOLD, 12));
 
         JPanel playerInformation = new JPanel();
+        playerInformation.setPreferredSize(new Dimension(300, 100));
+        playerInformation.setMaximumSize(new Dimension(300, 100));
         playerInformationTextArea = new TextArea(gameSession.getPlayerStats());
-        playerInformationTextArea.setPreferredSize(new Dimension(300, 200));
+        playerInformationTextArea.setPreferredSize(new Dimension(300, 100));
+        playerInformationTextArea.setMaximumSize(new Dimension(300, 100));
         playerInformationTextArea.setFocusable(false);
         playerInformationTextArea.setEditable(false);
 
         playerInformation.add(playerInformationLabel);
         playerInformation.add(playerInformationTextArea);
 
-        JLabel playerNotificationsLabel = new JLabel("Player Notifications");
-        playerInformationLabel.setFont(new Font(Font.SERIF, Font.BOLD, 12));
-
         JPanel playerNotifications = new JPanel();
+        playerNotifications.setPreferredSize(new Dimension(300, 100));
+        playerNotifications.setMaximumSize(new Dimension(300, 100));
+
+        JLabel playerNotificationsLabel = new JLabel("Player Notifications");
+        playerNotificationsLabel.setFont(new Font(Font.SERIF, Font.BOLD, 12));
+
         playerNotificationsTextArea = new TextArea();
-        playerNotificationsTextArea.setPreferredSize(new Dimension(300, 200));
+//        playerNotificationsTextArea.setMaximumSize(new Dimension(300, 100));
         playerNotificationsTextArea.setFocusable(false);
         playerNotificationsTextArea.setEditable(false);
 
         playerNotifications.add(playerNotificationsLabel);
         playerNotifications.add(playerNotificationsTextArea);
 
+        JPanel powerUpParentPanel = new JPanel();
+        powerUpParentPanel.setPreferredSize(new Dimension(300, 300));
+        powerUpParentPanel.setMaximumSize(new Dimension(300, 300));
+
+        JLabel playerPowerUpsLabel = new JLabel("Player Power-ups");
+        playerPowerUpsLabel.setFont(new Font(Font.SERIF, Font.BOLD, 12));
+        playerPowerUpsLabel.setPreferredSize(new Dimension(300, 20));
+        playerPowerUpsLabel.setMaximumSize(new Dimension(300, 20));
+        playerPowerUpsLabel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        playerPowerUpsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        playerPowerUpsLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+        powerUpParentPanel.add(playerPowerUpsLabel);
+
+        JPanel playerPowerUpsPanel = new JPanel();
+        playerPowerUpsPanel.setPreferredSize(new Dimension(300, 200));
+        playerPowerUpsPanel.setMaximumSize(new Dimension(300, 200));
+        playerPowerUpsPanel.setLayout(new BoxLayout(playerPowerUpsPanel, BoxLayout.PAGE_AXIS));
+
+        playerPowerUpsPanel.add(new PowerUpSubpanel(PowerUpEnum.INVINCIBILITY, gameSession.getPowerUpService(), this));
+        playerPowerUpsPanel.add(new PowerUpSubpanel(PowerUpEnum.INVISIBILITY, gameSession.getPowerUpService(), this));
+        playerPowerUpsPanel.add(new PowerUpSubpanel(PowerUpEnum.REPELLENT, gameSession.getPowerUpService(), this));
+        playerPowerUpsPanel.add(new PowerUpSubpanel(PowerUpEnum.TERMINATOR, gameSession.getPowerUpService(), this));
+        powerUpParentPanel.add(playerPowerUpsPanel);
+
         infoPanel.add(playerInformation);
         infoPanel.add(playerNotifications);
+        infoPanel.add(playerPowerUpsLabel);
+        infoPanel.add(powerUpParentPanel);
 
-        infoPanel.setPreferredSize(new Dimension(300, 400));
-
+        infoPanel.setPreferredSize(new Dimension(310, 400));
         infoPanel.addComponentListener(new ComponentListener() {
             @Override
             public void componentResized(ComponentEvent e) {

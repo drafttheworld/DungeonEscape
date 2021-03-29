@@ -18,21 +18,12 @@ public abstract class DungeonCharacter extends DungeonObject {
 
     private final Direction defaultFacingDirection = Direction.WEST;
 
-    private Player player;
     private int numberOfSpacesToMoveWhenPatrolling;
     private int numberOfSpacesToMoveWhenHunting;
     private DungeonSpace previousDungeonSpace;
     private Direction previousFacingDirection;
     private Direction currentFacingDirection;
-    private boolean active;
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
+    private boolean active = true;
 
     public int getNumberOfSpacesToMoveWhenPatrolling() {
         return numberOfSpacesToMoveWhenPatrolling;

@@ -25,4 +25,9 @@ public class Repellent implements PowerUp<Repellent> {
         return new Repellent();
     }
 
+    @Override
+    public PowerUpEnum getCorrespondingPowerUpEnum() {
+        return PowerUpEnum.REPELLENT;
+    }
+
 }

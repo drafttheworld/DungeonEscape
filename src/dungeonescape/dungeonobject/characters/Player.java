@@ -11,37 +11,49 @@ import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
+import dungeonescape.dungeon.space.Position;
 import dungeonescape.dungeonobject.coin.Coin;
 import dungeonescape.dungeonobject.powerups.PowerUp;
 import dungeonescape.dungeonobject.powerups.PowerUpBox;
+import dungeonescape.dungeonobject.powerups.PowerUpEnum;
+import dungeonescape.dungeonobject.powerups.PowerUpListener;
+import dungeonescape.dungeonobject.powerups.PowerUpService;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author Andrew
  */
-public class Player extends DungeonCharacter {
+public class Player extends DungeonCharacter implements PowerUpListener {
 
     private final DungeonSpace[][] dungeon;
     private final String playerName;
     private final int playerLineOfSightDistance;
+    private final PowerUpService powerUpService;
     private int frozenTurnsRemaining;
-    private final List<PowerUp> powerUps;
+    private final Map<PowerUpEnum, List<PowerUp>> powerUps;
+    private PowerUp activePowerUp;
     private int coinsCollected;
     private boolean won;
     private boolean lost;
     private boolean teleported;
 
-    public Player(String playerName, int playerLineOfSightDistance, DungeonSpace[][] dungeon) {
+    public Player(String playerName, int playerLineOfSightDistance, DungeonSpace[][] dungeon,
+        PowerUpService powerUpService) {
+
         this.playerName = playerName;
         this.playerLineOfSightDistance = playerLineOfSightDistance;
         this.dungeon = dungeon;
-        super.setActive(true);
+        this.powerUpService = powerUpService;
+        this.powerUpService.registerPowerUpClient(this);
         frozenTurnsRemaining = 0;
-        powerUps = new ArrayList<>();
+        powerUps = new EnumMap<>(PowerUpEnum.class);
         coinsCollected = 0;
         won = false;
         lost = false;
@@ -69,6 +81,10 @@ public class Player extends DungeonCharacter {
 
     public void decrementFrozenTurnsRemaining(long turns) {
         frozenTurnsRemaining -= turns;
+    }
+
+    public PowerUp getActivePowerUp() {
+        return activePowerUp;
     }
 
     public int getCoinsCollected() {
@@ -100,7 +116,10 @@ public class Player extends DungeonCharacter {
     public void addPowerUp(PowerUp powerUp) {
 
         if (powerUp != null) {
-            powerUps.add(powerUp);
+            List<PowerUp> powerUpList
+                = powerUps.computeIfAbsent(powerUp.getCorrespondingPowerUpEnum(), k -> new ArrayList<>());
+            powerUpList.add(powerUp);
+            powerUpService.addPowerUp(powerUp.getCorrespondingPowerUpEnum());
         }
     }
 
@@ -323,7 +342,6 @@ public class Player extends DungeonCharacter {
             }
         }
 
-        System.out.println("Revealing " + revealedDungeonSpaces.size() + " spaces.");
         return revealedDungeonSpaces;
     }
 
@@ -365,5 +383,23 @@ public class Player extends DungeonCharacter {
             && Objects.equals(this.playerName, other.playerName)
             && Arrays.deepEquals(this.dungeon, other.dungeon)
             && Objects.equals(this.powerUps, other.powerUps);
+    }
+
+    @Override
+    public void notifyPowerUpAdded(PowerUpEnum powerUpEnum) {
+        // do nothing, not used.
+    }
+
+    @Override
+    public void notifyPowerUpUsed(PowerUpEnum powerUpEnum) {
+        if (powerUpEnum != null) {
+            List<PowerUp> powerUpList
+                = powerUps.computeIfAbsent(powerUpEnum, k -> new ArrayList<>());
+            if (!powerUpList.isEmpty()) {
+                activePowerUp = powerUpList.remove(powerUpList.size() - 1);
+            } else {
+                System.out.println("There are no available " + powerUpEnum + " power-ups.");
+            }
+        }
     }
 }

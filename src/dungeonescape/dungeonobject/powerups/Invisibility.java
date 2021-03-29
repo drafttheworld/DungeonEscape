@@ -25,4 +25,9 @@ public class Invisibility implements PowerUp<Invisibility> {
         return new Invisibility();
     }
 
+    @Override
+    public PowerUpEnum getCorrespondingPowerUpEnum() {
+        return PowerUpEnum.INVISIBILITY;
+    }
+
 }

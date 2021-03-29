@@ -11,15 +11,19 @@ import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
+import dungeonescape.dungeonobject.powerups.PowerUp;
+import dungeonescape.dungeonobject.powerups.PowerUpEnum;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  *
  * @author Andrew
  */
-public class Ghost extends DungeonCharacter implements Runnable {
+public class Ghost extends NonPlayerCharacter {
 
     public static final FreezeTime DEFAULT_FREEZE_TIME = new FreezeTime(30);
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 2;
@@ -27,11 +31,12 @@ public class Ghost extends DungeonCharacter implements Runnable {
     public static int DEFAULT_DETECTION_DISTANCE = 10;
 
     private final FreezeTime freezeTime;
+    private final DungeonSpace[][] dungeon;
     private int detectionDistance;
 
-    public Ghost(FreezeTime freezeTime) {
+    public Ghost(FreezeTime freezeTime, DungeonSpace[][] dungeon, Player player) {
         this.freezeTime = freezeTime;
-        super.setActive(true);
+        this.dungeon = dungeon;
     }
 
     public FreezeTime getFreezeTime() {
@@ -77,11 +82,30 @@ public class Ghost extends DungeonCharacter implements Runnable {
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
         if (isActive() && dungeonObject instanceof Player) {
-            ((Player) dungeonObject).addFrozenTurns(freezeTime);
-            super.setActive(false);
-            NotificationManager.notify(
-                new InteractionNotification("A ghost has attacked you and frozen you in fear for "
-                    + freezeTime.getTurns() + " turns."));
+            Player player = (Player) dungeonObject;
+            PowerUp activePowerUp = player.getActivePowerUp();
+            boolean isAttackable = activePowerUp == null
+                || (activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVINCIBILITY
+                && activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVISIBILITY
+                && activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.TERMINATOR);
+            if (isAttackable) {
+                ((Player) dungeonObject).addFrozenTurns(freezeTime);
+                NotificationManager.notify(
+                    new InteractionNotification("A ghost has attacked you and frozen you in fear for "
+                        + freezeTime.getTurns() + " turns."));
+                // TODO teleport the ghost elsewhere in the dungeon
+                int nextPosX = ThreadLocalRandom.current().nextInt(dungeon.length);
+                int nextPosY = ThreadLocalRandom.current().nextInt(dungeon.length);
+                DungeonSpace nextDungeonSpace = dungeon[nextPosY][nextPosX];
+                setPreviousDungeonSpace(getDungeonSpace());
+                getDungeonSpace().removeDungeonObject(this);
+                nextDungeonSpace.addDungeonObject(this);
+                setDungeonSpace(nextDungeonSpace);
+                return Arrays.asList(getPreviousDungeonSpace(), nextDungeonSpace);
+            } else if (activePowerUp != null
+                && activePowerUp.getCorrespondingPowerUpEnum() == PowerUpEnum.TERMINATOR) {
+                setActive(false);
+            }
         }
 
         return Collections.emptyList();
@@ -109,6 +133,11 @@ public class Ghost extends DungeonCharacter implements Runnable {
 
         return CharacterActionUtil.moveEnemy(dungeon, this, getNumberOfSpacesToMoveWhenPatrolling(),
             getNumberOfSpacesToMoveWhenHunting(), getDetectionDistance(), player);
+    }
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -143,10 +172,5 @@ public class Ghost extends DungeonCharacter implements Runnable {
     @Override
     public String toString() {
         return "Ghost{" + "freezeTime=" + freezeTime + ", detectionDistance=" + detectionDistance + '}';
-    }
-
-    @Override
-    public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

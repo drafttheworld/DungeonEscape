@@ -13,27 +13,61 @@ import dungeonescape.dungeonobject.FreezeTime;
  * @author Andrew
  */
 public enum GameDifficulty {
-
+    DEMO,
     EASY,
     NORMAL,
     HARD,
-    INSANE,
     CUSTOM;
 
     public DungeonConfiguration getDungeonConfiguration() {
         switch (this) {
+            case DEMO:
+                return demo();
             case EASY:
-                return EASY();
+                return easy();
             case NORMAL:
-                return NORMAL();
+                return normal();
             case HARD:
-                return HARD();
-            case INSANE:
-                return INSANE();
+                return hard();
             case CUSTOM:
                 return new DungeonConfiguration();
         }
         return null;
+    }
+
+    private static DungeonConfiguration demo() {
+        return new DungeonConfiguration()
+            .dungeonWidth(25)
+            .playerVisibility(15)
+            .dungeonExitCount(8)
+            .dungeonMasterCount(0)
+            .spawnDungeonMastersTurnCount(25)
+            .dungeonMasterDetectionDistance(5)
+            .dungeonMasterNumberOfMovesWhenPatrolling(2)
+            .dungeonMasterNumberOfMovesWhenHunting(1)
+            .dungeonMasterMovementRateMs(1000)
+            .guardCount(0)
+            .guardDetectionDistance(5)
+            .guardNumberOfMovesWhenPatrolling(2)
+            .guardNumberOfMovesWhenHunting(1)
+            .guardMovementRateMs(1000)
+            .ghostCount(1)
+            .ghostMinFreezeTime(new FreezeTime(10))
+            .ghostMaxFreezeTime(new FreezeTime(10))
+            .ghostDetectionDistance(5)
+            .ghostNumberOfMovesWhenPatrolling(3)
+            .ghostNumberOfMovesWhenHunting(1)
+            .ghostMovementRateMs(1000)
+            .freezeMineCount(0)
+            .freezeMineMinFreezeTime(new FreezeTime(5))
+            .freezeMineMaxFreezeTime(new FreezeTime(5))
+            .teleportMineCount(0)
+            .powerUpBoxCount(1)
+            .invincibilityProbability(1)
+            .invisibilityProbability(1)
+            .repellentProbability(1)
+            .terminatorProbability(1)
+            .coinCoveragePercentOfOpenSpaces(0);
     }
 
     /**
@@ -41,26 +75,29 @@ public enum GameDifficulty {
      *
      * @return
      */
-    private static DungeonConfiguration EASY() {
+    private static DungeonConfiguration easy() {
         return new DungeonConfiguration()
             .dungeonWidth(DungeonSize.SMALL.getDungeonWidth())
             .playerVisibility(15)
             .dungeonExitCount(8)
             .dungeonMasterCount(1)
             .spawnDungeonMastersTurnCount(25)
-            .dungeonMasterDetectionDistance(3)
+            .dungeonMasterDetectionDistance(5)
             .dungeonMasterNumberOfMovesWhenPatrolling(2)
             .dungeonMasterNumberOfMovesWhenHunting(1)
+            .dungeonMasterMovementRateMs(1000)
             .guardCount(5)
-            .guardDetectionDistance(3)
+            .guardDetectionDistance(5)
             .guardNumberOfMovesWhenPatrolling(2)
             .guardNumberOfMovesWhenHunting(1)
+            .guardMovementRateMs(1000)
             .ghostCount(8)
             .ghostMinFreezeTime(new FreezeTime(10))
             .ghostMaxFreezeTime(new FreezeTime(10))
             .ghostDetectionDistance(5)
             .ghostNumberOfMovesWhenPatrolling(3)
             .ghostNumberOfMovesWhenHunting(1)
+            .ghostMovementRateMs(1000)
             .freezeMineCount(25)
             .freezeMineMinFreezeTime(new FreezeTime(5))
             .freezeMineMaxFreezeTime(new FreezeTime(5))
@@ -78,36 +115,39 @@ public enum GameDifficulty {
      *
      * @return
      */
-    private static DungeonConfiguration NORMAL() {
+    private static DungeonConfiguration normal() {
         return new DungeonConfiguration()
             .dungeonWidth(DungeonSize.MEDIUM.getDungeonWidth())
             .playerVisibility(12)
             .dungeonExitCount(5)
             .dungeonMasterCount(3)
             .spawnDungeonMastersTurnCount(25)
-            .dungeonMasterDetectionDistance(4)
+            .dungeonMasterDetectionDistance(6)
             .dungeonMasterNumberOfMovesWhenPatrolling(3)
             .dungeonMasterNumberOfMovesWhenHunting(3)
-            .guardCount(200)
-            .guardDetectionDistance(4)
+            .dungeonMasterMovementRateMs(500)
+            .guardCount(100)
+            .guardDetectionDistance(6)
             .guardNumberOfMovesWhenPatrolling(2)
             .guardNumberOfMovesWhenHunting(2)
-            .ghostCount(500)
+            .guardMovementRateMs(500)
+            .ghostCount(200)
             .ghostMinFreezeTime(new FreezeTime(10))
             .ghostMaxFreezeTime(new FreezeTime(20))
-            .ghostDetectionDistance(5)
+            .ghostDetectionDistance(6)
             .ghostNumberOfMovesWhenPatrolling(5)
             .ghostNumberOfMovesWhenHunting(3)
-            .freezeMineCount(2000)
+            .ghostMovementRateMs(500)
+            .freezeMineCount(1000)
             .freezeMineMinFreezeTime(new FreezeTime(5))
             .freezeMineMaxFreezeTime(new FreezeTime(15))
-            .teleportMineCount(1000)
+            .teleportMineCount(500)
             .powerUpBoxCount(20)
             .invincibilityProbability(1)
             .invisibilityProbability(1)
             .repellentProbability(1)
             .terminatorProbability(1)
-            .coinCoveragePercentOfOpenSpaces(15);
+            .coinCoveragePercentOfOpenSpaces(5);
     }
 
     /**
@@ -115,26 +155,29 @@ public enum GameDifficulty {
      *
      * @return
      */
-    private static DungeonConfiguration HARD() {
+    private static DungeonConfiguration hard() {
         return new DungeonConfiguration()
             .dungeonWidth(DungeonSize.LARGE.getDungeonWidth())
             .playerVisibility(10)
             .dungeonExitCount(3)
             .dungeonMasterCount(10)
             .spawnDungeonMastersTurnCount(25)
-            .dungeonMasterDetectionDistance(5)
+            .dungeonMasterDetectionDistance(7)
             .dungeonMasterNumberOfMovesWhenPatrolling(3)
             .dungeonMasterNumberOfMovesWhenHunting(3)
+            .dungeonMasterMovementRateMs(400)
             .guardCount(150)
-            .guardDetectionDistance(5)
+            .guardDetectionDistance(7)
             .guardNumberOfMovesWhenPatrolling(3)
             .guardNumberOfMovesWhenHunting(3)
+            .guardMovementRateMs(400)
             .ghostCount(300)
             .ghostMinFreezeTime(new FreezeTime(15))
             .ghostMaxFreezeTime(new FreezeTime(25))
-            .ghostDetectionDistance(5)
+            .ghostDetectionDistance(7)
             .ghostNumberOfMovesWhenPatrolling(5)
             .ghostNumberOfMovesWhenHunting(3)
+            .ghostMovementRateMs(400)
             .freezeMineCount(5000)
             .freezeMineMinFreezeTime(new FreezeTime(10))
             .freezeMineMaxFreezeTime(new FreezeTime(20))
@@ -146,42 +189,4 @@ public enum GameDifficulty {
             .terminatorProbability(1)
             .coinCoveragePercentOfOpenSpaces(15);
     }
-
-    /**
-     * (5000 X 5000) 25,000,000 space dungeon
-     *
-     * @return
-     */
-    private static DungeonConfiguration INSANE() {
-        return new DungeonConfiguration()
-            .dungeonWidth(DungeonSize.EPIC.getDungeonWidth())
-            .playerVisibility(8)
-            .dungeonExitCount(2)
-            .dungeonMasterCount(500)
-            .spawnDungeonMastersTurnCount(20)
-            .dungeonMasterDetectionDistance(5)
-            .dungeonMasterNumberOfMovesWhenPatrolling(3)
-            .dungeonMasterNumberOfMovesWhenHunting(3)
-            .guardCount(10000)
-            .guardDetectionDistance(5)
-            .guardNumberOfMovesWhenPatrolling(3)
-            .guardNumberOfMovesWhenHunting(3)
-            .ghostCount(40000)
-            .ghostMinFreezeTime(new FreezeTime(20))
-            .ghostMaxFreezeTime(new FreezeTime(30))
-            .ghostDetectionDistance(8)
-            .ghostNumberOfMovesWhenPatrolling(8)
-            .ghostNumberOfMovesWhenHunting(5)
-            .freezeMineCount(500000)
-            .freezeMineMinFreezeTime(new FreezeTime(15))
-            .freezeMineMaxFreezeTime(new FreezeTime(25))
-            .teleportMineCount(200000)
-            .powerUpBoxCount(40)
-            .invincibilityProbability(1)
-            .invisibilityProbability(1)
-            .repellentProbability(1)
-            .terminatorProbability(1)
-            .coinCoveragePercentOfOpenSpaces(15);
-    }
-
 }

@@ -15,6 +15,7 @@ import dungeonescape.dungeonobject.mine.TeleportMine;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.coin.Coin;
+import dungeonescape.dungeonobject.powerups.Invincibility;
 import dungeonescape.dungeonobject.powerups.PowerUp;
 import dungeonescape.dungeonobject.powerups.PowerUpBox;
 import dungeonescape.dungeonobject.powerups.PowerUpFactory;
@@ -147,8 +148,8 @@ public class DungeonConstructionUtil {
 
         List<PowerUpBox> powerUpBoxes = new ArrayList<>();
         for (int i = 0; i < countOfPowerUpMysterBoxes; i++) {
-            PowerUp powerUp = powerUpFactory.generatePowerUp();
-            PowerUpBox powerUpBox = new PowerUpBox(powerUp);
+//            PowerUp powerUp = powerUpFactory.generatePowerUp();
+            PowerUpBox powerUpBox = new PowerUpBox(new Invincibility());
             placeDungeonObject(emptyDungeonSpaces, powerUpBox);
             powerUpBoxes.add(powerUpBox);
         }
@@ -212,7 +213,6 @@ public class DungeonConstructionUtil {
         Map<Double, List<DungeonSpace>> targetAreas = new HashMap<>();
 
         List<TargetBoundary> targeBoundaryAreas = targetBoundaries.getTargetBoundaries();
-
         targeBoundaryAreas.forEach(targetBoundary -> {
             List<DungeonSpace> emptyDungeonSpacesInTargetArea = new ArrayList<>();
             for (int row = 0; row < dungeon.length; row++) {

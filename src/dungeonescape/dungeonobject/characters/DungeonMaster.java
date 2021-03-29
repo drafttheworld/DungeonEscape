@@ -13,6 +13,8 @@ import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
+import dungeonescape.dungeonobject.powerups.PowerUp;
+import dungeonescape.dungeonobject.powerups.PowerUpEnum;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +22,7 @@ import java.util.List;
  *
  * @author Andrew
  */
-public class DungeonMaster extends DungeonCharacter implements Runnable {
+public class DungeonMaster extends NonPlayerCharacter {
 
     public static int DEFAULT_MOVES_WHEN_PATROLLING = 3;
     public static int DEFAULT_MOVES_WHEN_HUNTING = 4;
@@ -29,10 +31,12 @@ public class DungeonMaster extends DungeonCharacter implements Runnable {
     public static final String CAPTURE_NOTIFICATION
         = "You have been caught and executed by a DUNGEON MASTER!";
 
+    private final Player player;
+
     private int detectionDistance;
 
-    public DungeonMaster() {
-        super.setActive(true);
+    public DungeonMaster(Player player) {
+        this.player = player;
     }
 
     @Override
@@ -92,8 +96,15 @@ public class DungeonMaster extends DungeonCharacter implements Runnable {
                 new ActionNotAllowedNotification("A dungeon master cannot occupy the "
                     + "same space as another dungeon master."));
         } else if (dungeonObject instanceof Player) {
-            NotificationManager.notify(
-                new LossNotification(CAPTURE_NOTIFICATION));
+            PowerUp activePowerUp = player.getActivePowerUp();
+            boolean isAttackable = activePowerUp == null
+                || (activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVINCIBILITY
+                && activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVISIBILITY
+                && activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.TERMINATOR);
+            if (isAttackable) {
+                NotificationManager.notify(
+                    new LossNotification(CAPTURE_NOTIFICATION));
+            }
         }
 
         return Collections.emptyList();
@@ -129,6 +140,11 @@ public class DungeonMaster extends DungeonCharacter implements Runnable {
     }
 
     @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
     public int hashCode() {
         int hash = 7;
         hash = 23 * hash + this.detectionDistance;
@@ -156,10 +172,5 @@ public class DungeonMaster extends DungeonCharacter implements Runnable {
     @Override
     public String toString() {
         return "DungeonMaster{" + "detectionDistance=" + detectionDistance + '}';
-    }
-
-    @Override
-    public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

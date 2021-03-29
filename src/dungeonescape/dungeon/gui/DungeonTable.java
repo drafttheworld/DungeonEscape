@@ -9,6 +9,7 @@ import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.play.GameSession;
 import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import java.awt.Rectangle;
 import java.util.Enumeration;
 import java.util.Set;
@@ -83,25 +84,27 @@ public class DungeonTable extends JTable {
     }
 
     protected void updateMap(Set<DungeonSpace> dungeonSpacesToUpdate) {
-        
+
+        System.out.println("Updating " + dungeonSpacesToUpdate.size() + " dungeon table spaces.");
+
         dungeonSpacesToUpdate.parallelStream().forEach(dungeonSpace -> {
 
             int row = dungeonSpace.getPosition().getPositionY();
             int col = dungeonSpace.getPosition().getPositionX();
             this.setValueAt(dungeonSpace, row, col);
-            
+
             DungeonObject dungeonObject = dungeonSpace.getVisibleDungeonObject();
             if (dungeonObject instanceof Player) {
                 mapCenterX = col;
                 mapCenterY = row;
             }
         });
-        
+
         centerOnPlayer();
     }
 
     public void centerOnPlayer() {
-        
+
         Rectangle currentlyVisible = this.getVisibleRect();
         Rectangle nextVisible = new Rectangle(currentlyVisible);
         int totalRowHeight = mapCenterY * CELL_SIZE;

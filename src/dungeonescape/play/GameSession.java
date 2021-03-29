@@ -7,8 +7,8 @@ package dungeonescape.play;
 
 import dungeonescape.dungeon.Dungeon;
 import dungeonescape.dungeon.DungeonConfiguration;
-import dungeonescape.dungeonobject.FreezeTime;
 import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeonobject.powerups.PowerUpService;
 import java.util.Set;
 import java.util.UUID;
 
@@ -21,6 +21,7 @@ public class GameSession {
     private final String sessionId = UUID.randomUUID().toString();
     private final DungeonConfiguration dungeonConfiguration;
     private final Dungeon dungeon;
+    private final PowerUpService powerUpService;
 
     //Game status
     private int turnCount;
@@ -28,7 +29,8 @@ public class GameSession {
     public GameSession(DungeonConfiguration dungeonConfiguration) {
         this.dungeonConfiguration = dungeonConfiguration;
 
-        dungeon = new Dungeon(dungeonConfiguration);
+        powerUpService = new PowerUpService();
+        dungeon = new Dungeon(dungeonConfiguration, powerUpService);
         turnCount = 0;
     }
 
@@ -41,8 +43,7 @@ public class GameSession {
     }
 
     public Set<DungeonSpace> movePlayerGui(Direction direction) {
-        movePlayer(direction);
-        return dungeon.getDungeonSpacesToUpdate();
+        return movePlayer(direction);
     }
 
     public String movePlayerHeadless(Direction direction) {
@@ -50,22 +51,23 @@ public class GameSession {
         return dungeon.generatePlayerMap();
     }
 
-    private void movePlayer(Direction direction) {
-
-        dungeon.movePlayer(direction);
+    private Set<DungeonSpace> movePlayer(Direction direction) {
 
         turnCount++;
 
+        Set<DungeonSpace> dungeonSpacesToUpdate = dungeon.movePlayer(direction);
+
         if (turnCount == dungeonConfiguration.getSpawnDungeonMastersTurnCount()) {
-            dungeon.spawnDungeonMasters();
+            dungeonSpacesToUpdate.addAll(dungeon.spawnDungeonMasters());
         }
+
+        return dungeonSpacesToUpdate;
     }
 
     public String getPlayerStats() {
 
-        int dungeonTimeElapsed = dungeon.getDungeonTimeElapsed();
         return new StringBuilder()
-            .append("Dungeon time elapsed: ").append(dungeonTimeElapsed).append(" turns").append("\n")
+            .append("Dungeon time elapsed: ").append(turnCount).append(" turns").append("\n")
             .append(dungeon.getPlayer().getPlayerStats()).toString();
     }
 
@@ -75,6 +77,10 @@ public class GameSession {
 
     public String getPlayerMap() {
         return dungeon.generatePlayerMap();
+    }
+
+    public PowerUpService getPowerUpService() {
+        return powerUpService;
     }
 
 }

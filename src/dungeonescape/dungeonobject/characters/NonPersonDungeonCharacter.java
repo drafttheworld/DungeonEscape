@@ -14,6 +14,17 @@ import java.util.List;
  */
 public abstract class NonPersonDungeonCharacter extends DungeonCharacter {
 
+    private final Player player;
+
+    protected NonPersonDungeonCharacter(Player player) {
+        this.player = player;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    @Override
     public abstract List<DungeonSpace> move(DungeonSpace[][] dungeon, Player player);
 
 }

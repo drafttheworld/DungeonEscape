@@ -25,7 +25,6 @@ public class FreezeMine extends Mine {
 
     public FreezeMine(FreezeTime freezeTime) {
         this.freezeTime = freezeTime;
-        super.setActive(true);
     }
 
     public void setFreezeDuration(FreezeTime freezeTime) {

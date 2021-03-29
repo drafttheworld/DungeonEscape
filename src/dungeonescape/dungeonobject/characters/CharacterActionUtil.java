@@ -13,12 +13,15 @@ import dungeonescape.dungeonobject.characters.pathfinder.EnemyPathfinder;
 import dungeonescape.play.Direction;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.Position;
+import dungeonescape.dungeonobject.powerups.PowerUp;
+import dungeonescape.dungeonobject.powerups.PowerUpEnum;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -96,6 +99,10 @@ public class CharacterActionUtil {
         int numberOfSpacesToMoveWhenPatrolling, int numberOfSpacesToMoveWhenHunting, int detectionDistance,
         Player player) {
 
+        if (!enemy.isActive()) {
+            return Collections.emptyList();
+        }
+
         List<DungeonSpace> dungeonSpaces = new ArrayList<>();
 
         DungeonSpace startingDungeonSpace = enemy.getDungeonSpace();
@@ -110,14 +117,15 @@ public class CharacterActionUtil {
         }
 
         MovementAction movementAction = new MovementAction(Direction.UNKNOWN, Collections.emptyList());
-        if (isPlayerInView(enemy, player, detectionDistance)) {
+        boolean isPlayerInvisible = isPlayerInvisibile(player);
+        if (!isPlayerInvisible && isPlayerInView(enemy, player, detectionDistance)) {
             movementAction = hunt(dungeon, enemy, player, numberOfSpacesToMoveWhenHunting);
         } else {
             int movesExecuted = 0;
             for (int moveNumber = 0; moveNumber < numberOfSpacesToMoveWhenPatrolling; moveNumber++) {
                 movementAction = patrol(dungeon, enemy);
                 movesExecuted++;
-                if (isPlayerInView(enemy, player, detectionDistance)) {
+                if (!isPlayerInvisible && isPlayerInView(enemy, player, detectionDistance)) {
                     int numberOfMovesRemaining = numberOfSpacesToMoveWhenHunting - movesExecuted;
                     if (numberOfMovesRemaining > 0) {
                         movementAction = hunt(dungeon, enemy, player, numberOfMovesRemaining);
@@ -129,7 +137,15 @@ public class CharacterActionUtil {
         enemy.setCurrentFacingDirection(movementAction.getDirection());
         dungeonSpaces.addAll(movementAction.getDungeonSpaces());
 
+        dungeonSpaces.removeIf(dungeonSpace -> !dungeonSpace.isVisible());
+
         return dungeonSpaces;
+    }
+
+    private static boolean isPlayerInvisibile(Player player) {
+        PowerUp powerUp = player.getActivePowerUp();
+        return powerUp != null
+            && powerUp.getCorrespondingPowerUpEnum() == PowerUpEnum.INVISIBILITY;
     }
 
     private static boolean isPlayerInView(DungeonCharacter enemy, Player player, int detectionDistance) {
@@ -160,32 +176,62 @@ public class CharacterActionUtil {
     private synchronized static MovementAction hunt(DungeonSpace[][] dungeon, DungeonCharacter enemy,
         Player player, int numberOfMoves) {
 
+        if (player.getActivePowerUp() != null
+            && player.getActivePowerUp().getCorrespondingPowerUpEnum() == PowerUpEnum.REPELLENT) {
+
+            return assignCharacterMovement(enemy, determineDungeonSpaceIfRepelled(dungeon, enemy, player));
+        }
+
         List<DungeonSpace> path = EnemyPathfinder.findShortestPathForEnemy(dungeon, enemy, player);
         if (!path.isEmpty()) {
-            try {
-                int nextDungeonSpaceIndex = path.size() <= numberOfMoves ? path.size() - 1 : numberOfMoves;
-                return assignCharacterMovement(enemy, path.get(nextDungeonSpaceIndex));
-            } catch (Exception e) {
-                System.out.println("path.size(): " + path.size() + ", numberOfMoves: " + numberOfMoves);
-                throw e;
-            }
+            int nextDungeonSpaceIndex = path.size() <= numberOfMoves ? path.size() - 1 : numberOfMoves;
+            return assignCharacterMovement(enemy, path.get(nextDungeonSpaceIndex));
         } else {
-            System.out.println("Unable to find path to player.");
+            System.out.println("Unable to find path to player: " + player.getDungeonSpace().getPosition()
+                + " for enemy: " + enemy.getDungeonSpace().getPosition());
             return patrol(dungeon, enemy);
         }
     }
 
-    private static void printPath(List<DungeonSpace> shortestPathToPlayer) {
+    private static DungeonSpace determineDungeonSpaceIfRepelled(DungeonSpace[][] dungeon,
+        DungeonCharacter enemy, Player player) {
 
-        StringBuilder sb = new StringBuilder("Path to player: ");
-        for (DungeonSpace dungeonSpace : shortestPathToPlayer) {
-            sb.append("[").append(dungeonSpace.getPosition().getPositionX()).append(",")
-                .append(dungeonSpace.getPosition().getPositionY()).append("]");
-            if (dungeonSpace != shortestPathToPlayer.get(shortestPathToPlayer.size() - 1)) {
-                sb.append(" -> ");
+        int enemyPosX = enemy.getPosition().getPositionX();
+        int enemyPosY = enemy.getPosition().getPositionY();
+        int playerPosX = player.getPosition().getPositionX();
+        int playerPosY = player.getPosition().getPositionY();
+
+        int nextPosX = enemyPosX;
+        if (enemyPosX < playerPosX && enemyPosX > 0) { // player is west of enemy
+            // move east
+            DungeonSpace dungeonSpace = dungeon[enemyPosY][enemyPosX - 1];
+            if (enemy.canOccupySpace(dungeonSpace)) {
+                return dungeonSpace;
+            }
+        } else if (enemyPosX > playerPosX && enemyPosX < dungeon.length - 1) {
+            // move west
+            DungeonSpace dungeonSpace = dungeon[enemyPosY][enemyPosX + 1];
+            if (enemy.canOccupySpace(dungeonSpace)) {
+                return dungeonSpace;
             }
         }
-        System.out.println(sb.toString());
+
+        int nextPosY = enemyPosY;
+        if (enemyPosY < playerPosY && enemyPosY > 0) {
+            // move south
+            DungeonSpace dungeonSpace = dungeon[enemyPosY - 1][enemyPosX];
+            if (enemy.canOccupySpace(dungeonSpace)) {
+                return dungeonSpace;
+            }
+        } else if (enemyPosY > playerPosY && enemyPosY < dungeon.length - 1) {
+            // move north
+            DungeonSpace dungeonSpace = dungeon[enemyPosY + 1][enemyPosX];
+            if (enemy.canOccupySpace(dungeonSpace)) {
+                return dungeonSpace;
+            }
+        }
+
+        return dungeon[nextPosY][nextPosX];
     }
 
     /**
@@ -215,6 +261,10 @@ public class CharacterActionUtil {
         currentDungeonSpace.removeDungeonObject(character);
 
         List<DungeonSpace> dungeonSpaces = nextDungeonSpace.addDungeonObject(character);
+
+        if (dungeonSpaces.isEmpty()) {
+            dungeonSpaces.add(nextDungeonSpace);
+        }
         Direction direction = determineDirection(currentDungeonSpace, nextDungeonSpace);
 
         return new MovementAction(direction, dungeonSpaces);

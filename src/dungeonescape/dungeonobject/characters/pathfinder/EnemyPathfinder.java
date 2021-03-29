@@ -12,6 +12,7 @@ import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
 import dungeonescape.dungeon.space.Position;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +34,30 @@ public class EnemyPathfinder {
      * @return
      */
     public static List<DungeonSpace> findShortestPathForEnemy(DungeonSpace[][] dungeon, DungeonCharacter enemy, Player player) {
+
+        if (enemy.getDungeonSpace().getPosition().equals(player.getDungeonSpace().getPosition())
+            || enemyAndPlayerAreAdjacent(enemy, player)) {
+
+            return Arrays.asList(enemy.getDungeonSpace(), player.getDungeonSpace());
+        }
+
         DungeonSpace[][] dungeonArea = narrowDungeonArea(dungeon, enemy.getPosition(), player.getPosition());
+
         return findShortestPathUsingBFS(dungeonArea, enemy);
+    }
+
+    private static boolean enemyAndPlayerAreAdjacent(DungeonCharacter enemy, Player player) {
+
+        int enemyPosX = enemy.getDungeonSpace().getPosition().getPositionX();
+        int playerPosX = player.getDungeonSpace().getPosition().getPositionX();
+        int diffX = Math.abs(enemyPosX - playerPosX);
+
+        int enemyPosY = enemy.getDungeonSpace().getPosition().getPositionY();
+        int playerPosY = player.getDungeonSpace().getPosition().getPositionY();
+        int diffY = Math.abs(enemyPosY - playerPosY);
+
+        return (diffX == 0 && diffY == 1)
+            || (diffX == 1 && diffY == 0);
     }
 
     private static DungeonSpace[][] narrowDungeonArea(DungeonSpace[][] dungeon, Position enemyPosition, Position playerPosition) {
@@ -81,6 +104,7 @@ public class EnemyPathfinder {
     }
 
     private static List<DungeonSpace> findShortestPathUsingBFS(DungeonSpace[][] dungeonArea, DungeonCharacter enemy) {
+
         boolean[][] visited = new boolean[dungeonArea.length][dungeonArea[0].length];
         PathNode startNode = null;
         for (int row = 0; row < dungeonArea.length; row++) {
@@ -97,7 +121,7 @@ public class EnemyPathfinder {
         }
 
         if (startNode == null) {
-            throw new IllegalArgumentException("Enemy was not found within dungeonArea.");
+            return Collections.emptyList();
         }
 
         Queue<PathNode> pathQueue = new LinkedList();

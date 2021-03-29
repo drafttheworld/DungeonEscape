@@ -24,4 +24,9 @@ public class Invincibility implements PowerUp<Invincibility> {
         return new Invincibility();
     }
 
+    @Override
+    public PowerUpEnum getCorrespondingPowerUpEnum() {
+        return PowerUpEnum.INVINCIBILITY;
+    }
+
 }

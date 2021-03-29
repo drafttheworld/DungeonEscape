@@ -5,18 +5,14 @@
  */
 package dungeonescape.dungeonobject.powerups;
 
-import dungeonescape.dungeonobject.DungeonObject;
-
 /**
  *
  * @author Andrew
  */
-public interface PowerUp<T> {
+public interface PowerUpListener {
 
-    void applyPowerUp(DungeonObject dungeonObject);
+    public void notifyPowerUpAdded(PowerUpEnum powerUpEnum);
 
-    T newInstance();
-
-    PowerUpEnum getCorrespondingPowerUpEnum();
+    public void notifyPowerUpUsed(PowerUpEnum powerUpEnum);
 
 }

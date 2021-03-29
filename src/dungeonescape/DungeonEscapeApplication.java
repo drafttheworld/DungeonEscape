@@ -7,9 +7,6 @@ package dungeonescape;
 
 import dungeonescape.dungeon.DungeonConfiguration;
 import dungeonescape.dungeon.gui.DungeonEscapeGUI;
-import dungeonescape.dungeon.notifications.ExecutionErrorNotification;
-import dungeonescape.dungeon.notifications.NotificationManager;
-import dungeonescape.play.GameDifficulty;
 import dungeonescape.play.GameSession;
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,7 +27,7 @@ public class DungeonEscapeApplication {
     }
 
     public void startGameGUI() throws IOException {
-        new DungeonEscapeGUI(this).setVisible(true);
+        new DungeonEscapeGUI().setVisible(true);
     }
 
     public GameSession getGameSession(String gameSessionId) {
