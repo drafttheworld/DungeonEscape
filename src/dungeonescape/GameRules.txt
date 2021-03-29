@@ -1,4 +1,37 @@
 Dungeon Escape
 1. Game Types
-    1. Escape: Make it out of the dungeon in the shortest amount of time.
-    2. Treasure Hunter: Collect the most treasure, making it out of the dungeon before time expires. 
+    1. Evade and Escape: Make it out of the dungeon in the shortest amount of time.
+    2. Treasure Hunter: Collect the treasure, making it out of the dungeon within a limited number of turns.
+
+2. Characters
+    1. Sir Knight: This is you. You play as a captured knight who must escape the dungeon and it's creatures to win the day and find any chance of making it home.
+        Movement: 1 space per turn
+    2. Ghost: Ghosts are nasty little buggers which have the farthest detection distance of all enemies and are terrifying to encounter but fortunately cannot cause any permanent damage.
+        Movement: Ghosts have the largest freedom of movement. Typically they will be able to move several spaces while patrolling and then usually one or two spaces once they are hunting
+        Attack: Freezes the player for an extended amount time (10-20 turns)
+    3. Guard: Guards are the cursed skeletal remanent of the former dungeon staff. They have one purpose in their afterlife which is to keep their dungeon residents in their cells.
+        Movement: Guards patrol the dungeon usually a few spaces at a time however once they detect a loose captive they become much more focused and as a result actually slow down 
+            a little so that they can track their target.
+        Attack: When a guard captures you they drag you back to your cell at the center of the dungeon where you will have to start your escape all over again. The guard will respawn
+            randomly to another part of the map after capturing it's prisoner.
+    4. Dungeon Master: The Dungeon Master is the biggest, baddest enemy that you'll encounter. If caught by a Dungeon Master, the game is over so evade at all costs!
+        Movement: Dungeon Masters spawn at the center of the dungeon after a set number of turns (all spawn at the same time) and then start searching for you. They usually move
+            a few spaces at a time while patrolling and then slow down to 2 spaces per turn once they detect you. They are faster than you so if they find you, head for either 
+            the exit or the nearest teleport mine, whichever is closest.
+        Attack: Dungeon Masters show no mercy or forgiveness to prisoners who escape their cells, they will crush you...gave over.
+
+3. Mines
+    1. Freeze mines:
+    2. Teleport mines:
+
+3. Items
+    1. Coins
+    2. Power-up Boxes
+
+4. Power-Ups
+    1. Invincibility
+    2. Invisibility
+    3. Repellent
+    4. Terminator
+
+Narrative
