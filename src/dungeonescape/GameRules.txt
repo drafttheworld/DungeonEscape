@@ -1,10 +1,14 @@
 Dungeon Escape
-1. Game Types
-    1. Evade and Escape: Make it out of the dungeon in the shortest amount of time.
-    2. Treasure Hunter: Collect the treasure, making it out of the dungeon within a limited number of turns.
+1. Gameplay
+    Starting a new game: After clicking the "Start New Game" button the player should use the drop down menu to choose the dungeon size. The dungeon size will determine the size 
+        of the map along with the number of items and enemies in play. Keep in mind that larger maps will also increase the potential score that is achievable.
+    The dungeon map: The map will display the tiles of the map that have been exposed to the player based on the player's line of sight. Additional map tiles are revealed to the 
+        player as the map is explored, tiles that have been revealed remain visible to the player throughout gameplay. Enemies will only be visible to the player with the player's
+        current "line-of-sight" distance.
+    Movement: Player movement is performed using either the a(left) s(down) d(right) w(up) or arrow keys on the keyboard.
 
 2. Characters
-    1. Sir Knight: This is you. You play as a captured knight who must escape the dungeon and it's creatures to win the day and find any chance of making it home.
+    1. Knight: This is you. You play as a captured knight who must escape the dungeon and it's creatures to win the day and find any chance of making it home.
         Movement: 1 space per turn
     2. Ghost: Ghosts are nasty little buggers which have the farthest detection distance of all enemies and are terrifying to encounter but fortunately cannot cause any permanent damage.
         Movement: Ghosts have the largest freedom of movement. Typically they will be able to move several spaces while patrolling and then usually one or two spaces once they are hunting
@@ -21,17 +25,22 @@ Dungeon Escape
         Attack: Dungeon Masters show no mercy or forgiveness to prisoners who escape their cells, they will crush you...gave over.
 
 3. Mines
-    1. Freeze mines:
-    2. Teleport mines:
+    1. Freeze mines: Freeze mines freeze the player in place for random number of turns.
+    2. Teleport mines: Teleport mines teleport the user to a random location in the dungeon. These may either work for or against the player depending on the situation, 
+            if trying to escape an attacking enemy these can be a good way to get away.
 
 3. Items
-    1. Coins
-    2. Power-up Boxes
+    1. Coins: Coins are way to increase your score. The player is awarded 1 point for every coin collected and those still in inventory at the end of the game are given a 
+            multiplier. It is therefore important to keep in mind that if you are captured by a guard then all of your coins in inventory are lost.
+    2. Power-up Boxes: Power-up boxes award a random power-up to the player. Power-ups in the player's inventory may be activated as needed and last a set number of turns.
+            Once a power-up is used it is then removed from the player's inventory. Like coins, if the player is captured by a guard then all of power-ups in inventory
+            are lost.
 
 4. Power-Ups
-    1. Invincibility
-    2. Invisibility
-    3. Repellent
-    4. Terminator
-
-Narrative
+    1. Invincibility: Renders the player immune to effects of attack by enemies. Enemies which attack while you are invincible will continue to follow and attack so it is 
+            important to reach safety before the power-up is expended.
+    2. Invisibility: Prevents enemies from being able to detect the player. Enemies will continue their normal searching pattern but cannot detect or attack the player
+            while invisible.
+    3. Repellent: Causes enemies who come into detection range of the player to be repelled from the player. Enemies will not be able to get close enough to attack the player
+            while repellent is active.
+    4. Terminator: The Terminator power-up causes the player to permanently remove attacking enemies from the dungeon.
