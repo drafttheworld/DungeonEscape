@@ -32,6 +32,7 @@ public enum Image {
     PLAYER_FACING_RIGHT("characters/player_facing_right.png"),
     START_SCREEN_BACKGROUND("hero_vs_dungeon_master.png"),
     STONE_WALL("construction/stone_wall.png"),
+    STORY("story.png"),
     TELEPORT_MINE("mines/teleport_mine.png");
 
     LoadedImage loadedImage;

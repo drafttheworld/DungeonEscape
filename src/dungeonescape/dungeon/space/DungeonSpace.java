@@ -10,6 +10,7 @@ import dungeonescape.dungeonobject.NonVisibleSpace;
 import dungeonescape.dungeonobject.OpenSpace;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.characters.DungeonCharacter;
+import dungeonescape.dungeonobject.characters.Ghost;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.dungeonobject.mine.Mine;
@@ -69,7 +70,8 @@ public class DungeonSpace implements Comparable<DungeonSpace> {
         List<DungeonObject> existingDungeonObjects = new ArrayList<>(dungeonObjects);
         for (DungeonObject existingDungeonObject : existingDungeonObjects) {
             if ((existingDungeonObject instanceof TeleportObject && dungeonObject instanceof Player)
-                || (existingDungeonObject instanceof Player && dungeonObject instanceof TeleportObject)) {
+                || (existingDungeonObject instanceof Player && dungeonObject instanceof TeleportObject)
+                || (existingDungeonObject instanceof Player && dungeonObject instanceof Ghost)) {
 
                 isTeleported = true;
             }

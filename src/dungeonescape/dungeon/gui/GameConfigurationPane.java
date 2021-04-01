@@ -29,11 +29,9 @@ public class GameConfigurationPane extends JPanel {
     private final DungeonEscapeGUI applicationGUI;
 
     private JComboBox gameDifficultyComboBox;
-    private JComboBox dungeonSizeComboBox;
     private CustomDungeonConfigurationPanel customDungeonConfigurationPanel;
 
     private JScrollPane dungeonSettingsScrollPane;
-    private JLabel dungeonSizeValue;
 
     public GameConfigurationPane(DungeonEscapeGUI applicationGUI) {
         this.applicationGUI = applicationGUI;
@@ -98,6 +96,7 @@ public class GameConfigurationPane extends JPanel {
     }
 
     private JPanel generateStaticGameDifficultySettingsPanel(GameDifficulty gameDifficulty) {
+
         DungeonConfiguration dungeonConfiguration = gameDifficulty.getDungeonConfiguration();
         JLabel dungeon = new JLabel("Dungeon:");
         int dungeonWidth = dungeonConfiguration.getDungeonWidth();

@@ -11,7 +11,6 @@ import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.play.Direction;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.DungeonSpaceType;
-import dungeonescape.dungeon.space.Position;
 import dungeonescape.dungeonobject.coin.Coin;
 import dungeonescape.dungeonobject.powerups.PowerUp;
 import dungeonescape.dungeonobject.powerups.PowerUpBox;
@@ -24,7 +23,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -36,25 +34,44 @@ public class Player extends DungeonCharacter implements PowerUpListener {
     private final String playerName;
     private final int playerLineOfSightDistance;
     private final PowerUpService powerUpService;
-    private int frozenTurnsRemaining;
+    private int frozenTurnsRemaining = 0;
     private final Map<PowerUpEnum, List<PowerUp>> powerUps;
+    private final int powerUpDurationTurns;
     private PowerUp activePowerUp;
-    private int coinsCollected;
+    private int activePowerUpTurnsRemaining = 0;
+    private int powerUpsCollected = 0;
+    private int powerUpsUsed = 0;
+    private int coinsCollected = 0;
+    private int coinsInInventory = 0;
+    private int ghostAttacks = 0;
+    private int guardAttacks = 0;
+    private int freezeMinesTripped = 0;
+    private int turnsFrozen = 0;
+    private int teleportMinesTripped = 0;
+    private int turnCount = 0;
     private boolean won;
     private boolean lost;
     private boolean teleported;
 
+    //Stats:
+    //Number of coins collected
+    //Number of power-ups collected
+    //Number of ghost attacks
+    //Number of guard attacks
+    //Number of Freeze mines tripped
+    //Number of Teleport mines tripped
+    //Number of turns
+    //Total play time
+    //Score
     public Player(String playerName, int playerLineOfSightDistance, DungeonSpace[][] dungeon,
-        PowerUpService powerUpService) {
+        PowerUpService powerUpService, int powerUpDurationTurns) {
 
         this.playerName = playerName;
         this.playerLineOfSightDistance = playerLineOfSightDistance;
         this.dungeon = dungeon;
         this.powerUpService = powerUpService;
-        this.powerUpService.registerPowerUpClient(this);
-        frozenTurnsRemaining = 0;
+        this.powerUpDurationTurns = powerUpDurationTurns;
         powerUps = new EnumMap<>(PowerUpEnum.class);
-        coinsCollected = 0;
         won = false;
         lost = false;
     }
@@ -75,8 +92,9 @@ public class Player extends DungeonCharacter implements PowerUpListener {
         return new FreezeTime(frozenTurnsRemaining);
     }
 
-    public void addFrozenTurns(FreezeTime forzenTurns) {
-        frozenTurnsRemaining += forzenTurns.getTurns();
+    public void addFrozenTurns(FreezeTime frozenTurns) {
+        frozenTurnsRemaining += frozenTurns.getTurns();
+        turnsFrozen += frozenTurns.getTurns();
     }
 
     public void decrementFrozenTurnsRemaining(long turns) {
@@ -99,16 +117,22 @@ public class Player extends DungeonCharacter implements PowerUpListener {
             } else {
                 this.coinsCollected += coinsCollected;
             }
+
+            if (Integer.MAX_VALUE - coinsCollected <= this.coinsInInventory) {
+                this.coinsInInventory = Integer.MAX_VALUE;
+            } else {
+                this.coinsInInventory += coinsCollected;
+            }
         }
     }
 
-    public void removeCoinsCollected(int coins) {
+    public void removeCoinsHeld(int coins) {
 
         if (coins >= 0) {
-            if (this.coinsCollected - coins < 0) {
-                this.coinsCollected = 0;
+            if (this.coinsInInventory - coins < 0) {
+                this.coinsInInventory = 0;
             } else {
-                this.coinsCollected -= coins;
+                this.coinsInInventory -= coins;
             }
         }
     }
@@ -120,6 +144,7 @@ public class Player extends DungeonCharacter implements PowerUpListener {
                 = powerUps.computeIfAbsent(powerUp.getCorrespondingPowerUpEnum(), k -> new ArrayList<>());
             powerUpList.add(powerUp);
             powerUpService.addPowerUp(powerUp.getCorrespondingPowerUpEnum());
+            powerUpsCollected++;
         }
     }
 
@@ -145,6 +170,68 @@ public class Player extends DungeonCharacter implements PowerUpListener {
 
     public void setTeleported(boolean teleported) {
         this.teleported = teleported;
+    }
+
+    public int getActivePowerUpTurnsRemaining() {
+        return activePowerUpTurnsRemaining;
+    }
+
+    public int getPowerUpsInInventory() {
+        return powerUps.values().stream()
+            .mapToInt(powerUpList -> powerUpList.size())
+            .sum();
+    }
+
+    public int getPowerUpsCollected() {
+        return powerUpsCollected;
+    }
+
+    public int getPowerUpsUsed() {
+        return powerUpsUsed;
+    }
+
+    public int getTurnsFrozen() {
+        return turnsFrozen;
+    }
+
+    public int getTeleportMinesTripped() {
+        return teleportMinesTripped;
+    }
+
+    public void incrementTeleportMinesTripped() {
+        teleportMinesTripped++;
+    }
+
+    public int getTurnCount() {
+        return turnCount;
+    }
+
+    public int getGhostAttacks() {
+        return ghostAttacks;
+    }
+
+    public void incrementGhostAttacks() {
+        ghostAttacks++;
+    }
+
+    public int getGuardAttacks() {
+        return guardAttacks;
+    }
+
+    public void incrementGuardAttacks() {
+        guardAttacks++;
+    }
+
+    public int getFreezeMinesTripped() {
+        return freezeMinesTripped;
+    }
+
+    public void incrementFreezeMinesTripped() {
+        freezeMinesTripped++;
+    }
+
+    public int getCoinsInInventory() {
+        return coinsInInventory;
     }
 
     @Override
@@ -185,6 +272,14 @@ public class Player extends DungeonCharacter implements PowerUpListener {
             dungeonSpaces.addAll(revealCurrentMapArea());
         } else {
             dungeonSpaces.addAll(revealMapForMove(direction));
+        }
+
+        if (activePowerUpTurnsRemaining > 0) {
+            activePowerUpTurnsRemaining--;
+            if (activePowerUpTurnsRemaining == 0) {
+                powerUpService.powerUpExpended(activePowerUp.getCorrespondingPowerUpEnum());
+                activePowerUp = null;
+            }
         }
 
         return dungeonSpaces;
@@ -397,9 +492,16 @@ public class Player extends DungeonCharacter implements PowerUpListener {
                 = powerUps.computeIfAbsent(powerUpEnum, k -> new ArrayList<>());
             if (!powerUpList.isEmpty()) {
                 activePowerUp = powerUpList.remove(powerUpList.size() - 1);
+                activePowerUpTurnsRemaining = powerUpDurationTurns;
+                powerUpsUsed++;
             } else {
                 System.out.println("There are no available " + powerUpEnum + " power-ups.");
             }
         }
+    }
+
+    @Override
+    public void notifyPowerUpExpended(PowerUpEnum powerUpEnum) {
+        // do nothing, not used
     }
 }

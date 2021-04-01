@@ -30,4 +30,8 @@ public class PowerUpService {
         powerUpListeners.forEach(powerUpListener -> powerUpListener.notifyPowerUpAdded(powerUpEnum));
     }
 
+    public void powerUpExpended(PowerUpEnum powerUpEnum) {
+        powerUpListeners.forEach(powerUpListener -> powerUpListener.notifyPowerUpExpended(powerUpEnum));
+    }
+
 }

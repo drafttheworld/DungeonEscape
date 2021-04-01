@@ -8,21 +8,18 @@ package dungeonescape.dungeonobject.characters;
 import dungeonescape.dungeon.notifications.ActionNotAllowedNotification;
 import dungeonescape.dungeon.notifications.InteractionNotification;
 import dungeonescape.dungeon.notifications.NotificationManager;
+import dungeonescape.dungeon.space.DungeonSpace;
+import dungeonescape.dungeon.space.DungeonSpaceType;
 import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.construction.Construction;
-import dungeonescape.dungeon.space.DungeonSpace;
-import dungeonescape.dungeon.space.DungeonSpaceType;
-import dungeonescape.dungeon.space.Position;
 import dungeonescape.dungeonobject.powerups.PowerUp;
 import dungeonescape.dungeonobject.powerups.PowerUpEnum;
-import dungeonescape.play.Direction;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -36,11 +33,13 @@ public class Guard extends NonPlayerCharacter implements TeleportObject {
 
     private final DungeonSpace jailCellSpace;
     private final DungeonSpace[][] dungeon;
+    private final Player player;
     private int detectionDistance;
 
     public Guard(DungeonSpace jailCellSpace, DungeonSpace[][] dungeon, Player player) {
         this.jailCellSpace = jailCellSpace;
         this.dungeon = dungeon;
+        this.player = player;
     }
 
     @Override
@@ -90,7 +89,6 @@ public class Guard extends NonPlayerCharacter implements TeleportObject {
             NotificationManager.notify(
                 new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master."));
         } else if (dungeonObject instanceof Player) {
-            Player player = (Player) dungeonObject;
             PowerUp activePowerUp = player.getActivePowerUp();
             boolean isAttackable = activePowerUp == null
                 || (activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVINCIBILITY
@@ -99,6 +97,7 @@ public class Guard extends NonPlayerCharacter implements TeleportObject {
             if (isAttackable) {
                 NotificationManager.notify(
                     new InteractionNotification("A guard has caught you and moved you back to the center of the map."));
+                player.incrementGuardAttacks();
                 List<DungeonSpace> dungeonSpaces = teleport(dungeonObject);
                 DungeonSpace nextDungeonSpace = teleportGuard();
                 setPreviousDungeonSpace(getDungeonSpace());
@@ -109,7 +108,6 @@ public class Guard extends NonPlayerCharacter implements TeleportObject {
             } else if (activePowerUp != null
                 && activePowerUp.getCorrespondingPowerUpEnum() == PowerUpEnum.TERMINATOR) {
                 setActive(false);
-                getDungeonSpace().removeDungeonObject(this);
             }
         }
 

@@ -10,16 +10,9 @@ package dungeonescape.dungeon.notifications;
  * @author Andrew
  */
 public class InteractionNotification extends GameNotification {
-    
-    private static final String NOTIFICATION = "Character interaction: ";
-    
+
     public InteractionNotification(String message) {
         super(message);
     }
-    
-    @Override
-    public String getNotificationMessage() {
-        return NOTIFICATION + super.getNotificationMessage();
-    }
-    
+
 }

@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -187,8 +186,6 @@ public class CharacterActionUtil {
             int nextDungeonSpaceIndex = path.size() <= numberOfMoves ? path.size() - 1 : numberOfMoves;
             return assignCharacterMovement(enemy, path.get(nextDungeonSpaceIndex));
         } else {
-            System.out.println("Unable to find path to player: " + player.getDungeonSpace().getPosition()
-                + " for enemy: " + enemy.getDungeonSpace().getPosition());
             return patrol(dungeon, enemy);
         }
     }
@@ -265,6 +262,7 @@ public class CharacterActionUtil {
         if (dungeonSpaces.isEmpty()) {
             dungeonSpaces.add(nextDungeonSpace);
         }
+
         Direction direction = determineDirection(currentDungeonSpace, nextDungeonSpace);
 
         return new MovementAction(direction, dungeonSpaces);

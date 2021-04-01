@@ -9,7 +9,6 @@ import dungeonescape.dungeonobject.DungeonObject;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.play.GameSession;
 import dungeonescape.dungeon.space.DungeonSpace;
-import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import java.awt.Rectangle;
 import java.util.Enumeration;
 import java.util.Set;
@@ -84,8 +83,6 @@ public class DungeonTable extends JTable {
     }
 
     protected void updateMap(Set<DungeonSpace> dungeonSpacesToUpdate) {
-
-        System.out.println("Updating " + dungeonSpacesToUpdate.size() + " dungeon table spaces.");
 
         dungeonSpacesToUpdate.parallelStream().forEach(dungeonSpace -> {
 

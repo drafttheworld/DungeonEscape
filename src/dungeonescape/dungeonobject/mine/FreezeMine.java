@@ -43,7 +43,9 @@ public class FreezeMine extends Mine {
     @Override
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
         if (dungeonObject instanceof Player) {
-            ((Player) dungeonObject).addFrozenTurns(freezeTime);
+            Player player = (Player) dungeonObject;
+            player.addFrozenTurns(freezeTime);
+            player.incrementFreezeMinesTripped();
             setActive(false);
         }
         return Collections.emptyList();

@@ -20,10 +20,10 @@ import dungeonescape.play.GameSession;
 import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeonobject.powerups.PowerUpEnum;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.TextArea;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
@@ -40,6 +40,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -47,6 +48,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -71,15 +73,15 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private boolean gameOver = true;
 
     private JPanel applicationPanel;
-    private JLabel loadingLabel;
-    private JButton startButton;
+    private JButton startNewGameButton;
     private JButton recenterButton;
     private List<DungeonTable> dungeonTables;
     private DungeonTable activeDungeonTable;
-    private JComponent gameConfigurationPane;
+    private JComponent gameConfigurationPanel;
+    private JPanel introMenuPanel;
     private JPanel informationPanel;
-    private TextArea playerInformationTextArea;
-    private TextArea playerNotificationsTextArea;
+    private JTextArea playerInformationTextArea;
+    private JTextArea playerNotificationsTextArea;
 
     private GameSession gameSession;
     private Future backgroundAudioTrack;
@@ -91,96 +93,53 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     private void initComponents() throws IOException {
 
         applicationPanel = new JPanel();
-        loadingLabel = new JLabel();
-        startButton = new JButton();
+        applicationPanel.setLayout(new BorderLayout());
+        applicationPanel.setPreferredSize(new Dimension(STARTING_WIDTH, STARTING_HEIGHT));
+
         recenterButton = new JButton();
         dungeonTables = new ArrayList<>();
 
+        addMovementKeyListener();
+
+        addResizeListener();
+
+        gameConfigurationPanel = new ImagePanel(Image.START_SCREEN_BACKGROUND.getBufferedImage());
+        applicationPanel.add(gameConfigurationPanel, BorderLayout.CENTER);
+
+        introMenuPanel = buildIntroMenuPanel(applicationPanel);
+        applicationPanel.add(introMenuPanel, BorderLayout.EAST);
+
+        this.setLayout(new BorderLayout());
+        this.add(applicationPanel);
+        this.setTitle("Dungeon Escape");
+        centerApplication();
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        pack();
 
-        this.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                //do nothing
-            }
+        NotificationManager.registerNotificationListener(this);
+    }
 
-            @Override
-            public void keyPressed(KeyEvent e) {
+    private JButton createStartNewGameButton() {
 
-                if (gameOver) {
-                    return;
-                }
-
-                switch (e.getKeyCode()) {
-                    case NORTH_KEY_CODE:
-                        movePlayer(Direction.NORTH);
-                        updateStats();
-                        break;
-                    case SOUTH_KEY_CODE:
-                        movePlayer(Direction.SOUTH);
-                        updateStats();
-                        break;
-                    case EAST_KEY_CODE:
-                        movePlayer(Direction.EAST);
-                        updateStats();
-                        break;
-                    case WEST_KEY_CODE:
-                        movePlayer(Direction.WEST);
-                        updateStats();
-                        break;
-                    default:
-                        //do nothing
-                        break;
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                // do nothing
-            }
-
-        });
-
-        this.addComponentListener(new ComponentListener() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                applicationPanel.revalidate();
-                applicationPanel.repaint();
-            }
-
-            @Override
-            public void componentMoved(ComponentEvent e) {
-                //do nothing
-            }
-
-            @Override
-            public void componentShown(ComponentEvent e) {
-                //do nothing
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-                //do nothing
-            }
-
-        });
-
-        startButton.setText("Start New Game");
-        startButton.addActionListener((ActionEvent e) -> {
+        JButton button = new JButton();
+        button.setText("Start New Game");
+        button.addActionListener((ActionEvent e) -> {
             if (backgroundAudioTrack != null) {
                 backgroundAudioTrack.cancel(true);
             }
-            applicationPanel.remove(gameConfigurationPane);
+            applicationPanel.remove(gameConfigurationPanel);
+            applicationPanel.remove(introMenuPanel);
             applicationPanel.remove(recenterButton);
-            applicationPanel.remove(startButton);
+            applicationPanel.remove(button);
             if (informationPanel != null) {
                 applicationPanel.remove(informationPanel);
             }
-            gameConfigurationPane = new GameConfigurationPane(this);
-            applicationPanel.add(gameConfigurationPane, BorderLayout.CENTER);
+            informationPanel = null;
+            gameConfigurationPanel = new GameConfigurationPane(this);
+            applicationPanel.add(gameConfigurationPanel, BorderLayout.CENTER);
 
             if (playerInformationTextArea != null) {
-                playerInformationTextArea.setText(gameSession.getPlayerStats());
+                playerInformationTextArea.setText(gameSession.getPlayerStats(false));
             }
 
             if (playerNotificationsTextArea != null) {
@@ -190,23 +149,11 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             refresh();
         });
 
-        gameConfigurationPane = new ImagePanel(Image.START_SCREEN_BACKGROUND.getBufferedImage());
-
-        applicationPanel.setLayout(new BorderLayout());
-        applicationPanel.setPreferredSize(new Dimension(STARTING_WIDTH, STARTING_HEIGHT));
-        applicationPanel.add(startButton, BorderLayout.NORTH);
-        applicationPanel.add(gameConfigurationPane, BorderLayout.CENTER);
-
-        this.setLayout(new BorderLayout());
-        this.add(applicationPanel);
-        this.setTitle("Dungeon Escape");
-        centerApplication();
-        pack();
-
-        NotificationManager.registerNotificationListener(this);
+        return button;
     }
 
     private void centerApplication() {
+
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((dimension.getWidth() - STARTING_WIDTH) / 2);
         int y = (int) ((dimension.getHeight() - STARTING_HEIGHT) / 2);
@@ -214,10 +161,8 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     }
 
     protected void startNewGame(DungeonConfiguration dungeonConfiguration) {
-        applicationPanel.remove(gameConfigurationPane);
-        loadingLabel.setText("Loading map...");
-        applicationPanel.add(loadingLabel, BorderLayout.CENTER);
-        loadingLabel.setVisible(true);
+
+        applicationPanel.remove(gameConfigurationPanel);
         SwingUtilities.invokeLater(() -> {
             //Create the game session
             dungeonConfiguration.setPlayerName(PLAYER_NAME);
@@ -226,12 +171,11 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             dungeonTables.add(activeDungeonTable);
 
             //Once ready remove the loading label and add the map
-            gameConfigurationPane = buildDungeonScrollPane();
-            applicationPanel.remove(loadingLabel);
-            applicationPanel.add(startButton, BorderLayout.NORTH);
-            applicationPanel.add(gameConfigurationPane, BorderLayout.CENTER);
+            gameConfigurationPanel = buildDungeonScrollPane();
+            applicationPanel.add(startNewGameButton, BorderLayout.NORTH);
+            applicationPanel.add(gameConfigurationPanel, BorderLayout.CENTER);
             if (informationPanel == null) {
-                informationPanel = buildInformationPane();
+                informationPanel = buildPlayerInformationPane();
             } else {
                 updateStats();
             }
@@ -242,7 +186,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
             recenterButton.setVisible(true);
             recenterButton.setText("Recenter Map");
             recenterButton.addActionListener((ActionEvent ev) -> {
-                gameConfigurationPane.requestFocus();
+                gameConfigurationPanel.requestFocus();
                 activeDungeonTable.centerOnPlayer();
                 refresh();
             });
@@ -285,13 +229,19 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
     }
 
     private void displayNotificationPane(BufferedImage backgroundImage) throws IOException {
-        applicationPanel.remove(gameConfigurationPane);
+
+        applicationPanel.remove(gameConfigurationPanel);
         applicationPanel.remove(informationPanel);
-        gameConfigurationPane = new ImagePanel(backgroundImage);
+        gameConfigurationPanel = new ImagePanel(backgroundImage);
         applicationPanel.remove(recenterButton);
-        applicationPanel.add(startButton, BorderLayout.NORTH);
-        applicationPanel.add(gameConfigurationPane, BorderLayout.CENTER);
+        applicationPanel.add(startNewGameButton, BorderLayout.NORTH);
+        applicationPanel.add(gameConfigurationPanel, BorderLayout.CENTER);
         refresh();
+    }
+
+    private void refresh(JComponent component) {
+        component.revalidate();
+        component.repaint();
     }
 
     private void refresh() {
@@ -300,7 +250,67 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         this.requestFocus();
     }
 
-    private JPanel buildInformationPane() {
+    private JPanel buildIntroMenuPanel(JPanel parent) {
+
+        JPanel panel = new JPanel();
+
+        int panelWidth = 150;
+        panel.setPreferredSize(new Dimension(panelWidth, STARTING_HEIGHT));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+
+        JButton storyButton = new JButton("The Story");
+        storyButton.setMinimumSize(new Dimension(panelWidth, 30));
+        storyButton.setMaximumSize(new Dimension(panelWidth, 30));
+        storyButton.setPreferredSize(new Dimension(panelWidth, 30));
+
+        storyButton.addActionListener((ActionEvent e) -> {
+            ImagePanel storyImage = new ImagePanel(Image.STORY.getBufferedImage());
+            storyImage.addComponentListener(new ComponentListener() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    storyImage.revalidate();
+                    storyImage.repaint();
+                }
+
+                @Override
+                public void componentMoved(ComponentEvent e) {
+                    // not used
+                }
+
+                @Override
+                public void componentShown(ComponentEvent e) {
+                    // not used
+                }
+
+                @Override
+                public void componentHidden(ComponentEvent e) {
+                    // not used
+                }
+            });
+            parent.remove(gameConfigurationPanel);
+            parent.add(storyImage, BorderLayout.CENTER);
+            gameConfigurationPanel = storyImage;
+            refresh(parent);
+        });
+        panel.add(storyButton);
+
+        JButton instructionsButton = new JButton("Instructions");
+        instructionsButton.setMinimumSize(new Dimension(panelWidth, 30));
+        instructionsButton.setMaximumSize(new Dimension(panelWidth, 30));
+        instructionsButton.setPreferredSize(new Dimension(panelWidth, 30));
+        panel.add(instructionsButton);
+
+        startNewGameButton = createStartNewGameButton();
+        startNewGameButton.setMinimumSize(new Dimension(panelWidth, 30));
+        startNewGameButton.setMaximumSize(new Dimension(panelWidth, 30));
+        startNewGameButton.setPreferredSize(new Dimension(panelWidth, 30));
+        panel.add(startNewGameButton);
+
+        return panel;
+    }
+
+    private JPanel buildPlayerInformationPane() {
+
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.PAGE_AXIS));
         infoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -310,28 +320,32 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         playerInformationLabel.setFont(new Font(Font.SERIF, Font.BOLD, 12));
 
         JPanel playerInformation = new JPanel();
-        playerInformation.setPreferredSize(new Dimension(300, 100));
-        playerInformation.setMaximumSize(new Dimension(300, 100));
-        playerInformationTextArea = new TextArea(gameSession.getPlayerStats());
-        playerInformationTextArea.setPreferredSize(new Dimension(300, 100));
-        playerInformationTextArea.setMaximumSize(new Dimension(300, 100));
+        playerInformation.setPreferredSize(new Dimension(300, 300));
+        playerInformation.setMaximumSize(new Dimension(300, 300));
+        playerInformationTextArea = new JTextArea(gameSession.getPlayerStats(false));
+        playerInformationTextArea.setPreferredSize(new Dimension(300, 200));
+        playerInformationTextArea.setMaximumSize(new Dimension(300, 200));
         playerInformationTextArea.setFocusable(false);
         playerInformationTextArea.setEditable(false);
+        playerInformationTextArea.setBorder(BorderFactory.createLineBorder(Color.black));
 
         playerInformation.add(playerInformationLabel);
         playerInformation.add(playerInformationTextArea);
 
         JPanel playerNotifications = new JPanel();
-        playerNotifications.setPreferredSize(new Dimension(300, 100));
-        playerNotifications.setMaximumSize(new Dimension(300, 100));
+        playerNotifications.setPreferredSize(new Dimension(300, 75));
+        playerNotifications.setMaximumSize(new Dimension(300, 75));
 
         JLabel playerNotificationsLabel = new JLabel("Player Notifications");
         playerNotificationsLabel.setFont(new Font(Font.SERIF, Font.BOLD, 12));
 
-        playerNotificationsTextArea = new TextArea();
-//        playerNotificationsTextArea.setMaximumSize(new Dimension(300, 100));
+        playerNotificationsTextArea = new JTextArea();
+        playerNotificationsTextArea.setPreferredSize(new Dimension(300, 100));
+        playerNotificationsTextArea.setMaximumSize(new Dimension(300, 100));
         playerNotificationsTextArea.setFocusable(false);
         playerNotificationsTextArea.setEditable(false);
+        playerNotificationsTextArea.setLineWrap(true);
+        playerNotificationsTextArea.setBorder(BorderFactory.createLineBorder(Color.black));
 
         playerNotifications.add(playerNotificationsLabel);
         playerNotifications.add(playerNotificationsTextArea);
@@ -426,11 +440,89 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         return dungeonScrollPane;
     }
 
-    private void updateStats() {
-        String playerStats = gameSession.getPlayerStats();
+    protected void updateStats() {
+
+        String playerStats = gameSession.getPlayerStats(false);
         playerInformationTextArea.setText(playerStats);
         playerInformationTextArea.revalidate();
         playerInformationTextArea.repaint();
+    }
+
+    private void addMovementKeyListener() {
+
+        this.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                //do nothing
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+                if (gameOver) {
+                    return;
+                }
+
+                if (playerNotificationsTextArea != null) {
+                    playerNotificationsTextArea.setText("");
+                }
+
+                switch (e.getKeyCode()) {
+                    case NORTH_KEY_CODE:
+                        movePlayer(Direction.NORTH);
+                        updateStats();
+                        break;
+                    case SOUTH_KEY_CODE:
+                        movePlayer(Direction.SOUTH);
+                        updateStats();
+                        break;
+                    case EAST_KEY_CODE:
+                        movePlayer(Direction.EAST);
+                        updateStats();
+                        break;
+                    case WEST_KEY_CODE:
+                        movePlayer(Direction.WEST);
+                        updateStats();
+                        break;
+                    default:
+                        //do nothing
+                        break;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // do nothing
+            }
+
+        });
+    }
+
+    private void addResizeListener() {
+
+        this.addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                applicationPanel.revalidate();
+                applicationPanel.repaint();
+            }
+
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                //do nothing
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                //do nothing
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                //do nothing
+            }
+
+        });
     }
 
 }

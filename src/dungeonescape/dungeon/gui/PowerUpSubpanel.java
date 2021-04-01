@@ -13,7 +13,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -25,12 +24,12 @@ public class PowerUpSubpanel extends JPanel implements PowerUpListener {
 
     private final PowerUpEnum powerUpEnum;
     private final PowerUpService powerUpService;
-    private final JFrame dungeonEscapeGUI;
+    private final DungeonEscapeGUI dungeonEscapeGUI;
     private int inventory;
     private JLabel label;
     private JButton button;
 
-    public PowerUpSubpanel(PowerUpEnum powerUpEnum, PowerUpService powerUpService, JFrame dungeonEscapeGUI) {
+    public PowerUpSubpanel(PowerUpEnum powerUpEnum, PowerUpService powerUpService, DungeonEscapeGUI dungeonEscapeGUI) {
         this.powerUpEnum = powerUpEnum;
         this.powerUpService = powerUpService;
         this.dungeonEscapeGUI = dungeonEscapeGUI;
@@ -54,6 +53,7 @@ public class PowerUpSubpanel extends JPanel implements PowerUpListener {
         button.addActionListener((ActionEvent e) -> {
             powerUpService.usePowerUp(powerUpEnum);
             decrementInventory(1);
+            dungeonEscapeGUI.updateStats();
             dungeonEscapeGUI.requestFocus();
         });
         add(button);
@@ -72,7 +72,13 @@ public class PowerUpSubpanel extends JPanel implements PowerUpListener {
     }
 
     public void decrementInventory(int amount) {
-        inventory -= amount;
+
+        if (inventory - amount <= 0) {
+            inventory = 0;
+        } else {
+            inventory -= amount;
+        }
+
         label.setText(buildLabelText());
         if (inventory <= 0) {
             button.setEnabled(false);
@@ -104,6 +110,21 @@ public class PowerUpSubpanel extends JPanel implements PowerUpListener {
 
     @Override
     public void notifyPowerUpUsed(PowerUpEnum powerUpEnum) {
-        // do nothing, not used.
+        if (powerUpEnum == this.powerUpEnum) {
+            button.setText("Active");
+        }
+        button.setEnabled(false);
+    }
+
+    @Override
+    public void notifyPowerUpExpended(PowerUpEnum powerUpEnum) {
+
+        if (powerUpEnum == this.powerUpEnum) {
+            button.setText("Use");
+        }
+
+        if (inventory > 0) {
+            button.setEnabled(true);
+        }
     }
 }

@@ -32,11 +32,13 @@ public class Ghost extends NonPlayerCharacter {
 
     private final FreezeTime freezeTime;
     private final DungeonSpace[][] dungeon;
+    private final Player player;
     private int detectionDistance;
 
     public Ghost(FreezeTime freezeTime, DungeonSpace[][] dungeon, Player player) {
         this.freezeTime = freezeTime;
         this.dungeon = dungeon;
+        this.player = player;
     }
 
     public FreezeTime getFreezeTime() {
@@ -82,7 +84,6 @@ public class Ghost extends NonPlayerCharacter {
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
         if (isActive() && dungeonObject instanceof Player) {
-            Player player = (Player) dungeonObject;
             PowerUp activePowerUp = player.getActivePowerUp();
             boolean isAttackable = activePowerUp == null
                 || (activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVINCIBILITY
@@ -93,14 +94,17 @@ public class Ghost extends NonPlayerCharacter {
                 NotificationManager.notify(
                     new InteractionNotification("A ghost has attacked you and frozen you in fear for "
                         + freezeTime.getTurns() + " turns."));
-                // TODO teleport the ghost elsewhere in the dungeon
+                player.incrementGhostAttacks();
                 int nextPosX = ThreadLocalRandom.current().nextInt(dungeon.length);
                 int nextPosY = ThreadLocalRandom.current().nextInt(dungeon.length);
                 DungeonSpace nextDungeonSpace = dungeon[nextPosY][nextPosX];
-                setPreviousDungeonSpace(getDungeonSpace());
-                getDungeonSpace().removeDungeonObject(this);
+
+                DungeonSpace previousDungeonSpace = getDungeonSpace();
+                setPreviousDungeonSpace(previousDungeonSpace);
+                previousDungeonSpace.removeDungeonObject(this);
                 nextDungeonSpace.addDungeonObject(this);
                 setDungeonSpace(nextDungeonSpace);
+
                 return Arrays.asList(getPreviousDungeonSpace(), nextDungeonSpace);
             } else if (activePowerUp != null
                 && activePowerUp.getCorrespondingPowerUpEnum() == PowerUpEnum.TERMINATOR) {

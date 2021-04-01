@@ -23,6 +23,7 @@ import dungeonescape.dungeon.space.DungeonSpace;
 import dungeonescape.dungeon.space.Position;
 import dungeonescape.dungeonobject.characters.NonPlayerCharacter;
 import dungeonescape.dungeonobject.powerups.PowerUpService;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -57,6 +58,7 @@ public class Dungeon {
     private Player player;
     private DungeonSpace[][] dungeon;
     private int numberOfOpenDungeonSpaces;
+    private Instant playStartTime;
 
     public Dungeon(DungeonConfiguration dungeonConfiguration, PowerUpService powerUpService) {
         this.dungeonConfiguration = dungeonConfiguration;
@@ -95,9 +97,11 @@ public class Dungeon {
         // Create and place the player at the center of the dungeon
         dungeon[centerX][centerY].clearDungeonObjects();
         String playerName = dungeonConfiguration.getPlayerName();
-        player = new Player(playerName, dungeonConfiguration.getPlayerVisibility(), dungeon, powerUpService);
+        player = new Player(playerName, dungeonConfiguration.getPlayerVisibility(), dungeon, powerUpService,
+            dungeonConfiguration.getPowerUpDurationTurns());
         dungeon[centerX][centerY].addDungeonObject(player);
         player.revealCurrentMapArea();
+        powerUpService.registerPowerUpClient(player);
 
         numberOfOpenDungeonSpaces = DungeonConstructionUtil.getOpenSpaces(dungeon).size();
         System.out.println("Number of open dungeon spaces: " + numberOfOpenDungeonSpaces);
@@ -165,6 +169,11 @@ public class Dungeon {
     }
 
     public Set<DungeonSpace> movePlayer(Direction direction) {
+
+        if (playStartTime == null) {
+            playStartTime = Instant.now();
+        }
+
         //check to see if the player has been caught by a dungeon master
         if (player.hasWon() || player.hasLost()) {
             String gameResult = player.hasWon() ? "You Won!" : "You lost.";
@@ -209,6 +218,7 @@ public class Dungeon {
     }
 
     private Set<DungeonSpace> moveNonPlayerCharacters() {
+
         List<Future<List<DungeonSpace>>> futures = new ArrayList<>();
         for (DungeonCharacter dungeonCharacter : nonPlayerCharacters) {
             try {
@@ -256,6 +266,10 @@ public class Dungeon {
 
     public DungeonSpace[][] getDungeon() {
         return dungeon;
+    }
+
+    public int getNumberOfOpenSpaces() {
+        return numberOfOpenDungeonSpaces;
     }
 
     public Player getPlayer() {

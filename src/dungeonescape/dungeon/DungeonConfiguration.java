@@ -57,6 +57,7 @@ public class DungeonConfiguration {
     private int invisibilityProbability;
     private int repellentProbability;
     private int terminatorProbability;
+    private int powerUpDurationTurns;
 
     //Coin settings
     private Integer coinCoveragePercentOfOpenSpaces;//null to disable, 0-100 to populate a percent of open spaces.
@@ -504,6 +505,19 @@ public class DungeonConfiguration {
 
     public DungeonConfiguration terminatorProbability(int terminatorProbability) {
         setTerminatorProbability(terminatorProbability);
+        return this;
+    }
+
+    public int getPowerUpDurationTurns() {
+        return powerUpDurationTurns;
+    }
+
+    public void setPowerUpDurationTurns(int powerUpDurationTurns) {
+        this.powerUpDurationTurns = powerUpDurationTurns;
+    }
+
+    public DungeonConfiguration powerUpDurationTurns(int powerUpDurationTurns) {
+        setPowerUpDurationTurns(powerUpDurationTurns);
         return this;
     }
 

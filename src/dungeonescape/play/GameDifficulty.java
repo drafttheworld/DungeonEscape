@@ -67,6 +67,7 @@ public enum GameDifficulty {
             .invisibilityProbability(1)
             .repellentProbability(1)
             .terminatorProbability(1)
+            .powerUpDurationTurns(10)
             .coinCoveragePercentOfOpenSpaces(0);
     }
 
@@ -107,7 +108,8 @@ public enum GameDifficulty {
             .invisibilityProbability(1)
             .repellentProbability(1)
             .terminatorProbability(1)
-            .coinCoveragePercentOfOpenSpaces(15);
+            .powerUpDurationTurns(10)
+            .coinCoveragePercentOfOpenSpaces(10);
     }
 
     /**
@@ -147,6 +149,7 @@ public enum GameDifficulty {
             .invisibilityProbability(1)
             .repellentProbability(1)
             .terminatorProbability(1)
+            .powerUpDurationTurns(10)
             .coinCoveragePercentOfOpenSpaces(5);
     }
 
@@ -187,6 +190,7 @@ public enum GameDifficulty {
             .invisibilityProbability(1)
             .repellentProbability(1)
             .terminatorProbability(1)
-            .coinCoveragePercentOfOpenSpaces(15);
+            .powerUpDurationTurns(10)
+            .coinCoveragePercentOfOpenSpaces(1);
     }
 }

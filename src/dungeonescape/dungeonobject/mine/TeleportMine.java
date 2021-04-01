@@ -49,6 +49,7 @@ public class TeleportMine extends Mine implements TeleportObject {
             NotificationManager.notify(
                 new InteractionNotification(
                     "You stepped on a teleport mine and have been transported to another part of the dungeon."));
+            ((Player) dungeonObject).incrementTeleportMinesTripped();
             return teleport(dungeonObject);
         }
 
@@ -62,10 +63,10 @@ public class TeleportMine extends Mine implements TeleportObject {
 
     @Override
     public List<DungeonSpace> teleport(DungeonObject dungeonObject) {
-        
+
         Player player = (Player) dungeonObject;
         List<DungeonSpace> dungeonSpaces = new ArrayList<>();
-        
+
         //move the player to the next location
         DungeonSpace currentPlayerDungeonSpace = player.getDungeonSpace();
         player.setPreviousDungeonSpace(currentPlayerDungeonSpace);
@@ -73,7 +74,7 @@ public class TeleportMine extends Mine implements TeleportObject {
         teleportSpace.addDungeonObject(player);
         dungeonSpaces.add(teleportSpace);
         player.setTeleported(true);
-        
+
         return dungeonSpaces;
     }
 
