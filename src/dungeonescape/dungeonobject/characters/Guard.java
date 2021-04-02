@@ -33,13 +33,12 @@ public class Guard extends NonPlayerCharacter implements TeleportObject {
 
     private final DungeonSpace jailCellSpace;
     private final DungeonSpace[][] dungeon;
-    private final Player player;
     private int detectionDistance;
 
     public Guard(DungeonSpace jailCellSpace, DungeonSpace[][] dungeon, Player player) {
+        super(player);
         this.jailCellSpace = jailCellSpace;
         this.dungeon = dungeon;
-        this.player = player;
     }
 
     @Override
@@ -89,6 +88,7 @@ public class Guard extends NonPlayerCharacter implements TeleportObject {
             NotificationManager.notify(
                 new ActionNotAllowedNotification("Guards cannot occupy the same space as a dungeon master."));
         } else if (dungeonObject instanceof Player) {
+            Player player = (Player) dungeonObject;
             PowerUp activePowerUp = player.getActivePowerUp();
             boolean isAttackable = activePowerUp == null
                 || (activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVINCIBILITY
@@ -98,6 +98,8 @@ public class Guard extends NonPlayerCharacter implements TeleportObject {
                 NotificationManager.notify(
                     new InteractionNotification("A guard has caught you and moved you back to the center of the map."));
                 player.incrementGuardAttacks();
+                player.clearCoinsInInventory();
+                player.clearPowerUpInventory();
                 List<DungeonSpace> dungeonSpaces = teleport(dungeonObject);
                 DungeonSpace nextDungeonSpace = teleportGuard();
                 setPreviousDungeonSpace(getDungeonSpace());
@@ -219,35 +221,28 @@ public class Guard extends NonPlayerCharacter implements TeleportObject {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 67 * hash + Objects.hashCode(this.jailCellSpace);
-        hash = 67 * hash + this.detectionDistance;
+        int hash = 7;
+        hash = 37 * hash + getDungeonSpace().getPosition().hashCode();
+        hash = 37 * hash + this.detectionDistance;
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
+
         if (this == obj) {
             return true;
-        }
-        if (obj == null) {
+        } else if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
+
         final Guard other = (Guard) obj;
-        if (this.detectionDistance != other.detectionDistance) {
-            return false;
-        }
-        if (!Objects.equals(this.jailCellSpace, other.jailCellSpace)) {
-            return false;
-        }
-        return true;
+        return this.detectionDistance == other.detectionDistance
+            && this.getDungeonSpace().getPosition().equals(other.getDungeonSpace().getPosition());
     }
 
     @Override
     public String toString() {
-        return "Guard{" + "jailCellSpace=" + jailCellSpace + ", detectionDistance=" + detectionDistance + '}';
+        return "Guard{" + "detectionDistance=" + detectionDistance + '}';
     }
 }

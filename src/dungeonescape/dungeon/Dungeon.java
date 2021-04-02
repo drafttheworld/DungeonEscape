@@ -184,6 +184,7 @@ public class Dungeon {
 
         Set<DungeonSpace> dungeonSpacesToUpdate = new HashSet<>(nonPlayerCharacters.size());
 
+        player.incrementTurnCount();
         if (!player.isFrozen()) {
             try {
                 List<DungeonSpace> playerDungeonSpaces = player.move(direction);

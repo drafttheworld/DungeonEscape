@@ -32,13 +32,12 @@ public class Ghost extends NonPlayerCharacter {
 
     private final FreezeTime freezeTime;
     private final DungeonSpace[][] dungeon;
-    private final Player player;
     private int detectionDistance;
 
     public Ghost(FreezeTime freezeTime, DungeonSpace[][] dungeon, Player player) {
+        super(player);
         this.freezeTime = freezeTime;
         this.dungeon = dungeon;
-        this.player = player;
     }
 
     public FreezeTime getFreezeTime() {
@@ -84,6 +83,7 @@ public class Ghost extends NonPlayerCharacter {
     public List<DungeonSpace> interact(DungeonObject dungeonObject) {
 
         if (isActive() && dungeonObject instanceof Player) {
+            Player player = (Player) dungeonObject;
             PowerUp activePowerUp = player.getActivePowerUp();
             boolean isAttackable = activePowerUp == null
                 || (activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVINCIBILITY

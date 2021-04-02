@@ -11,6 +11,7 @@ import dungeonescape.dungeonobject.OpenSpace;
 import dungeonescape.dungeonobject.TeleportObject;
 import dungeonescape.dungeonobject.characters.DungeonCharacter;
 import dungeonescape.dungeonobject.characters.Ghost;
+import dungeonescape.dungeonobject.characters.NonPlayerCharacter;
 import dungeonescape.dungeonobject.characters.Player;
 import dungeonescape.dungeonobject.construction.Construction;
 import dungeonescape.dungeonobject.mine.Mine;
@@ -125,8 +126,9 @@ public class DungeonSpace implements Comparable<DungeonSpace> {
         DungeonObject visibleDungeonObject = null;
         for (int index = dungeonObjects.size() - 1; index >= 0; index--) {
             DungeonObject dungeonObject = dungeonObjects.get(index);
-            if (dungeonObject instanceof DungeonCharacter
-                && !((DungeonCharacter) dungeonObject).isActive() || dungeonObject instanceof Mine && !((Mine) dungeonObject).isActive()) {
+            if (dungeonObject instanceof Mine && !((Mine) dungeonObject).isActive()
+                || (dungeonObject instanceof NonPlayerCharacter
+                && !isNonPlayerCharacterVisible((NonPlayerCharacter) dungeonObject))) {
                 continue;
             }
 
@@ -139,6 +141,30 @@ public class DungeonSpace implements Comparable<DungeonSpace> {
         }
 
         return visibleDungeonObject;
+    }
+
+    private boolean isNonPlayerCharacterVisible(NonPlayerCharacter nonPlayerCharacter) {
+
+        if (!nonPlayerCharacter.isActive()) {
+            return false;
+        }
+
+        Player player = nonPlayerCharacter.getPlayer();
+        int playerLineOfSightDistance = player.getPlayerLineOfSightDistance();
+        int playerPositionX = player.getPosition().getPositionX();
+        int playerPositionY = player.getPosition().getPositionY();
+        int npcPositionX = nonPlayerCharacter.getPosition().getPositionX();
+        int npcPositionY = nonPlayerCharacter.getPosition().getPositionY();
+
+        if (playerPositionX == npcPositionX) {
+            return Math.abs(playerPositionY - npcPositionY) <= playerLineOfSightDistance;
+        } else if (playerPositionY == npcPositionY) {
+            return Math.abs(playerPositionX - npcPositionX) <= playerLineOfSightDistance;
+        } else {
+            int diffX = Math.abs(playerPositionX - npcPositionX);
+            int diffY = Math.abs(playerPositionY - npcPositionY);
+            return (int) Math.sqrt(diffX * diffX + diffY * diffY) <= playerLineOfSightDistance;
+        }
     }
 
     public boolean containsDungeonSpaceType(DungeonSpaceType dungeonSpaceType) {
@@ -176,7 +202,7 @@ public class DungeonSpace implements Comparable<DungeonSpace> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, visible, dungeonObjects);
+        return Objects.hash(position, visible);
     }
 
     @Override

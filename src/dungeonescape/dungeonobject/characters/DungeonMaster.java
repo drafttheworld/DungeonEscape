@@ -31,12 +31,10 @@ public class DungeonMaster extends NonPlayerCharacter {
     public static final String CAPTURE_NOTIFICATION
         = "You have been caught and executed by a DUNGEON MASTER!";
 
-    private final Player player;
-
     private int detectionDistance;
 
     public DungeonMaster(Player player) {
-        this.player = player;
+        super(player);
     }
 
     @Override
@@ -96,7 +94,7 @@ public class DungeonMaster extends NonPlayerCharacter {
                 new ActionNotAllowedNotification("A dungeon master cannot occupy the "
                     + "same space as another dungeon master."));
         } else if (dungeonObject instanceof Player) {
-            PowerUp activePowerUp = player.getActivePowerUp();
+            PowerUp activePowerUp = getPlayer().getActivePowerUp();
             boolean isAttackable = activePowerUp == null
                 || (activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVINCIBILITY
                 && activePowerUp.getCorrespondingPowerUpEnum() != PowerUpEnum.INVISIBILITY

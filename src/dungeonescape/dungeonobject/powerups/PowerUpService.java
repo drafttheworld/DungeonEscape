@@ -34,4 +34,8 @@ public class PowerUpService {
         powerUpListeners.forEach(powerUpListener -> powerUpListener.notifyPowerUpExpended(powerUpEnum));
     }
 
+    public void clearPowerUps() {
+        powerUpListeners.forEach(powerUpListener -> powerUpListener.clearPowerUps());
+    }
+
 }

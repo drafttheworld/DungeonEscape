@@ -17,4 +17,6 @@ public interface PowerUpListener {
 
     public void notifyPowerUpExpended(PowerUpEnum powerUpEnum);
 
+    public void clearPowerUps();
+
 }

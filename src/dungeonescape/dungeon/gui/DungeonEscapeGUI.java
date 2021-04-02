@@ -58,10 +58,14 @@ import javax.swing.SwingUtilities;
  */
 public class DungeonEscapeGUI extends JFrame implements NotificationListener {
 
-    private static final int NORTH_KEY_CODE = 38;
-    private static final int SOUTH_KEY_CODE = 40;
-    private static final int EAST_KEY_CODE = 39;
-    private static final int WEST_KEY_CODE = 37;
+    private static final int NORTH_KEY_CODE_W = 87;
+    private static final int NORTH_KEY_CODE_UP = 38;
+    private static final int SOUTH_KEY_CODE_S = 83;
+    private static final int SOUTH_KEY_CODE_DOWN = 40;
+    private static final int EAST_KEY_CODE_D = 68;
+    private static final int EAST_KEY_CODE_RIGHT = 39;
+    private static final int WEST_KEY_CODE_A = 65;
+    private static final int WEST_KEY_CODE_LEFT = 37;
 
     private static final int STARTING_HEIGHT = 600;
     private static final int STARTING_WIDTH = 900;
@@ -220,6 +224,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
                 }
                 displayNotificationPane(Image.GAME_WON.getBufferedImage());
                 gameOver = true;
+                new FinalScoreWindow().createAndShowFinalScoreWindow(gameSession.getPlayerStats(true));
             } else {
                 playerNotificationsTextArea.setText(gameNotification.getNotificationMessage());
             }
@@ -250,7 +255,7 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         this.requestFocus();
     }
 
-    private JPanel buildIntroMenuPanel(JPanel parent) {
+    private JPanel buildIntroMenuPanel(JPanel parentPanel) {
 
         JPanel panel = new JPanel();
 
@@ -258,13 +263,32 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
         panel.setPreferredSize(new Dimension(panelWidth, STARTING_HEIGHT));
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
+        JButton storyButton = createStoryButton(panelWidth, parentPanel);
+        panel.add(storyButton);
+
+        JButton instructionsButton = createInstructionsButton(panelWidth, parentPanel);
+        panel.add(instructionsButton);
+
+        startNewGameButton = createStartNewGameButton();
+        startNewGameButton.setMinimumSize(new Dimension(panelWidth, 30));
+        startNewGameButton.setMaximumSize(new Dimension(panelWidth, 30));
+        startNewGameButton.setPreferredSize(new Dimension(panelWidth, 30));
+        panel.add(startNewGameButton);
+
+        return panel;
+    }
+
+    private JButton createStoryButton(int panelWidth, JPanel parentPanel) {
+
         JButton storyButton = new JButton("The Story");
         storyButton.setMinimumSize(new Dimension(panelWidth, 30));
         storyButton.setMaximumSize(new Dimension(panelWidth, 30));
         storyButton.setPreferredSize(new Dimension(panelWidth, 30));
 
         storyButton.addActionListener((ActionEvent e) -> {
+
             ImagePanel storyImage = new ImagePanel(Image.STORY.getBufferedImage());
+
             storyImage.addComponentListener(new ComponentListener() {
                 @Override
                 public void componentResized(ComponentEvent e) {
@@ -287,26 +311,57 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
                     // not used
                 }
             });
-            parent.remove(gameConfigurationPanel);
-            parent.add(storyImage, BorderLayout.CENTER);
+
+            parentPanel.remove(gameConfigurationPanel);
+            parentPanel.add(storyImage, BorderLayout.CENTER);
             gameConfigurationPanel = storyImage;
-            refresh(parent);
+            refresh(parentPanel);
         });
-        panel.add(storyButton);
+
+        return storyButton;
+    }
+
+    private JButton createInstructionsButton(int panelWidth, JPanel parentPanel) {
 
         JButton instructionsButton = new JButton("Instructions");
         instructionsButton.setMinimumSize(new Dimension(panelWidth, 30));
         instructionsButton.setMaximumSize(new Dimension(panelWidth, 30));
         instructionsButton.setPreferredSize(new Dimension(panelWidth, 30));
-        panel.add(instructionsButton);
 
-        startNewGameButton = createStartNewGameButton();
-        startNewGameButton.setMinimumSize(new Dimension(panelWidth, 30));
-        startNewGameButton.setMaximumSize(new Dimension(panelWidth, 30));
-        startNewGameButton.setPreferredSize(new Dimension(panelWidth, 30));
-        panel.add(startNewGameButton);
+        instructionsButton.addActionListener((ActionEvent e) -> {
 
-        return panel;
+            ImagePanel instructionsPanel = new ImagePanel(Image.INSTRUCTIONS.getBufferedImage());
+
+            instructionsPanel.addComponentListener(new ComponentListener() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    instructionsPanel.revalidate();
+                    instructionsPanel.repaint();
+                }
+
+                @Override
+                public void componentMoved(ComponentEvent e) {
+                    // not used
+                }
+
+                @Override
+                public void componentShown(ComponentEvent e) {
+                    // not used
+                }
+
+                @Override
+                public void componentHidden(ComponentEvent e) {
+                    // not used
+                }
+            });
+
+            parentPanel.remove(gameConfigurationPanel);
+            parentPanel.add(instructionsPanel, BorderLayout.CENTER);
+            gameConfigurationPanel = instructionsPanel;
+            refresh(parentPanel);
+        });
+
+        return instructionsButton;
     }
 
     private JPanel buildPlayerInformationPane() {
@@ -468,19 +523,23 @@ public class DungeonEscapeGUI extends JFrame implements NotificationListener {
                 }
 
                 switch (e.getKeyCode()) {
-                    case NORTH_KEY_CODE:
+                    case NORTH_KEY_CODE_W:
+                    case NORTH_KEY_CODE_UP:
                         movePlayer(Direction.NORTH);
                         updateStats();
                         break;
-                    case SOUTH_KEY_CODE:
+                    case SOUTH_KEY_CODE_S:
+                    case SOUTH_KEY_CODE_DOWN:
                         movePlayer(Direction.SOUTH);
                         updateStats();
                         break;
-                    case EAST_KEY_CODE:
+                    case EAST_KEY_CODE_D:
+                    case EAST_KEY_CODE_RIGHT:
                         movePlayer(Direction.EAST);
                         updateStats();
                         break;
-                    case WEST_KEY_CODE:
+                    case WEST_KEY_CODE_A:
+                    case WEST_KEY_CODE_LEFT:
                         movePlayer(Direction.WEST);
                         updateStats();
                         break;

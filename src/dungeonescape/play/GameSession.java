@@ -85,8 +85,11 @@ public class GameSession {
             score += (turnDelta * TURN_DELTA_BONUS);
         }
 
-        StringBuilder sb = new StringBuilder()
-            .append("Dungeon time elapsed: ").append(player.getTurnCount()).append(" turns\n")
+        StringBuilder sb = new StringBuilder();
+        if (isFinalStats) {
+            sb.append("\n");
+        }
+        sb.append("Dungeon time elapsed: ").append(player.getTurnCount()).append(" turns\n")
             .append("Coins in inventory: ").append(player.getCoinsInInventory()).append(" coins\n");
 
         if (isFinalStats) {

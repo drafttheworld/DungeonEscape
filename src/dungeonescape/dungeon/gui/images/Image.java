@@ -25,6 +25,7 @@ public enum Image {
     GHOST_FACING_RIGHT("characters/ghost_facing_right.png"),
     GUARD_FACING_LEFT("characters/guard_facing_left.png"),
     GUARD_FACING_RIGHT("characters/guard_facing_right.png"),
+    INSTRUCTIONS("instructions.png"),
     MYSTERY_BOX("items/mystery_box.png"),
     NON_VISIBLE_SPACE("construction/nonvisible_space.png"),
     OPEN_SPACE("construction/open_space.png"),

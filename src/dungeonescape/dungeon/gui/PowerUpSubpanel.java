@@ -127,4 +127,12 @@ public class PowerUpSubpanel extends JPanel implements PowerUpListener {
             button.setEnabled(true);
         }
     }
+
+    @Override
+    public void clearPowerUps() {
+        inventory = 0;
+        label.setText(buildLabelText());
+        button.setText("Use");
+        button.setEnabled(false);
+    }
 }

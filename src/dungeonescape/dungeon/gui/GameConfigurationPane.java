@@ -118,11 +118,11 @@ public class GameConfigurationPane extends JPanel {
         JLabel ghostNumberOfMovesWhenPatrolling = new JLabel("Ghost patrol moves: " + dungeonConfiguration.getGhostNumberOfMovesWhenPatrolling());
         JLabel ghostNumberOfMovesWhenHunting = new JLabel("Ghost hunting moves: " + dungeonConfiguration.getGhostNumberOfMovesWhenHunting());
         JLabel ghostDetectionDistance = new JLabel("Ghost detection range: " + dungeonConfiguration.getGhostDetectionDistance());
-        JLabel ghostMinFreezeTime = new JLabel("Ghost min freeze time: " + dungeonConfiguration.getGhostMinFreezeTime().toString());
-        JLabel ghostMaxFreezeTime = new JLabel("Ghost max freeze time: " + dungeonConfiguration.getGhostMaxFreezeTime().toString());
+        JLabel ghostMinFreezeTime = new JLabel("Ghost min freeze time: " + dungeonConfiguration.getGhostMinFreezeTime().getTurns());
+        JLabel ghostMaxFreezeTime = new JLabel("Ghost max freeze time: " + dungeonConfiguration.getGhostMaxFreezeTime().getTurns());
         JLabel mines = new JLabel("Mines:");
         JLabel freezeMineCount = new JLabel("Freeze mine count: " + dungeonConfiguration.getFreezeMineCount());
-        JLabel freezeMineMaxFreezeTime = new JLabel("Freeze mine max " + dungeonConfiguration.getFreezeMineMaxFreezeTime());
+        JLabel freezeMineMaxFreezeTime = new JLabel("Freeze mine max freeze time: " + dungeonConfiguration.getFreezeMineMaxFreezeTime().getTurns());
         JLabel teleportMineCount = new JLabel("Teleport mine count: " + dungeonConfiguration.getTeleportMineCount());
 
         JPanel configurationPanel = new JPanel();

@@ -13,7 +13,7 @@ import dungeonescape.dungeonobject.FreezeTime;
  * @author Andrew
  */
 public enum GameDifficulty {
-    DEMO,
+//    DEMO,
     EASY,
     NORMAL,
     HARD,
@@ -21,8 +21,8 @@ public enum GameDifficulty {
 
     public DungeonConfiguration getDungeonConfiguration() {
         switch (this) {
-            case DEMO:
-                return demo();
+//            case DEMO:
+//                return demo();
             case EASY:
                 return easy();
             case NORMAL:
@@ -40,13 +40,13 @@ public enum GameDifficulty {
             .dungeonWidth(25)
             .playerVisibility(15)
             .dungeonExitCount(8)
-            .dungeonMasterCount(0)
+            .dungeonMasterCount(1)
             .spawnDungeonMastersTurnCount(25)
             .dungeonMasterDetectionDistance(5)
             .dungeonMasterNumberOfMovesWhenPatrolling(2)
             .dungeonMasterNumberOfMovesWhenHunting(1)
             .dungeonMasterMovementRateMs(1000)
-            .guardCount(0)
+            .guardCount(1)
             .guardDetectionDistance(5)
             .guardNumberOfMovesWhenPatrolling(2)
             .guardNumberOfMovesWhenHunting(1)
@@ -62,13 +62,13 @@ public enum GameDifficulty {
             .freezeMineMinFreezeTime(new FreezeTime(5))
             .freezeMineMaxFreezeTime(new FreezeTime(5))
             .teleportMineCount(0)
-            .powerUpBoxCount(1)
+            .powerUpBoxCount(10)
             .invincibilityProbability(1)
             .invisibilityProbability(1)
             .repellentProbability(1)
             .terminatorProbability(1)
             .powerUpDurationTurns(10)
-            .coinCoveragePercentOfOpenSpaces(0);
+            .coinCoveragePercentOfOpenSpaces(10);
     }
 
     /**
@@ -87,7 +87,7 @@ public enum GameDifficulty {
             .dungeonMasterNumberOfMovesWhenPatrolling(2)
             .dungeonMasterNumberOfMovesWhenHunting(1)
             .dungeonMasterMovementRateMs(1000)
-            .guardCount(5)
+            .guardCount(10)
             .guardDetectionDistance(5)
             .guardNumberOfMovesWhenPatrolling(2)
             .guardNumberOfMovesWhenHunting(1)
@@ -129,22 +129,22 @@ public enum GameDifficulty {
             .dungeonMasterNumberOfMovesWhenHunting(3)
             .dungeonMasterMovementRateMs(500)
             .guardCount(100)
-            .guardDetectionDistance(6)
+            .guardDetectionDistance(5)
             .guardNumberOfMovesWhenPatrolling(2)
-            .guardNumberOfMovesWhenHunting(2)
+            .guardNumberOfMovesWhenHunting(1)
             .guardMovementRateMs(500)
             .ghostCount(200)
             .ghostMinFreezeTime(new FreezeTime(10))
             .ghostMaxFreezeTime(new FreezeTime(20))
             .ghostDetectionDistance(6)
             .ghostNumberOfMovesWhenPatrolling(5)
-            .ghostNumberOfMovesWhenHunting(3)
+            .ghostNumberOfMovesWhenHunting(1)
             .ghostMovementRateMs(500)
             .freezeMineCount(1000)
             .freezeMineMinFreezeTime(new FreezeTime(5))
             .freezeMineMaxFreezeTime(new FreezeTime(15))
             .teleportMineCount(500)
-            .powerUpBoxCount(20)
+            .powerUpBoxCount(30)
             .invincibilityProbability(1)
             .invisibilityProbability(1)
             .repellentProbability(1)
@@ -170,9 +170,9 @@ public enum GameDifficulty {
             .dungeonMasterNumberOfMovesWhenHunting(3)
             .dungeonMasterMovementRateMs(400)
             .guardCount(150)
-            .guardDetectionDistance(7)
+            .guardDetectionDistance(6)
             .guardNumberOfMovesWhenPatrolling(3)
-            .guardNumberOfMovesWhenHunting(3)
+            .guardNumberOfMovesWhenHunting(2)
             .guardMovementRateMs(400)
             .ghostCount(300)
             .ghostMinFreezeTime(new FreezeTime(15))
@@ -185,7 +185,7 @@ public enum GameDifficulty {
             .freezeMineMinFreezeTime(new FreezeTime(10))
             .freezeMineMaxFreezeTime(new FreezeTime(20))
             .teleportMineCount(1000)
-            .powerUpBoxCount(30)
+            .powerUpBoxCount(50)
             .invincibilityProbability(1)
             .invisibilityProbability(1)
             .repellentProbability(1)

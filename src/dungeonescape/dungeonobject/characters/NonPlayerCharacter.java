@@ -11,6 +11,12 @@ package dungeonescape.dungeonobject.characters;
  */
 public abstract class NonPlayerCharacter extends DungeonCharacter implements Runnable {
 
+    private final Player player;
+
+    protected NonPlayerCharacter(Player player) {
+        this.player = player;
+    }
+
     /**
      * Time in ms between movements of this character.
      */
@@ -22,6 +28,10 @@ public abstract class NonPlayerCharacter extends DungeonCharacter implements Run
 
     public void setMovementRateMs(long movementRateMs) {
         this.movementRateMs = movementRateMs;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
 }

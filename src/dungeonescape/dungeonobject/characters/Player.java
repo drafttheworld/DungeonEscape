@@ -137,6 +137,10 @@ public class Player extends DungeonCharacter implements PowerUpListener {
         }
     }
 
+    public void clearCoinsInInventory() {
+        coinsInInventory = 0;
+    }
+
     public void addPowerUp(PowerUp powerUp) {
 
         if (powerUp != null) {
@@ -146,6 +150,11 @@ public class Player extends DungeonCharacter implements PowerUpListener {
             powerUpService.addPowerUp(powerUp.getCorrespondingPowerUpEnum());
             powerUpsCollected++;
         }
+    }
+
+    public void clearPowerUpInventory() {
+        powerUpService.clearPowerUps();
+        powerUps.clear();
     }
 
     public boolean hasWon() {
@@ -232,6 +241,10 @@ public class Player extends DungeonCharacter implements PowerUpListener {
 
     public int getCoinsInInventory() {
         return coinsInInventory;
+    }
+
+    public void incrementTurnCount() {
+        turnCount++;
     }
 
     @Override
@@ -502,6 +515,11 @@ public class Player extends DungeonCharacter implements PowerUpListener {
 
     @Override
     public void notifyPowerUpExpended(PowerUpEnum powerUpEnum) {
+        // do nothing, not used
+    }
+
+    @Override
+    public void clearPowerUps() {
         // do nothing, not used
     }
 }
